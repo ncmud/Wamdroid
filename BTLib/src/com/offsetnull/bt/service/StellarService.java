@@ -46,7 +46,7 @@ import com.offsetnull.bt.service.plugin.settings.SettingsGroup;
 import com.offsetnull.bt.settings.ConfigurationLoader;
 import com.offsetnull.bt.alias.AliasData;
 
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import dalvik.system.PathClassLoader;
 

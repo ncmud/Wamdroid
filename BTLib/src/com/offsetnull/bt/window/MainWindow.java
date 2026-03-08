@@ -57,8 +57,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
 import android.text.InputType;
 import android.util.Log;
 //import android.util.Log;
@@ -125,8 +125,8 @@ import com.offsetnull.bt.trigger.BetterTriggerSelectionDialog;
 import com.offsetnull.bt.trigger.TriggerSelectionDialog;
 import com.offsetnull.bt.ui.SDCardUtils;
 
-import android.support.v7.app.AppCompatActivity;
-import android.support.v4.view.MenuItemCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 
 public class MainWindow extends AppCompatActivity implements MainWindowCallback,ActivityCompat.OnRequestPermissionsResultCallback {
 	
@@ -370,7 +370,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		titleBarHeight = sprefs.getInt("TITLE_BAR_HEIGHT", 0);
 		setContentView(R.layout.window_layout);
 
-		android.support.v7.widget.Toolbar myToolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
+		androidx.appcompat.widget.Toolbar myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
 
 		history = new CommandKeeper(10);
@@ -878,7 +878,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 								}});
 
 					View snackbarView = bar.getView();
-					TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+					TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 					textView.setMaxLines(5);  // show multiple line
 					bar.show();
 					break;
@@ -1329,15 +1329,15 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 
 		this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0x00FFFFFF));
 
-		this.getSupportActionBar().setDisplayOptions(0, android.support.v7.app.ActionBar.DISPLAY_SHOW_HOME);
-		this.getSupportActionBar().setDisplayOptions(0, android.support.v7.app.ActionBar.DISPLAY_SHOW_TITLE);
+		this.getSupportActionBar().setDisplayOptions(0, androidx.appcompat.app.ActionBar.DISPLAY_SHOW_HOME);
+		this.getSupportActionBar().setDisplayOptions(0, androidx.appcompat.app.ActionBar.DISPLAY_SHOW_TITLE);
 
 
 
 		Button b = new Button(this);
 		b.setBackgroundColor(0x00000000);
 		//b.setBackgroundColor(0x33FF0000);
-		android.support.v7.app.ActionBar.LayoutParams tmp2 = new android.support.v7.app.ActionBar.LayoutParams(android.support.v7.app.ActionBar.LayoutParams.MATCH_PARENT,android.support.v7.app.ActionBar.LayoutParams.WRAP_CONTENT);
+		androidx.appcompat.app.ActionBar.LayoutParams tmp2 = new androidx.appcompat.app.ActionBar.LayoutParams(androidx.appcompat.app.ActionBar.LayoutParams.MATCH_PARENT,androidx.appcompat.app.ActionBar.LayoutParams.WRAP_CONTENT);
 
 		LinearLayout.LayoutParams tmp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		b.setLayoutParams(tmp);
@@ -1366,11 +1366,11 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		});
 
 		//this.getSupportActionBar().setCustomView(b,tmp2);
-		//this.getSupportActionBar().setDisplayOptions(android.support.v7.app.ActionBar.DISPLAY_SHOW_CUSTOM);
+		//this.getSupportActionBar().setDisplayOptions(androidx.appcompat.app.ActionBar.DISPLAY_SHOW_CUSTOM);
 		//this.getSupportActionBar().setDisplayShowCustomEnabled(true);
 		//b.setEnabled(true);
 		//this.getSupportActionBar().setContent
-		//android.support.v7.widget.Toolbar parent =(android.support.v7.widget.Toolbar) customView.getParent();
+		//androidx.appcompat.widget.Toolbar parent =(androidx.appcompat.widget.Toolbar) customView.getParent();
 		//parent.setContentInsetsAbsolute(0,0);
 
 		//Log.e("Window","End on create");
@@ -3138,7 +3138,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//}
 
 		//bring the toolbar to the front
-		android.support.v7.widget.Toolbar myToolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
+		androidx.appcompat.widget.Toolbar myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
 		if(myToolbar != null) {
 			myToolbar.bringToFront();
 		}
@@ -3433,7 +3433,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					}});
 
 		View snackbarView = bar.getView();
-		TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+		TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 		textView.setMaxLines(5);  // show multiple line
 		bar.show();
 	}
@@ -3450,7 +3450,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					}});
 
 		View snackbarView = bar.getView();
-		TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+		TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 		textView.setMaxLines(5);  // show multiple line
 		bar.show();
 	}

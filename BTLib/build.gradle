@@ -4,6 +4,10 @@ android {
 	namespace "com.offsetnull.bt"
 	compileSdk 35
 
+	buildFeatures {
+		aidl true
+	}
+
 	defaultConfig {
 		minSdk 31
 		targetSdk 35
