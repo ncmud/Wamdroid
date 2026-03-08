@@ -996,19 +996,13 @@ public class StellarService extends Service {
 		@Override
 		public void registerWindowCallback(final String displayName, final String name, final IWindowCallback callback)
 				throws RemoteException {
-			Connection c = mConnections.get(displayName);
-			if (c != null) {
-				c.registerWindowCallback(name, callback);
-			} 
+			// Stub: AIDL bridge is dead code; callers use StellarService.registerWindowCallback() directly.
 		}
 
 		@Override
 		public void unregisterWindowCallback(final String name,
 				final IWindowCallback callback) throws RemoteException {
-			Connection c = mConnections.get(name);
-			if (c != null) {
-				c.unregisterWindowCallback(callback);
-			}
+			// Stub: AIDL bridge is dead code; callers use StellarService.unregisterWindowCallback() directly.
 		}
 
 		@Override
@@ -1624,14 +1618,14 @@ public class StellarService extends Service {
 		return mConnections.get(mConnectionClutch).getWindows();
 	}
 
-	public void registerWindowCallback(final String displayName, final String name, final IWindowCallback callback) {
+	public void registerWindowCallback(final String displayName, final String name, final WindowCallback callback) {
 		Connection c = mConnections.get(displayName);
 		if (c != null) {
 			c.registerWindowCallback(name, callback);
 		}
 	}
 
-	public void unregisterWindowCallback(final String name, final IWindowCallback callback) {
+	public void unregisterWindowCallback(final String name, final WindowCallback callback) {
 		Connection c = mConnections.get(name);
 		if (c != null) {
 			c.unregisterWindowCallback(callback);
