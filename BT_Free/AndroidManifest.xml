@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         tools:replace="android:theme"
@@ -48,7 +51,8 @@
         <service tools:replace="android:process"
                  android:name="com.offsetnull.bt.service.StellarService"
                  android:process=":stellar"
-                 android:exported="false">
+                 android:exported="false"
+                 android:foregroundServiceType="connectedDevice">
             <intent-filter>
                 <action android:name="com.offsetnull.bt.service.IStellarService.MODE_NORMAL"/>
             </intent-filter>

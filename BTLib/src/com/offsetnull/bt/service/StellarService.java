@@ -13,12 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.pm.ServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -550,12 +550,9 @@ public class StellarService extends Service {
 		
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 	
-		PendingIntent contentIntent = PendingIntent.getActivity(this, notificationID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, notificationID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-		String channelId = null;
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			channelId = createNotificationChannel(display);
-		}
+		String channelId = createNotificationChannel(display);
 		//note.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channelId);
 		Notification note = builder.setContentIntent(contentIntent)
@@ -571,7 +568,7 @@ public class StellarService extends Service {
 		
 		if (!mHasForegroundNotification) {
 			mForegroundNotificationId = notificationID;
-			this.startForeground(mForegroundNotificationId, note);
+			this.startForeground(mForegroundNotificationId, note, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
 			mHasForegroundNotification = true;
 		} else {
 			//int notificationId = notificationID;
@@ -586,7 +583,6 @@ public class StellarService extends Service {
 	 *
 	 * @param none
 	 */
-	@TargetApi(26)
 	public final String createNotificationChannel(final String display) {
 		String channelId = ConfigurationLoader.getConfigurationValue("ongoingNotificationLabel",this) + "_service" + "_" + display;
 		String channelName = ConfigurationLoader.getConfigurationValue("ongoingNotificationLabel",this);
@@ -626,7 +622,7 @@ public class StellarService extends Service {
 			//mNotificationManager.cancel(mForegroundNotificationId);
 			mForegroundNotificationId = tmpID;
 			mNotificationManager.cancel(tmpID);
-			this.startForeground(tmpID, tmpNote);
+			this.startForeground(tmpID, tmpNote, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
 		}
 		
 	}
