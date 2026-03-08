@@ -3065,33 +3065,28 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		}
 		
 		if(mWindows == null || mWindows.length == 0) {
-			//Exception e = new Exception("No windows to show.");
-			//throw new RuntimeException(e);
+			int retries = 0;
+			int maxRetries = 10;
 			synchronized(this) {
-				while(mWindows == null || mWindows.length == 0) {
+				while((mWindows == null || mWindows.length == 0) && retries < maxRetries) {
 					try {
 						this.wait(300);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					boolean done = false;
-					//while(!done) {
-						try {
-							mWindows = service.getWindowTokens();
-							if(mWindows != null) {
-								if(mWindows.length > 0) {
-									done = true;
-								}
-							}
-						} catch (RemoteException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					//}
+					try {
+						mWindows = service.getWindowTokens();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+					retries++;
 				}
 			}
-		} 
+			if(mWindows == null || mWindows.length == 0) {
+				Log.w("MUDWammer", "No window tokens received after " + maxRetries + " retries, skipping window initialization");
+				return;
+			}
+		}
 			ApplicationInfo ai = null;
 			try {
 				ai = this.getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
