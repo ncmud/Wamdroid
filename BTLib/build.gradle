@@ -4,9 +4,6 @@ android {
 	namespace "com.offsetnull.bt"
 	compileSdk 35
 
-	buildFeatures {
-		aidl true
-	}
 
 	defaultConfig {
 		minSdk 31
@@ -28,7 +25,6 @@ android {
 			manifest.srcFile 'AndroidManifest.xml'
 			java.srcDirs = ['src']
 			resources.srcDirs = ['src']
-			aidl.srcDirs = ['src']
 			res.srcDirs = ['res']
 			assets.srcDirs = ['assets']
 			jniLibs.srcDirs = ['libs']
