@@ -32,7 +32,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -101,7 +100,7 @@ public class StellarService extends Service {
 	/** The callback list of MainWindow activities that have bound to the Service. */
 	private final List<ConnectionCallback> mCallbacks = new ArrayList<ConnectionCallback>();
 	/** The callback list of Launcher activities that have bound to the Service. */
-	private RemoteCallbackList<ILauncherCallback> mLauncherCallbacks = new RemoteCallbackList<ILauncherCallback>();
+	private final List<LauncherCallback> mLauncherCallbacks = new ArrayList<LauncherCallback>();
 	/** The remote callback target. */
 	private IConnectionBinder.Stub mBinder = new ServiceBinder();
 	/** The local binder for in-process binding. */
@@ -462,15 +461,9 @@ public class StellarService extends Service {
 		mNotificationManager.notify(id, note);
 		
 		//now, if the launcher connection list has a listener, we should notify it that a connection has gone
-		int n = mLauncherCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mLauncherCallbacks.getBroadcastItem(i).connectionDisconnected();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (LauncherCallback cb : mLauncherCallbacks) {
+			cb.connectionDisconnected();
 		}
-		mLauncherCallbacks.finishBroadcast();
 	}
 	
 	/** Method called when a connection has connected successfully.
@@ -673,16 +666,12 @@ public class StellarService extends Service {
 		
 		@Override
 		public void registerLauncherCallback(final ILauncherCallback c) {
-			if (c != null) {
-				mLauncherCallbacks.register(c);
-			}
+			// Stub: AIDL bridge is dead code; callers use StellarService.registerLauncherCallback() directly.
 		}
-		
+
 		@Override
 		public void unregisterLauncherCallback(final ILauncherCallback c) {
-			if (c != null) {
-				mLauncherCallbacks.unregister(c);
-			}
+			// Stub: AIDL bridge is dead code; callers use StellarService.unregisterLauncherCallback() directly.
 		}
 
 		@Override
@@ -1364,15 +1353,15 @@ public class StellarService extends Service {
 		}
 	}
 
-	public void registerLauncherCallback(final ILauncherCallback c) {
+	public void registerLauncherCallback(final LauncherCallback c) {
 		if (c != null) {
-			mLauncherCallbacks.register(c);
+			mLauncherCallbacks.add(c);
 		}
 	}
 
-	public void unregisterLauncherCallback(final ILauncherCallback c) {
+	public void unregisterLauncherCallback(final LauncherCallback c) {
 		if (c != null) {
-			mLauncherCallbacks.unregister(c);
+			mLauncherCallbacks.remove(c);
 		}
 	}
 

@@ -80,7 +80,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.ILauncherCallback;
+import com.offsetnull.bt.service.LauncherCallback;
 import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.settings.ConfigurationLoader;
 import com.offsetnull.bt.ui.SDCardUtils;
@@ -1976,7 +1976,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		}
 	}
 	
-	ILauncherCallback the_callback = new ILauncherCallback.Stub() {
+	LauncherCallback the_callback = new LauncherCallback() {
 
 		@Override
 		public void connectionDisconnected() {
