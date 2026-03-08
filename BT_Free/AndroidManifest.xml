@@ -49,9 +49,7 @@
             </intent-filter>
         </activity>
 
-        <service tools:replace="android:process"
-                 android:name="com.offsetnull.bt.service.StellarService"
-                 android:process=":stellar"
+        <service android:name="com.offsetnull.bt.service.StellarService"
                  android:exported="false"
                  android:foregroundServiceType="connectedDevice">
             <intent-filter>

@@ -14,7 +14,6 @@
         		  </intent-filter>
         </activity>
         <service android:name="com.offsetnull.bt.service.StellarService"
-        		 android:process=":remote"
         		 android:exported="false">
         		 <intent-filter>
         		 	<action android:name="com.happygoatstudios.bt.service.IStellarService"/>
