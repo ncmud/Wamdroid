@@ -7,13 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.BetterPluginSelectionDialog;
 import com.offsetnull.bt.window.StandardSelectionDialog;
 import com.offsetnull.bt.window.BaseSelectionDialog;
@@ -27,7 +26,7 @@ public class BetterSpeedWalkConfigurationDialog extends StandardSelectionDialog 
 	String[] sortedKeys;
 	
 	public BetterSpeedWalkConfigurationDialog(Context context,
-			IConnectionBinder service) {
+			StellarService service) {
 		super(context, service);
 		// TODO Auto-generated constructor stub
 		
@@ -45,12 +44,9 @@ public class BetterSpeedWalkConfigurationDialog extends StandardSelectionDialog 
 	
 	private void buildList() {
 		
-		try {
-			dataMap = (HashMap<String, DirectionData>) service.getDirectionData();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		dataMap = (HashMap<String, DirectionData>) service.getDirectionData();
+		
 		sortedKeys = new String[dataMap.size()];
 		sortedKeys = dataMap.keySet().toArray(sortedKeys);
 		Arrays.sort(sortedKeys,String.CASE_INSENSITIVE_ORDER);
@@ -68,12 +64,9 @@ public class BetterSpeedWalkConfigurationDialog extends StandardSelectionDialog 
 	
 	private void saveList() {
 		
-		try {
-			service.setDirectionData(dataMap);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		service.setDirectionData(dataMap);
+		
 		
 	}
 	
@@ -125,12 +118,9 @@ public class BetterSpeedWalkConfigurationDialog extends StandardSelectionDialog 
 
 	@Override
 	public void onDonePressed(View v) {
-		try {
-			service.saveSettings();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		service.saveSettings();
+		
 	}
 
 	@Override

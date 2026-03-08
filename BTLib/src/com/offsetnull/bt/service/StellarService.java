@@ -104,7 +104,9 @@ public class StellarService extends Service {
 	private RemoteCallbackList<ILauncherCallback> mLauncherCallbacks = new RemoteCallbackList<ILauncherCallback>();
 	/** The remote callback target. */
 	private IConnectionBinder.Stub mBinder = new ServiceBinder();
-	
+	/** The local binder for in-process binding. */
+	private final LocalBinder mLocalBinder = new LocalBinder();
+
 	static {
 		try {
 			System.loadLibrary("sqlite3");
@@ -113,7 +115,14 @@ public class StellarService extends Service {
 			Log.e("MUDWammer", "Native Lua libraries not available", e);
 		}
 	}
-	
+
+	/** Binder for in-process (local) binding, replacing AIDL IPC. */
+	public class LocalBinder extends android.os.Binder {
+		public StellarService getService() {
+			return StellarService.this;
+		}
+	}
+
 	@Override
 	public void onLowMemory() {
 		//Log.e("SERVICE","The service has been requested to shore up memory usage, potentially going to be killed.");
@@ -650,7 +659,7 @@ public class StellarService extends Service {
 	 * @see Android AIDL docs.
 	 */
 	public final IBinder onBind(final Intent arg0) {
-		return mBinder;
+		return mLocalBinder;
 	}
 
 	/** Setter method for mConnectionClutch.
@@ -1398,6 +1407,545 @@ public class StellarService extends Service {
 		}
 
 	};
+
+	// ── Public methods for local (in-process) binding ──────────────────
+
+	public void registerCallback(final IConnectionBinderCallback c, final String host, final int port, final String display) {
+		if (c != null) {
+			mCallbacks.register(c);
+
+			if (!mConnections.containsKey(display)) {
+				setConnectionData(host, port, display);
+			} else {
+				mConnectionClutch = display;
+				try {
+					c.loadWindowSettings();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void unregisterCallback(final IConnectionBinderCallback c) {
+		if (c !=  null) {
+			mCallbacks.unregister(c);
+		}
+	}
+
+	public void registerLauncherCallback(final ILauncherCallback c) {
+		if (c != null) {
+			mLauncherCallbacks.register(c);
+		}
+	}
+
+	public void unregisterLauncherCallback(final ILauncherCallback c) {
+		if (c != null) {
+			mLauncherCallbacks.unregister(c);
+		}
+	}
+
+	public void initXfer() {
+		mHandler.sendEmptyMessage(MESSAGE_STARTUP);
+	}
+
+	public void endXfer() {
+		Connection c = mConnections.get(mConnectionClutch);
+		c.sendDataToWindow("\n" + Colorizer.getRedColor() + "Connection terminated by user." + Colorizer.getWhiteColor() + "\n\n");
+		c.killNetThreads(true);
+		mConnections.get(mConnectionClutch).doDisconnect(true);
+	}
+
+	public boolean isConnected() {
+		if (mConnections.size() < 1) {
+			return false;
+		}
+		return mConnections.get(mConnectionClutch).isConnected();
+	}
+
+	public void sendData(final byte[] seq) {
+		Handler handler = mConnections.get(mConnectionClutch).getHandler();
+		handler.sendMessage(handler.obtainMessage(Connection.MESSAGE_SENDDATA_BYTES, seq));
+	}
+
+	public void saveSettings() {
+		Connection c = mConnections.get(mConnectionClutch);
+		if (c == null) { return; }
+		c.saveMainSettings();
+	}
+
+	public void setConnectionData(final String host, final int port, final String display) {
+		Message msg = mHandler.obtainMessage(MESSAGE_NEWCONENCTION);
+		Bundle b = msg.getData();
+		b.putString("DISPLAY", display);
+		b.putString("HOST", host);
+		b.putInt("PORT", port);
+		msg.setData(b);
+		mHandler.sendMessage(msg);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List getSystemCommands() {
+		return mConnections.get(mConnectionClutch).getSystemCommands();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getAliases() {
+		return mConnections.get(mConnectionClutch).getAliases();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setAliases(final Map map) {
+		mConnections.get(mConnectionClutch).setAliases((HashMap<String, AliasData>) map);
+	}
+
+	public void loadSettingsFromPath(final String path) {
+		mConnections.get(mConnectionClutch).startLoadSettingsSequence(path);
+	}
+
+	public void exportSettingsToPath(final String path) {
+		mConnections.get(mConnectionClutch).exportSettings(path);
+	}
+
+	public void resetSettings() {
+		mConnections.get(mConnectionClutch).resetSettings();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getTriggerData() {
+		HashMap<String, TriggerData> triggers = mConnections.get(mConnectionClutch).getTriggers();
+		return triggers;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getPluginTriggerData(final String id) {
+		return mConnections.get(mConnectionClutch).getPluginTriggers(id);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getDirectionData() {
+		return mConnections.get(mConnectionClutch).getDirectionData();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setDirectionData(final Map data) {
+		mConnections.get(mConnectionClutch).setDirectionData((HashMap<String, DirectionData>) data);
+	}
+
+	public void newTrigger(final TriggerData data) {
+		mConnections.get(mConnectionClutch).addTrigger(data);
+	}
+
+	public void updateTrigger(final TriggerData from, final TriggerData to) {
+		mConnections.get(mConnectionClutch).updateTrigger(from, to);
+	}
+
+	public void deleteTrigger(final String which) {
+		mConnections.get(mConnectionClutch).deleteTrigger(which);
+	}
+
+	public TriggerData getTrigger(final String pattern) {
+		return mConnections.get(mConnectionClutch).getTrigger(pattern);
+	}
+
+	public boolean isKeepLast() {
+		return mConnections.get(mConnectionClutch).isKeepLast();
+	}
+
+	public void setDisplayDimensions(final int rows, final int cols) {
+		Connection c = mConnections.get(mConnectionClutch);
+		if (c == null) {
+			return;
+		}
+		c.getProcessor().setDisplayDimensions(rows, cols);
+	}
+
+	public void reconnect(final String str) {
+		String connection = str;
+		if (str == null || str.equals("")) {
+			connection = mConnectionClutch;
+		}
+		mConnections.get(connection).doReconnect();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getTimers() {
+		return mConnections.get(mConnectionClutch).getTimers();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getPluginTimers(final String plugin) {
+		return mConnections.get(mConnectionClutch).getPluginTimers(plugin);
+	}
+
+	public TimerData getTimer(final String ordinal) {
+		return mConnections.get(mConnectionClutch).getTimer(ordinal);
+	}
+
+	public void startTimer(final String ordinal) {
+		mConnections.get(mConnectionClutch).playTimer(ordinal);
+	}
+
+	public void pauseTimer(final String ordinal) {
+		mConnections.get(mConnectionClutch).pauseTimer(ordinal);
+	}
+
+	public void stopTimer(final String ordinal) {
+		mConnections.get(mConnectionClutch).stopTimer(ordinal);
+	}
+
+	public void startPluginTimer(final String plugin, final String ordinal) {
+		mConnections.get(mConnectionClutch).playPluginTimer(plugin, ordinal);
+	}
+
+	public void pausePluginTimer(final String plugin, final String ordinal) {
+		mConnections.get(mConnectionClutch).pausePluginTimer(plugin, ordinal);
+	}
+
+	public void stopPluginTimer(final String plugin, final String ordinal) {
+		mConnections.get(mConnectionClutch).stopPluginTimer(plugin, ordinal);
+	}
+
+	public void updateTimer(final TimerData old, final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).updateTimer(old, newtimer);
+	}
+
+	public void addTimer(final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).addTimer(newtimer);
+	}
+
+	public void removeTimer(final TimerData deltimer) {
+		//TODO: THIS IS BLANK, CAN WE REMOVE TIMERS?!
+	}
+
+	public int getNextTimerOrdinal() {
+		return 0;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getTimerProgressWad() {
+		return null;
+	}
+
+	public String getEncoding() {
+		return (String) ((EncodingOption) mConnections.get(mConnectionClutch).getSettings().findOptionByKey("encoding")).getValue();
+	}
+
+	public String getConnectedTo() {
+		return mConnectionClutch;
+	}
+
+	public boolean isFullScreen() {
+		return mConnections.get(mConnectionClutch).isFullScren();
+	}
+
+	public void setTriggerEnabled(final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setTriggerEnabled(enabled, key);
+	}
+
+	public void setButtonSetLocked(final boolean locked, final String key) {
+	}
+
+	public boolean isButtonSetLocked(final String key) {
+		return false;
+	}
+
+	public boolean isButtonSetLockedMoveButtons(final String key) {
+		return false;
+	}
+
+	public boolean isButtonSetLockedNewButtons(final String key) {
+		return false;
+	}
+
+	public boolean isButtonSetLockedEditButtons(final String key) {
+		return false;
+	}
+
+	public void startNewConnection(final String host, final int port, final String display) {
+	}
+
+	public void switchToConnection(final String display) {
+		mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_SWITCH, display));
+	}
+
+	public boolean isConnectedTo(final String display) {
+		return mConnections.keySet().contains(display);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List getConnections() {
+		List<String> tmp = new ArrayList<String>();
+		for (String key : mConnections.keySet()) {
+			tmp.add(key);
+		}
+		return tmp;
+	}
+
+	public WindowToken[] getWindowTokens() {
+		if (mConnections == null || mConnections.size() == 0) { return null; }
+		return mConnections.get(mConnectionClutch).getWindows();
+	}
+
+	public void registerWindowCallback(final String displayName, final String name, final IWindowCallback callback) {
+		Connection c = mConnections.get(displayName);
+		if (c != null) {
+			c.registerWindowCallback(name, callback);
+		}
+	}
+
+	public void unregisterWindowCallback(final String name, final IWindowCallback callback) {
+		Connection c = mConnections.get(name);
+		if (c != null) {
+			c.unregisterWindowCallback(callback);
+		}
+	}
+
+	public String getScript(final String plugin, final String name) {
+		return mConnections.get(mConnectionClutch).getScript(plugin, name);
+	}
+
+	public void reloadSettings() {
+		mHandler.sendEmptyMessage(MESSAGE_RELOADSETTINGS);
+	}
+
+	public void pluginXcallS(final String plugin, final String function, final String str) {
+		mConnections.get(mConnectionClutch).pluginXcallS(plugin, function, str);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getPluginList() {
+		Connection c = mConnections.get(mConnectionClutch);
+		HashMap<String, String> list = new HashMap<String, String>();
+
+		for (Plugin p : c.getPlugins()) {
+			String info = "";
+			info += p.getTriggerCount() + " T, ";
+			info += p.getAliasCount() + " A, ";
+			info += p.getTimerCount() + " C, ";
+			info += p.getScriptCount() + " S, ";
+			info += p.getStorageType();
+			list.put(p.getName(), info);
+		}
+
+		return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List getPluginsWithTriggers() {
+		ArrayList<String> list = new ArrayList<String>();
+		Connection c = mConnections.get(mConnectionClutch);
+		for (Plugin p : c.getPlugins()) {
+			if (p.getSettings().getTriggers().size() > 0) {
+				list.add(p.getName());
+			}
+		}
+		return list;
+	}
+
+	public void newPluginTrigger(final String selectedPlugin, final TriggerData data) {
+		mConnections.get(mConnectionClutch).newPluginTrigger(selectedPlugin, data);
+	}
+
+	public void updatePluginTrigger(final String selectedPlugin, final TriggerData from, final TriggerData to) {
+		mConnections.get(mConnectionClutch).updatePluginTrigger(selectedPlugin, from, to);
+	}
+
+	public TriggerData getPluginTrigger(final String selectedPlugin, final String pattern) {
+		return mConnections.get(mConnectionClutch).getPluginTrigger(selectedPlugin, pattern);
+	}
+
+	public void setPluginTriggerEnabled(final String selectedPlugin, final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setPluginTriggerEnabled(selectedPlugin, enabled, key);
+	}
+
+	public void deletePluginTrigger(final String selectedPlugin, final String which) {
+		mConnections.get(mConnectionClutch).deletePluginTrigger(selectedPlugin, which);
+	}
+
+	public AliasData getAlias(final String key) {
+		return mConnections.get(mConnectionClutch).getAlias(key);
+	}
+
+	public AliasData getPluginAlias(final String plugin, final String key) {
+		return mConnections.get(mConnectionClutch).getPluginAlias(plugin, key);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getPluginAliases(final String currentPlugin) {
+		return mConnections.get(mConnectionClutch).getPluginAliases(currentPlugin);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setPluginAliases(final String plugin, final Map map) {
+		mConnections.get(mConnectionClutch).setPluginAliases(plugin, (HashMap<String, AliasData>) map);
+	}
+
+	public void deleteAlias(final String key) {
+		mConnections.get(mConnectionClutch).deleteAlias(key);
+	}
+
+	public void deletePluginAlias(final String plugin, final String key) {
+		mConnections.get(mConnectionClutch).deletePluginAlias(plugin, key);
+	}
+
+	public void setAliasEnabled(final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setAliasEnabled(enabled, key);
+	}
+
+	public void setPluginAliasEnabled(final String plugin, final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setPluginAliasEnabled(plugin, enabled, key);
+	}
+
+	public TimerData getPluginTimer(final String plugin, final String name) {
+		return mConnections.get(mConnectionClutch).getPluginTimer(plugin, name);
+	}
+
+	public void deleteTimer(final String name) {
+		mConnections.get(mConnectionClutch).deleteTimer(name);
+	}
+
+	public void deletePluginTimer(final String plugin, final String name) {
+		mConnections.get(mConnectionClutch).deletePluginTimer(plugin, name);
+	}
+
+	public void updatePluginTimer(final String plugin, final TimerData old, final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).updatePluginTimer(plugin, old, newtimer);
+	}
+
+	public void addPluginTimer(final String plugin, final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).addPluginTimer(plugin, newtimer);
+	}
+
+	public SettingsGroup getSettings() {
+		if (mConnections.size() == 0) { return null; }
+		Connection c = mConnections.get(mConnectionClutch);
+		if (c == null) { return null; }
+		return c.getSettings();
+	}
+
+	public SettingsGroup getPluginSettings(final String plugin) {
+		return mConnections.get(mConnectionClutch).getPluginSettings(plugin);
+	}
+
+	public void updateBooleanSetting(final String key, final boolean value) {
+		mConnections.get(mConnectionClutch).updateBooleanSetting(key, value);
+	}
+
+	public void updatePluginBooleanSetting(final String plugin, final String key, final boolean value) {
+		mConnections.get(mConnectionClutch).updatePluginBooleanSetting(plugin, key, value);
+	}
+
+	public void updateIntegerSetting(final String key, final int value) {
+		mConnections.get(mConnectionClutch).updateIntegerSetting(key, value);
+	}
+
+	public void updatePluginIntegerSetting(final String plugin, final String key, final int value) {
+		mConnections.get(mConnectionClutch).updatePluginIntegerSetting(plugin, key, value);
+	}
+
+	public void updateFloatSetting(final String key, final float value) {
+		mConnections.get(mConnectionClutch).updateFloatSetting(key, value);
+	}
+
+	public void updatePluginFloatSetting(final String plugin, final String key, final float value) {
+		mConnections.get(mConnectionClutch).updatePluginFloatSetting(plugin, key, value);
+	}
+
+	public void updateStringSetting(final String key, final String value) {
+		mConnections.get(mConnectionClutch).updateStringSetting(key, value);
+	}
+
+	public void updatePluginStringSetting(final String plugin, final String key, final String value) {
+		mConnections.get(mConnectionClutch).updatePluginStringSetting(plugin, key, value);
+	}
+
+	public void updateWindowBufferMaxValue(final String plugin, final String window, final int amount) {
+		mConnections.get(mConnectionClutch).updateWindowBufferMaxValue(plugin, window, amount);
+	}
+
+	public void closeConnection(final String display) {
+		Connection c = mConnections.get(display);
+		if (c != null) {
+			c.shutdown();
+			mConnections.remove(display);
+		}
+	}
+
+	public void windowShowing(final boolean show) {
+		mWindowShowing = show;
+	}
+
+	public void dispatchLuaError(final String message) {
+		mConnections.get(mConnectionClutch).dispatchLuaError(message);
+	}
+
+	public void addLink(final String path) {
+		mConnections.get(mConnectionClutch).addLink(path);
+	}
+
+	public void deletePlugin(final String plugin) {
+		mConnections.get(mConnectionClutch).deletePlugin(plugin);
+	}
+
+	public void setPluginEnabled(final String plugin, final boolean enabled) {
+		mConnections.get(mConnectionClutch).setPluginEnabled(plugin, enabled);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List getPluginsWithAliases() {
+		ArrayList<String> list = new ArrayList<String>();
+		Connection c = mConnections.get(mConnectionClutch);
+		for (Plugin p : c.getPlugins()) {
+			if (p.getSettings().getAliases().size() > 0) {
+				list.add(p.getName());
+			}
+		}
+		return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List getPluginsWithTimers() {
+		ArrayList<String> list = new ArrayList<String>();
+		Connection c = mConnections.get(mConnectionClutch);
+		for (Plugin p : c.getPlugins()) {
+			if (p.getSettings().getTimers().size() > 0) {
+				list.add(p.getName());
+			}
+		}
+		return list;
+	}
+
+	public boolean isLinkLoaded(final String link) {
+		boolean retval = mConnections.get(mConnectionClutch).isLinkLoaded(link);
+		return retval;
+	}
+
+	public String getPluginPath(final String plugin) {
+		String path = mConnections.get(mConnectionClutch).getPluginPath(plugin);
+		if (path == null) { path = ""; }
+		return path;
+	}
+
+	public void dispatchLuaText(final String str) {
+		mConnections.get(mConnectionClutch).dispatchLuaText(str);
+	}
+
+	public void callPluginFunction(final String plugin, final String function) {
+		mConnections.get(mConnectionClutch).callPluginFunction(plugin, function);
+	}
+
+	public boolean isPluginInstalled(final String desired) {
+		return mConnections.get(mConnectionClutch).isPluginInstalled(desired);
+	}
+
+	public void setShowRegexWarning(boolean state) {
+		mConnections.get(mConnectionClutch).updateBooleanSetting("show_regex_warning", state);
+	}
+
+	public String getPluginOption(String plugin, String key) {
+		return mConnections.get(mConnectionClutch).getPluginOptionValue(plugin,key);
+	}
 
 	/** Dispatches data to the foreground window.
 	 * 

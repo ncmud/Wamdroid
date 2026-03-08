@@ -2,37 +2,30 @@ package com.offsetnull.bt.window;
 
 import java.util.List;
 
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 
 import android.content.Context;
-import android.os.RemoteException;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class PluginFilterSelectionDialog extends BaseSelectionDialog implements BaseSelectionDialog.OptionItemClickListener {
 
-	protected IConnectionBinder service;
+	protected StellarService service;
 	public final static String MAIN_SETTINGS = "bt_main_settings";
 	protected String currentPlugin = MAIN_SETTINGS;
 	
 	String[] pluginList;
 	
-	public PluginFilterSelectionDialog(Context context,IConnectionBinder service) {
+	public PluginFilterSelectionDialog(Context context,StellarService service) {
 		super(context);
 		this.service = service;
 		setOptionItemClickListener(this);
-		try {
-			List<String> rawList = this.getPluginList();
-			if(rawList == null) return;
-			pluginList = new String[rawList.size()];
-			pluginList = rawList.toArray(pluginList);
-			java.util.Arrays.sort(pluginList);
-			//java.util.Arrays.sort(plugins);
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		List<String> rawList = this.getPluginList();
+		if(rawList == null) return;
+		pluginList = new String[rawList.size()];
+		pluginList = rawList.toArray(pluginList);
+		java.util.Arrays.sort(pluginList);
+		//java.util.Arrays.sort(plugins);
 		
 		this.clearOptionItems();
 		
@@ -93,7 +86,7 @@ public class PluginFilterSelectionDialog extends BaseSelectionDialog implements 
 	
 	
 	
-	public List<String> getPluginList() throws RemoteException {
+	public List<String> getPluginList() {
 		//List<String> foo = (List<String>)service.getPluginsWithTriggers();
 		return null;
 	}

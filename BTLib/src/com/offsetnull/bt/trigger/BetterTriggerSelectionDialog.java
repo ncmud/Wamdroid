@@ -9,14 +9,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.PluginFilterSelectionDialog;
 import com.offsetnull.bt.window.BaseSelectionDialog;
 
@@ -27,7 +26,7 @@ public class BetterTriggerSelectionDialog extends PluginFilterSelectionDialog im
 	private boolean mShowWarning = true;
 	
 	public BetterTriggerSelectionDialog(Context context,
-			IConnectionBinder service,boolean showWarning) {
+			StellarService service,boolean showWarning) {
 		super(context, service);
 		buildList();
 		this.setToolbarListener(this);
@@ -49,15 +48,13 @@ public class BetterTriggerSelectionDialog extends PluginFilterSelectionDialog im
 		TriggerData d = dataMap.get(sortedKeys[row]);
 		boolean state = !d.isEnabled();
 		d.setEnabled(state);
-		try {
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				service.setTriggerEnabled(state, d.getName());
-			} else {
-				service.setPluginTriggerEnabled(currentPlugin, state, d.getName());
-			}
-		} catch (RemoteException e) {
-			
+
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			service.setTriggerEnabled(state, d.getName());
+		} else {
+			service.setPluginTriggerEnabled(currentPlugin, state, d.getName());
 		}
+		
 		if(state) {
 			v.setImageResource(R.drawable.toolbar_toggleon_button);
 			this.setItemMiniIcon(row, R.drawable.toolbar_mini_enabled);
@@ -72,15 +69,13 @@ public class BetterTriggerSelectionDialog extends PluginFilterSelectionDialog im
 	public void onItemDeleted(int row) {
 		TriggerData d = dataMap.get(sortedKeys[row]);
 		
-		try {
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				service.deleteTrigger(d.getName());
-			} else {
-				service.deletePluginTrigger(currentPlugin, d.getName());
-			}
-		} catch (RemoteException e) {
-			
+
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			service.deleteTrigger(d.getName());
+		} else {
+			service.deletePluginTrigger(currentPlugin, d.getName());
 		}
+		
 		Log.e("Trigger","trigger item selected for delete: "+d.getName());
 	}
 
@@ -92,12 +87,9 @@ public class BetterTriggerSelectionDialog extends PluginFilterSelectionDialog im
 
 	@Override
 	public void onDonePressed(View v) {
-		try {
-			service.saveSettings();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		service.saveSettings();
+		
 	}
 	
 	@Override
@@ -115,15 +107,13 @@ public class BetterTriggerSelectionDialog extends PluginFilterSelectionDialog im
 	private void buildList() {
 		//HashMap<String,TriggerData> list = null;
 		//pull the list down, clear out the items list, populate it, and call the superclass to reload the table.
-		try {
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				dataMap = (HashMap<String, TriggerData>) service.getTriggerData();
-			} else {
-				dataMap = (HashMap<String, TriggerData>) service.getPluginTriggerData(currentPlugin);
-			}
-		} catch (RemoteException e) {
-			
+
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			dataMap = (HashMap<String, TriggerData>) service.getTriggerData();
+		} else {
+			dataMap = (HashMap<String, TriggerData>) service.getPluginTriggerData(currentPlugin);
 		}
+		
 		
 		sortedKeys = new String[dataMap.size()];
 		sortedKeys = dataMap.keySet().toArray(sortedKeys);
@@ -146,7 +136,7 @@ public class BetterTriggerSelectionDialog extends PluginFilterSelectionDialog im
 	}
 	
 	@Override 
-	public List<String> getPluginList() throws RemoteException {
+	public List<String> getPluginList() {
 		List<String> foo = (List<String>)service.getPluginsWithTriggers();
 		return foo;
 	}

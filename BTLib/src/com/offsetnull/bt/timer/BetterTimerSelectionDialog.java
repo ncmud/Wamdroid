@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.PluginFilterSelectionDialog;
 import com.offsetnull.bt.window.BaseSelectionDialog;
 import android.content.Context;
@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -27,7 +26,7 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 	String[] sortedKeys;
 	
 	public BetterTimerSelectionDialog(Context context,
-			IConnectionBinder service) {
+			StellarService service) {
 		super(context, service);
 		buildList();
 		this.setToolbarListener(this);
@@ -53,33 +52,27 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 				icon = R.drawable.toolbar_mini_pause;
 				ImageButton b = (ImageButton)v;
 				b.setImageResource(R.drawable.toolbar_pause_button);
-				try {
-					if(currentPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
-						service.pauseTimer(d.getName());
-					} else {
-						service.pausePluginTimer(d.getName(),currentPlugin);
-					}
-					
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				if(currentPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
+					service.pauseTimer(d.getName());
+				} else {
+					service.pausePluginTimer(d.getName(),currentPlugin);
 				}
+				
+				
 			} else {
 				icon = R.drawable.toolbar_mini_play;
 				ImageButton b = (ImageButton)v;
 				b.setImageResource(R.drawable.toolbar_play_button);
 				
-				try {
-					if(currentPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
-						service.startTimer(d.getName());
-					} else {
-						service.startPluginTimer(d.getName(),currentPlugin);
-					}
-					
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				if(currentPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
+					service.startTimer(d.getName());
+				} else {
+					service.startPluginTimer(d.getName(),currentPlugin);
 				}
+				
+				
 			}
 			d.setPlaying(!d.isPlaying());
 			action = "play/pause";
@@ -87,17 +80,14 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 		case 1:
 			action = "stop";
 			icon = R.drawable.toolbar_mini_stop;
-			try {
-				if(currentPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
-					service.stopTimer(d.getName());
-				} else {
-					service.stopPluginTimer(d.getName(),currentPlugin);
-				}
-				
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+			if(currentPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
+				service.stopTimer(d.getName());
+			} else {
+				service.stopPluginTimer(d.getName(),currentPlugin);
 			}
+			
+			
 			break;
 		case 2:
 			action = "mod";
@@ -118,15 +108,13 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 		TimerData d = dataMap.get(sortedKeys[row]);
 		//boolean state = !d.isEnabled();
 		//d.setEnabled(state);
-		//try {
-		//	if(currentPlugin.equals(MAIN_SETTINGS)) {
-		//		service.setTriggerEnabled(state, d.getName());
-		//	} else {
-		//		service.setPluginTriggerEnabled(currentPlugin, state, d.getName());
-		//	}
-		//} catch (RemoteException e) {
-		//	
-		//}
+		//
+	//	if(currentPlugin.equals(MAIN_SETTINGS)) {
+	//		service.setTriggerEnabled(state, d.getName());
+	//	} else {
+	//		service.setPluginTriggerEnabled(currentPlugin, state, d.getName());
+	//	}
+	//
 		/*
 		if(state) {
 			v.setImageResource(R.drawable.toolbar_toggleon_button);
@@ -142,15 +130,13 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 	public void onItemDeleted(int row) {
 		TimerData d = dataMap.get(sortedKeys[row]);
 		
-		try {
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				service.deleteTrigger(d.getName());
-			} else {
-				service.deletePluginTrigger(currentPlugin, d.getName());
-			}
-		} catch (RemoteException e) {
-			
+
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			service.deleteTrigger(d.getName());
+		} else {
+			service.deletePluginTrigger(currentPlugin, d.getName());
 		}
+		
 		Log.e("Trigger","trigger item selected for delete: "+d.getName());
 	}
 
@@ -162,12 +148,9 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 
 	@Override
 	public void onDonePressed(View v) {
-		try {
-			service.saveSettings();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		service.saveSettings();
+		
 	}
 	
 	@Override
@@ -185,15 +168,13 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 	private void buildList() {
 		//HashMap<String,TriggerData> list = null;
 		//pull the list down, clear out the items list, populate it, and call the superclass to reload the table.
-		try {
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				dataMap = (HashMap<String, TimerData>) service.getTimers();
-			} else {
-				dataMap = (HashMap<String, TimerData>) service.getPluginTimers(currentPlugin);
-			}
-		} catch (RemoteException e) {
-			
+
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			dataMap = (HashMap<String, TimerData>) service.getTimers();
+		} else {
+			dataMap = (HashMap<String, TimerData>) service.getPluginTimers(currentPlugin);
 		}
+		
 		
 		sortedKeys = new String[dataMap.size()];
 		sortedKeys = dataMap.keySet().toArray(sortedKeys);
@@ -223,7 +204,7 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 	}
 	
 	@Override 
-	public List<String> getPluginList() throws RemoteException {
+	public List<String> getPluginList() {
 		List<String> foo = (List<String>)service.getPluginsWithTimers();
 		return foo;
 	}

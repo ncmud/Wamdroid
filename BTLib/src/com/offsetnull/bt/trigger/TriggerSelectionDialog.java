@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.ui.RealTranslateAnimation;
 import com.offsetnull.bt.window.AnimatedRelativeLayout;
 
@@ -18,7 +18,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -50,7 +49,7 @@ import android.widget.ViewFlipper;
 public class TriggerSelectionDialog extends Dialog {
 
 	private ListView list;
-	private IConnectionBinder service;
+	private StellarService service;
 	private List<TriggerItem> entries;
 	private TriggerListAdapter adapter;
 	//private int lastSelectedIndex = -1;
@@ -69,7 +68,7 @@ public class TriggerSelectionDialog extends Dialog {
 	
 	LinearLayout theToolbar = null;
 	
-	public TriggerSelectionDialog(Context context,IConnectionBinder the_service) {
+	public TriggerSelectionDialog(Context context,StellarService the_service) {
 		super(context);
 		service = the_service;
 		entries = new ArrayList<TriggerItem>();
@@ -205,28 +204,25 @@ public class TriggerSelectionDialog extends Dialog {
 		});
 	
 		//gett he plugin list.
-		try {
-			List<String> pluginList = (List<String>)service.getPluginsWithTriggers();
+
+		List<String> pluginList = (List<String>)service.getPluginsWithTriggers();
+		
+		plugins = new String[pluginList.size()+4];
+		plugins[0] = "Help";
+		plugins[1] = "Disable All";
+		plugins[2] = "divider";
+		plugins[3] = "Main";
+		
+		String[] tmp = new String[pluginList.size()];
+		tmp = pluginList.toArray(tmp);
+		java.util.Arrays.sort(tmp);
+		for(int i=0;i<tmp.length;i++) {
+			plugins[i+4] = tmp[i];
 			
-			plugins = new String[pluginList.size()+4];
-			plugins[0] = "Help";
-			plugins[1] = "Disable All";
-			plugins[2] = "divider";
-			plugins[3] = "Main";
-			
-			String[] tmp = new String[pluginList.size()];
-			tmp = pluginList.toArray(tmp);
-			java.util.Arrays.sort(tmp);
-			for(int i=0;i<tmp.length;i++) {
-				plugins[i+4] = tmp[i];
-				
-			}
-			//java.util.Arrays.sort(plugins);
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		//java.util.Arrays.sort(plugins);
+		
+		
 		
 		mPluginAdapter = new PluginListAdapter(this.getContext(),0,plugins);
 		
@@ -530,16 +526,14 @@ public class TriggerSelectionDialog extends Dialog {
 		public void onAnimationEnd(Animation animation) {
 			list.setOnFocusChangeListener(null);
 			list.setFocusable(false);
-			try {
-				if(currentPlugin.equals("main")) {
-					service.deleteTrigger(entries.get(lastSelectedIndex).name);
-				} else {
-					service.deletePluginTrigger(currentPlugin,entries.get(lastSelectedIndex).name);
-				}
-				
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
+
+			if(currentPlugin.equals("main")) {
+				service.deleteTrigger(entries.get(lastSelectedIndex).name);
+			} else {
+				service.deletePluginTrigger(currentPlugin,entries.get(lastSelectedIndex).name);
 			}
+			
+			
 			adapter.remove(adapter.getItem(lastSelectedIndex));
 			adapter.notifyDataSetInvalidated();
 			lastSelectedIndex = -1;
@@ -567,20 +561,18 @@ public class TriggerSelectionDialog extends Dialog {
 			int index = lastSelectedIndex;
 			TriggerItem entry = adapter.getItem(index);
 			//launch the trigger editor with this item.
-			try {
-				TriggerData data = null;
-				if(currentPlugin.equals("main")) {
-					data = service.getTrigger(entry.name);
-				} else {
-					data = service.getPluginTrigger(currentPlugin,entry.name);
-				}
-				TriggerEditorDialog editor = new TriggerEditorDialog(TriggerSelectionDialog.this.getContext(),data,service,triggerEditorDoneHandler,currentPlugin,true);
-				editor.show();
-				
-				
-			} catch (RemoteException e) {
-				e.printStackTrace();
+
+			TriggerData data = null;
+			if(currentPlugin.equals("main")) {
+				data = service.getTrigger(entry.name);
+			} else {
+				data = service.getPluginTrigger(currentPlugin,entry.name);
 			}
+			TriggerEditorDialog editor = new TriggerEditorDialog(TriggerSelectionDialog.this.getContext(),data,service,triggerEditorDoneHandler,currentPlugin,true);
+			editor.show();
+			
+			
+			
 		}
 	}
 	
@@ -605,33 +597,27 @@ public class TriggerSelectionDialog extends Dialog {
 			ImageButton b = (ImageButton)v;
 			if(entry.enabled) {
 				b.setImageResource(R.drawable.toolbar_toggleoff_button);
-				try {
-					if(currentPlugin.equals("main")) {
-						service.setTriggerEnabled( false,key);
-					} else {
-						service.setPluginTriggerEnabled( currentPlugin,false,key);
-					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				if(currentPlugin.equals("main")) {
+					service.setTriggerEnabled( false,key);
+				} else {
+					service.setPluginTriggerEnabled( currentPlugin,false,key);
 				}
+				
 				entry.enabled = false;
 				RelativeLayout root = (RelativeLayout) v.getParent().getParent().getParent();
 				
 				((ImageView)root.findViewById(R.id.icon)).setImageResource(R.drawable.toolbar_mini_disabled);
 			} else {
 				b.setImageResource(R.drawable.toolbar_toggleon_button);
-				try {
-					if(currentPlugin.equals("main")) {
-						service.setTriggerEnabled( true,key);
-					} else {
-						service.setPluginTriggerEnabled( currentPlugin,true,key);
-					}
-					
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				if(currentPlugin.equals("main")) {
+					service.setTriggerEnabled( true,key);
+				} else {
+					service.setPluginTriggerEnabled( currentPlugin,true,key);
 				}
+				
+				
 				entry.enabled = true;
 				RelativeLayout root = (RelativeLayout) v.getParent().getParent().getParent();
 				
@@ -652,16 +638,14 @@ public class TriggerSelectionDialog extends Dialog {
 		entries.clear();
 		//adapter.notifyDataSetInvalidated();
 		HashMap<String, TriggerData> trigger_list = null;
-		try {
-			if(currentPlugin.equals("main")) {
-				trigger_list = (HashMap<String, TriggerData>) service.getTriggerData();
-			} else {
-				trigger_list = (HashMap<String, TriggerData>) service.getPluginTriggerData(currentPlugin);
-			}
-			
-		} catch (RemoteException e) {
-			throw new RuntimeException(e);
+
+		if(currentPlugin.equals("main")) {
+			trigger_list = (HashMap<String, TriggerData>) service.getTriggerData();
+		} else {
+			trigger_list = (HashMap<String, TriggerData>) service.getPluginTriggerData(currentPlugin);
 		}
+		
+		
 		
 		for(TriggerData data : trigger_list.values()) {
 			if(!data.isHidden()) {
@@ -1119,29 +1103,23 @@ public class TriggerSelectionDialog extends Dialog {
 			case MESSAGE_NEW_TRIGGER:
 				TriggerData tmp = (TriggerData)msg.obj;
 				//attempt to modify service
-				try {
-					service.newTrigger(tmp);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+
+				service.newTrigger(tmp);
+				
 				break;
 			case MESSAGE_MOD_TRIGGER:
 				TriggerData from = msg.getData().getParcelable("old");
 				TriggerData to = msg.getData().getParcelable("new");
 				
-				try {
-					service.updateTrigger(from, to);
-				} catch (RemoteException e) {
-					throw new RuntimeException(e);
-				}
+
+				service.updateTrigger(from, to);
+				
 				break;
 			case MESSAGE_DELETE_TRIGGER:
 				String which = (String)msg.obj;
-				try {
-					service.deleteTrigger(which);
-				} catch (RemoteException e) {
-					throw new RuntimeException(e);
-				}
+
+				service.deleteTrigger(which);
+				
 				break;
 			}
 		}

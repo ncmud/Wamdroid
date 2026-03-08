@@ -10,14 +10,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.PluginFilterSelectionDialog;
 import com.offsetnull.bt.window.BaseSelectionDialog;
 
@@ -27,7 +26,7 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 	String[] sortedKeys;
 	
 	public BetterAliasSelectionDialog(Context context,
-			IConnectionBinder service) {
+			StellarService service) {
 		super(context, service);
 		buildList();
 		this.setToolbarListener(this);
@@ -48,15 +47,13 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 		AliasData d = dataMap.get(sortedKeys[row]);
 		boolean state = !d.isEnabled();
 		d.setEnabled(state);
-		try {
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				service.setAliasEnabled(state, d.getPre());
-			} else {
-				service.setPluginAliasEnabled(currentPlugin, state, d.getPre());
-			}
-		} catch (RemoteException e) {
-			
+
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			service.setAliasEnabled(state, d.getPre());
+		} else {
+			service.setPluginAliasEnabled(currentPlugin, state, d.getPre());
 		}
+		
 		if(state) {
 			v.setImageResource(R.drawable.toolbar_toggleon_button);
 			this.setItemMiniIcon(row, R.drawable.toolbar_mini_enabled);
@@ -71,15 +68,13 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 	public void onItemDeleted(int row) {
 		AliasData d = dataMap.get(sortedKeys[row]);
 		
-		try {
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				service.deleteAlias(d.getPre());
-			} else {
-				service.deletePluginAlias(currentPlugin, d.getPre());
-			}
-		} catch (RemoteException e) {
-			
+
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			service.deleteAlias(d.getPre());
+		} else {
+			service.deletePluginAlias(currentPlugin, d.getPre());
 		}
+		
 		Log.e("Trigger","alias item selected for delete: "+d.getPre());
 	}
 
@@ -91,12 +86,9 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 
 	@Override
 	public void onDonePressed(View v) {
-		try {
-			service.saveSettings();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		service.saveSettings();
+		
 	}
 	
 	@Override
@@ -114,15 +106,13 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 	private void buildList() {
 		//HashMap<String,TriggerData> list = null;
 		//pull the list down, clear out the items list, populate it, and call the superclass to reload the table.
-		try {
-			if (currentPlugin.equals(MAIN_SETTINGS)) {
-				dataMap = (HashMap<String, AliasData>) service.getAliases();
-			} else {
-				dataMap = (HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
-			}
-		} catch (RemoteException e) {
-			
+
+		if (currentPlugin.equals(MAIN_SETTINGS)) {
+			dataMap = (HashMap<String, AliasData>) service.getAliases();
+		} else {
+			dataMap = (HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
 		}
+		
 		
 		sortedKeys = new String[dataMap.size()];
 		
@@ -155,7 +145,7 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 	}
 	
 	@Override 
-	public List<String> getPluginList() throws RemoteException {
+	public List<String> getPluginList() {
 		List<String> foo = (List<String>)service.getPluginsWithAliases();
 		return foo;
 	}
@@ -241,35 +231,32 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 		apdapter.notifyDataSetChanged();
 		apdapter.sort(new AliasComparator());*/
 		
-		try {
-			/*HashMap<String,AliasData> existingAliases = null;
-			if(currentPlugin.equals("main")) {
-				existingAliases =(HashMap<String, AliasData>) service.getAliases();
-			} else {
-				existingAliases =(HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
-			}*/
-			
-			AliasData newAlias = new AliasData();
-			newAlias.setPost(post);
-			newAlias.setPre(pre);
-			newAlias.setEnabled(enabled);
-			String newKey = newAlias.getPre();
-			if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
-			if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
-			
-			dataMap.put(newKey, newAlias);
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				service.setAliases(dataMap);
-			} else {
-				service.setPluginAliases(currentPlugin,dataMap);
-			}
-			
-			aliasEditorDoneHandler.sendMessageDelayed(aliasEditorDoneHandler.obtainMessage(100,newAlias),10);
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		/*HashMap<String,AliasData> existingAliases = null;
+		if(currentPlugin.equals("main")) {
+			existingAliases =(HashMap<String, AliasData>) service.getAliases();
+		} else {
+			existingAliases =(HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
+		}*/
+		
+		AliasData newAlias = new AliasData();
+		newAlias.setPost(post);
+		newAlias.setPre(pre);
+		newAlias.setEnabled(enabled);
+		String newKey = newAlias.getPre();
+		if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
+		if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
+		
+		dataMap.put(newKey, newAlias);
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			service.setAliases(dataMap);
+		} else {
+			service.setPluginAliases(currentPlugin,dataMap);
 		}
+		
+		aliasEditorDoneHandler.sendMessageDelayed(aliasEditorDoneHandler.obtainMessage(100,newAlias),10);
+		
+		
 		
 		
 
@@ -291,33 +278,30 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 		
 		
 		//remove from the list and add the new one.
-		try {
-			
-			String oldKey = orig.getPre();
-			if(oldKey.startsWith("^")) oldKey = oldKey.substring(1,oldKey.length());
-			if(oldKey.endsWith("$")) oldKey = oldKey.substring(0,oldKey.length()-1);
-			dataMap.remove(oldKey);
-			
-			String newKey = pre;
-			if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
-			if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
-			AliasData newAlias = new AliasData();
-			newAlias.setPre(pre);
-			newAlias.setPost(post);
-			newAlias.setEnabled(enabled);
-			dataMap.put(newKey, newAlias);
-			if(currentPlugin.equals(MAIN_SETTINGS)) {
-				service.setAliases(dataMap);
-			} else {
-				service.setPluginAliases(currentPlugin,dataMap);
-			}
-			
-			aliasEditorDoneHandler.sendMessageDelayed(aliasEditorDoneHandler.obtainMessage(100,newAlias),10);
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		
+		String oldKey = orig.getPre();
+		if(oldKey.startsWith("^")) oldKey = oldKey.substring(1,oldKey.length());
+		if(oldKey.endsWith("$")) oldKey = oldKey.substring(0,oldKey.length()-1);
+		dataMap.remove(oldKey);
+		
+		String newKey = pre;
+		if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
+		if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
+		AliasData newAlias = new AliasData();
+		newAlias.setPre(pre);
+		newAlias.setPost(post);
+		newAlias.setEnabled(enabled);
+		dataMap.put(newKey, newAlias);
+		if(currentPlugin.equals(MAIN_SETTINGS)) {
+			service.setAliases(dataMap);
+		} else {
+			service.setPluginAliases(currentPlugin,dataMap);
 		}
+		
+		aliasEditorDoneHandler.sendMessageDelayed(aliasEditorDoneHandler.obtainMessage(100,newAlias),10);
+		
+		
 		
 		
 	}

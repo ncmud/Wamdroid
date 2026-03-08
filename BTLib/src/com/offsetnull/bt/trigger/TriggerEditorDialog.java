@@ -16,7 +16,6 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.RemoteException;
 import android.text.util.Linkify;
 //import android.util.Log;
 import android.view.Gravity;
@@ -49,7 +48,7 @@ import com.offsetnull.bt.responder.replace.ReplaceResponder;
 import com.offsetnull.bt.responder.script.ScriptResponder;
 import com.offsetnull.bt.responder.script.ScriptResponderEditor;
 import com.offsetnull.bt.responder.toast.*;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.validator.Validator;
 import com.offsetnull.bt.window.PluginFilterSelectionDialog;
 
@@ -62,7 +61,7 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 	private TriggerData original_trigger;
 	private boolean isEditor = false;
 	
-	private IConnectionBinder service;
+	private StellarService service;
 	
 	private Handler finish_with;
 	
@@ -75,7 +74,7 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 	HashMap<Integer,Integer> checkclosed;
 	String selectedPlugin = null;
 	
-	public TriggerEditorDialog(Context context,TriggerData input,IConnectionBinder pService,Handler finisher,String selectedPlugin,boolean showWarning) {
+	public TriggerEditorDialog(Context context,TriggerData input,StellarService pService,Handler finisher,String selectedPlugin,boolean showWarning) {
 		super(context);
 		mEditorWarning = showWarning;
 		this.selectedPlugin = selectedPlugin;
@@ -301,29 +300,25 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 				the_trigger.setInterpretAsRegex(!literal.isChecked());
 				
 				//i don't care anymore about the checkchanged listeners. it was a neat idea, but here goes.
-				try {
-					if(selectedPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
-						service.updateTrigger(original_trigger,the_trigger);
-					} else {	
-						service.updatePluginTrigger(selectedPlugin,original_trigger,the_trigger);
-					}
-				} catch (RemoteException e) {
-					throw new RuntimeException(e);
+
+				if(selectedPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
+					service.updateTrigger(original_trigger,the_trigger);
+				} else {	
+					service.updatePluginTrigger(selectedPlugin,original_trigger,the_trigger);
 				}
+				
 				finish_with.sendMessageDelayed(finish_with.obtainMessage(100,the_trigger),10);
 			} else {	
 				the_trigger.setName(title.getText().toString());
 				the_trigger.setPattern(pattern.getText().toString());
 				the_trigger.setInterpretAsRegex(!literal.isChecked());
-				try {
-					if(selectedPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
-						service.newTrigger(the_trigger);
-					} else {
-						service.newPluginTrigger(selectedPlugin,the_trigger);
-					}
-				} catch (RemoteException e) {
-					throw new RuntimeException(e);
+
+				if(selectedPlugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
+					service.newTrigger(the_trigger);
+				} else {
+					service.newPluginTrigger(selectedPlugin,the_trigger);
 				}
+				
 				finish_with.sendMessageDelayed(finish_with.obtainMessage(100,the_trigger),10);
 			}
 			
@@ -597,12 +592,9 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 		public void onCheckedChanged(CompoundButton buttonView,
 				boolean isChecked) {
 			TriggerEditorDialog.this.mEditorWarning = isChecked;
-			try {
-				service.setShowRegexWarning(isChecked);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			service.setShowRegexWarning(isChecked);
+			
 		}
 		
 	}

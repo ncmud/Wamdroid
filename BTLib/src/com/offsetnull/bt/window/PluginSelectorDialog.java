@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import org.xml.sax.SAXException;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.service.plugin.settings.PluginDescription;
 import com.offsetnull.bt.service.plugin.settings.QuickPluginParser;
 
@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,9 +59,9 @@ public class PluginSelectorDialog extends Dialog {
 	private OnPluginLoadListener mListener = null;
 	
 	private InfoStackItem current_item = null;
-	private IConnectionBinder service;
+	private StellarService service;
 	//HashMap<String,PluginDescription[]> infoCache = new HashMap<String,PluginDescription[]>();
-	public PluginSelectorDialog(Context context,IConnectionBinder service,OnPluginLoadListener listener) {
+	public PluginSelectorDialog(Context context,StellarService service,OnPluginLoadListener listener) {
 		super(context);
 		mListener = listener;
 		this.service = service;
@@ -161,15 +160,12 @@ public class PluginSelectorDialog extends Dialog {
 					newContent.findViewById(R.id.install).setOnClickListener(new InstallClickedListener(path));
 					Button b = (Button) newContent.findViewById(R.id.install);
 					
-					try {
-						if(service.isLinkLoaded(path)) {
-							b.setText("Already Installed");
-							b.setEnabled(false);
-						}
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+
+					if(service.isLinkLoaded(path)) {
+						b.setText("Already Installed");
+						b.setEnabled(false);
 					}
+					
 					
 					
 					PluginInfoAdapter adapter = new PluginInfoAdapter(this.getContext(),0,info);
@@ -278,12 +274,9 @@ public class PluginSelectorDialog extends Dialog {
 	public void onBackPressed() {
 		Log.e("INFO","INFO CACHE SIZE:" + infoCacheStack.size());
 		if(infoCacheStack.size() == 1) {
-			//try {
-			//	service.saveSettings();
-			//} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-			//	e.printStackTrace();
-			//}
+			//
+		//	service.saveSettings();
+		//
 			this.dismiss();
 		} else {
 			InfoStackItem prev = infoCacheStack.pop();
@@ -377,17 +370,14 @@ public class PluginSelectorDialog extends Dialog {
 				icon.setImageResource(R.drawable.icon_folder);
 			} else {
 				
-				try {
-					boolean foo = service.isLinkLoaded(file.getAbsolutePath());
-					if(foo) {
-						icon.setImageResource(R.drawable.icon_plugin_installed);
-					} else {
-						icon.setImageResource(R.drawable.icon_plugin);
-					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				boolean foo = service.isLinkLoaded(file.getAbsolutePath());
+				if(foo) {
+					icon.setImageResource(R.drawable.icon_plugin_installed);
+				} else {
+					icon.setImageResource(R.drawable.icon_plugin);
 				}
+				
 				if(info.length > 1) {
 					title.setText(file.getName());
 					extra.setText(info.length + " plugins.");
@@ -526,17 +516,12 @@ public class PluginSelectorDialog extends Dialog {
 		
 		@Override
 		public void onClick(View v) {
-			try {
-				//get the substring path.
-				String extDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/";
-				
-				String subpath = path.substring(extDir.length(), path.length());
-				
-				service.addLink(subpath);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//get the substring path.
+			String extDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/";
+
+			String subpath = path.substring(extDir.length(), path.length());
+
+			service.addLink(subpath);
 			
 			//PluginSelectionDialog.this.
 			dismissTimer.sendEmptyMessageDelayed(100, 1500);

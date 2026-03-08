@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.MainWindow;
 
 import android.app.AlertDialog;
@@ -18,7 +18,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -48,9 +47,9 @@ public class ButtonSetSelectorDialog extends Dialog {
 	String selected_set;
 	HashMap<String,Integer> data;
 	ConnectionAdapter adapter;
-	IConnectionBinder service;
+	StellarService service;
 	ListView list = null;
-	public ButtonSetSelectorDialog(Context context,Handler reportto,HashMap<String,Integer> datai,String selectedset,IConnectionBinder the_service) {
+	public ButtonSetSelectorDialog(Context context,Handler reportto,HashMap<String,Integer> datai,String selectedset,StellarService the_service) {
 		super(context);
 		dispater = reportto;
 		selected_set = selectedset;
@@ -65,23 +64,16 @@ public class ButtonSetSelectorDialog extends Dialog {
 		entries.clear();
 		ListView lv = (ListView) findViewById(R.id.buttonset_list);
 		
-		//try {
-			//data = (HashMap<String, Integer>) service.getButtonSetListInfo();
-			//selected_set = service.getLastSelectedSet();
-		//} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//	return;
-		//}
+		//
+		//data = (HashMap<String, Integer>) service.getButtonSetListInfo();
+		//selected_set = service.getLastSelectedSet();
+	//
 		
 		for(String key : data.keySet()) {
 			ButtonEntry tmp = new ButtonEntry(key,data.get(key));
-			try {
-				tmp.locked = service.isButtonSetLocked(key);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			tmp.locked = service.isButtonSetLocked(key);
+			
 			entries.add(tmp);
 		}
 		
@@ -156,11 +148,9 @@ public class ButtonSetSelectorDialog extends Dialog {
 					//ListView lv = (ListView)ButtonSetSelectorDialog.this.findViewById(R.id.buttonset_list);
 					//ButtonEntry item = adapter.getItem(lv.getSelectedItemPosition());
 					Message reloadbuttonset = null;
-					//try {
-						//reloadbuttonset = dispater.obtainMessage(MainWindow.MESSAGE_CHANGEBUTTONSET,service.getLastSelectedSet());
-					//} catch (RemoteException e) {
-					//	throw new RuntimeException(e);
-					//}
+					//
+					//reloadbuttonset = dispater.obtainMessage(MainWindow.MESSAGE_CHANGEBUTTONSET,service.getLastSelectedSet());
+				//
 					dispater.sendMessage(reloadbuttonset);
 				}
 				ButtonSetSelectorDialog.this.dismiss();
@@ -283,11 +273,9 @@ public class ButtonSetSelectorDialog extends Dialog {
 			//ListView lv = (ListView)ButtonSetSelectorDialog.this.findViewById(R.id.buttonset_list);
 			//ButtonEntry item = adapter.getItem(lv.getSelectedItemPosition());
 			Message reloadbuttonset = null;
-			//try {
-			//	reloadbuttonset = dispater.obtainMessage(MainWindow.MESSAGE_CHANGEBUTTONSET,service.getLastSelectedSet());
-			//} catch (RemoteException e) {
-			//	throw new RuntimeException(e);
-			//}
+			//
+		//	reloadbuttonset = dispater.obtainMessage(MainWindow.MESSAGE_CHANGEBUTTONSET,service.getLastSelectedSet());
+		//
 			dispater.sendMessage(reloadbuttonset);
 		}
 		this.dismiss();
@@ -560,24 +548,18 @@ public class ButtonSetSelectorDialog extends Dialog {
 			
 			if(item.locked) {
 				//unlock
-				try {
-					service.setButtonSetLocked(false, item.name);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.setButtonSetLocked(false, item.name);
+				
 				ImageView iv = (ImageView)v;
 				iv.setImageResource(R.drawable.toolbar_unlocked_button);
 				icon.setVisibility(View.INVISIBLE);
 				item.locked = false;
 			} else {
 				//lock
-				try {
-					service.setButtonSetLocked(true, item.name);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.setButtonSetLocked(true, item.name);
+				
 				ImageView iv = (ImageView)v;
 				iv.setImageResource(R.drawable.toolbar_locked_button);
 				icon.setVisibility(View.VISIBLE);
@@ -664,11 +646,9 @@ public class ButtonSetSelectorDialog extends Dialog {
 		public void onAnimationEnd(Animation animation) {
 			list.setOnFocusChangeListener(null);
 			list.setFocusable(false);
-			//try {
-			//	service.deleteButtonSet(entries.get(entry).name);
-			//} catch (RemoteException e) {
-			//	throw new RuntimeException(e);
-			//}
+			//
+		//	service.deleteButtonSet(entries.get(entry).name);
+		//
 			/*Message delset = dispater.obtainMessage(MainWindow.MESSAGE_DELETEBUTTONSET);
 			delset.obj = (entries.get(picked)).name;
 			dispater.sendMessage(delset);*/

@@ -2,18 +2,17 @@ package com.offsetnull.bt.window;
 
 import java.util.List;
 
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 
 import android.content.Context;
-import android.os.RemoteException;
 import android.view.View;
 
 public class StandardSelectionDialog extends BaseSelectionDialog {
 	
-	protected IConnectionBinder service;
+	protected StellarService service;
 	
 	
-	public StandardSelectionDialog(Context context,IConnectionBinder service)  {
+	public StandardSelectionDialog(Context context,StellarService service)  {
 		super(context);
 		this.service = service;
 	}
