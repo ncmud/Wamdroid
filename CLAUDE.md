@@ -1,0 +1,91 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What This Is
+
+BlowTorch (Wamdroid) — an Android MUD client with Lua scripting, plugin support, and multi-connection capability. Two app variants: **BT_Free** (generic MUD client) and **BT_Aard** (Aardwolf-specific, hardcoded to aardmud.org:7777).
+
+## Build Commands
+
+### Prerequisites
+- Android SDK (set `ANDROID_SDK_ROOT`)
+- Android NDK r15c (set `NDK_HOME`)
+- Set `NDK_HOST_CC_TARGET` (`darwin-x86_64` on Mac, `linux-x86_64` on Linux)
+
+### Native Libraries (LuaJIT + Extensions)
+```bash
+./build_ndk_libraries.sh
+```
+Builds LuaJIT 2.0.5 for armeabi, armeabi-v7a, mips, x86. Then builds JNI modules (luajava, lsqlite3, sqlite3, bit, marshal, luabins) and copies `.so` files to `BTLib/libs/<abi>/`.
+
+### Android App
+```bash
+./gradlew :BT_Free:assembleDebug     # Debug APK
+./gradlew :BT_Aard:assembleDebug     # Debug APK (Aardwolf)
+./gradlew :BT_Free:assembleRelease   # Release (needs signing cert + BT_RELEASE_PASS env var)
+./gradlew :BT_Aard:assembleRelease   # Release (needs signing cert + BT_AARD_PASS env var)
+```
+Output: `BT_Free/build/outputs/apk/` or `BT_Aard/build/outputs/apk/`
+
+Release signing certs: `BTLib/key/bt_privatekey.keystore` (Free), `BT_Aard/key/signiture_cert` (Aard).
+
+### No Test Infrastructure
+No unit or integration tests exist.
+
+## Architecture
+
+### Module Structure
+- **BTLib** — Shared library (177 Java files, all core logic). Package: `com.offsetnull.bt`
+- **BT_Free** — Thin app wrapper (1 Java file: `FreeLauncher`). Package: `com.happygoatstudios.bt`
+- **BT_Aard** — Thin app wrapper (1 Java file: `AardLauncher`). Package: `com.happygoatstudios.aardwolf`
+
+### Key Classes (all in BTLib `com.offsetnull.bt`)
+
+| Class | Role |
+|-------|------|
+| `service.StellarService` | Background service managing all connections. Runs in separate process (`:stellar`). |
+| `service.Connection` | Per-connection handler — largest class (~137KB). Orchestrates data flow, triggers, plugins. |
+| `service.DataPumper` | Network I/O thread. Reads from socket, hands to Processor. Contains `OutputWriterThread`. |
+| `service.Processor` | Parses telnet protocol, handles option negotiation, MCCP decompression. |
+| `service.plugin.Plugin` | Lua plugin system (~93KB). Loads/runs Lua scripts, exposes Java API to Lua. |
+| `window.MainWindow` | Main activity (~111KB). Terminal UI, input handling, button bars. |
+| `window.TextTree` | Efficient line-based terminal buffer storage. |
+| `launcher.Launcher` | Connection management UI (add/edit/launch MUD connections). |
+
+### IPC Model
+AIDL-based communication between MainWindow (foreground) and StellarService (background process):
+- `IConnectionBinder` — Service exposes to Window
+- `IWindowCallback` — Window registers callbacks with Service
+- `ILauncherCallback` — Launcher registers with Service
+
+### Data Flow
+```
+MUD Server → Socket → DataPumper → Processor (telnet/MCCP) → Connection (triggers/plugins/Lua) → MainWindow (render)
+User Input → MainWindow → Service → Connection → DataPumper → Socket → MUD Server
+```
+
+### Threading
+- StellarService — Handler thread managing connections
+- Connection — Handler-based message dispatch (40+ MESSAGE_* constants)
+- DataPumper — Socket I/O thread + child OutputWriterThread
+- Lua plugin execution on service handler thread
+
+### Plugin/Scripting System
+Lua scripts (LuaJIT 2.0.5) with Java bridge via `org.keplerproject.luajava`. Plugins are XML-configured with Lua code. Available Lua extensions: sqlite3, bitwise ops, binary serialization (marshal, luabins).
+
+### Trigger/Responder System
+Pattern-matched triggers with 7 action types in `com.offsetnull.bt.responder`:
+- `ack/` — Acknowledgment
+- `color/` — Colorize matched text
+- `gag/` — Suppress output
+- `notification/` — Android notifications
+- `replace/` — Text replacement
+- `script/` — Execute Lua
+- `toast/` — Toast messages
+
+### Configuration
+XML-based per-connection settings. Plugin manifests loaded at runtime. Hot-reload via MESSAGE_RELOADSETTINGS.
+
+## Git Notes
+- Main branch: `trunk` (not `master`)
