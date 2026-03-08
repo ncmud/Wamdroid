@@ -3564,7 +3564,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				if (path != null) { //import old buttons
 				
 				//slag out the old settings and RAM them into the new ones.
-				LuaState pL = buttonwindow.getLuaState();
+				LuaState pL = buttonwindow.getLuaState(); if (pL == null) { return; }
 				
 				pL.newTable();
 				for (String key : s.getButtonSets().keySet()) {
@@ -3735,7 +3735,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				} else {
 					//default settings are being loaded.
 					//run the adjustment for the new buttons
-					LuaState pL = buttonwindow.getLuaState();
+					LuaState pL = buttonwindow.getLuaState(); if (pL == null) { return; }
 					pL.getGlobal("debug");
 					pL.getField(-1, "traceback");
 					pL.getGlobal("alignDefaultButtons");
@@ -3809,7 +3809,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 					if (path == null) {
 						Plugin buttonwindow = tmpplugs.get(1);
 						//LuaState L = buttonwindow.getLuaState();
-						LuaState pL = buttonwindow.getLuaState();
+						LuaState pL = buttonwindow.getLuaState(); if (pL == null) { return; }
 						pL.getGlobal("debug");
 						pL.getField(-1, "traceback");
 						pL.getGlobal("alignDefaultButtons");

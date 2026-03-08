@@ -108,45 +108,24 @@ public class Plugin implements SettingsChangedListener {
 	public Plugin(Handler h,ConnectionPluginCallback parent,String path,String dataDir) throws LuaException {
 		setSettings(new PluginSettings());
 		mHandler = h;
-		L = LuaStateFactory.newLuaState();
-		L.openLibs();
-		//set up the path and cpath.
-		
-		
-		
-		//this is going to get ugly.
-		//L.newTable();
-		//L.pushString("package");
-		//L.pushValue(-2);
-		//L.setTable(LuaState.LUA_GLOBALSINDEX);
-		
-		//L.newTable();
-		//L.pushString("preload");
-		//L.pushValue(-2);
-		//L.setTable(-4);
-		//L.remove(-2);
-		
-		//L.pushString("lsqlite3");
-		//--L.
-		
-		
 		this.parent = parent;
 		mContext = parent.getContext();
-		//initTimers();
+		L = LuaStateFactory.newLuaState();
+		if (L == null) return;
+		L.openLibs();
 		initLua(path,dataDir);
-		
+
 	}
-	
+
 	public Plugin(PluginSettings settings,Handler h,ConnectionPluginCallback parent,String path,String dataDir) throws LuaException {
 		this.settings = settings;
 		mHandler = h;
-	
-		L = LuaStateFactory.newLuaState();
 		mContext = parent.getContext();
 		this.parent = parent;
-		
-		//initTimers();
-		
+
+		L = LuaStateFactory.newLuaState();
+		if (L == null) return;
+
 		initLua(path,dataDir);
 	}
 	

@@ -24,6 +24,7 @@
 
 package org.keplerproject.luajava;
 
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,11 +56,15 @@ public final class LuaStateFactory
 	 */
 	public synchronized static LuaState newLuaState()
 	{
+		if (!LuaState.isNativeAvailable()) {
+			Log.w("MUDWammer", "Lua native libraries not available, skipping LuaState creation");
+			return null;
+		}
 		int i = getNextStateIndex();
 		LuaState L = new LuaState(i);
-		
+
 		states.add(i, L);
-		
+
 		return L;
 	}
 	

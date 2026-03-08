@@ -89,14 +89,21 @@ public class LuaState
   /**
    * Opens the library containing the luajava API
    */
+  private static boolean nativeAvailable = false;
+
   static
   {
     try {
       System.loadLibrary(LUAJAVA_LIB);
       System.loadLibrary("sqlite3");
+      nativeAvailable = true;
     } catch (UnsatisfiedLinkError e) {
       Log.e("MUDWammer", "Native Lua libraries not available", e);
     }
+  }
+
+  public static boolean isNativeAvailable() {
+    return nativeAvailable;
   }
 
   private CPtr luaState;

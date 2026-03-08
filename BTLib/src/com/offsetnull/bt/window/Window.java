@@ -2243,12 +2243,13 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 			mL = null;
 		}
 		this.mL = LuaStateFactory.newLuaState();
+		if (mL == null) return;
 		initLua();
 		mL.pushJavaObject(this);
 		mL.setGlobal("view");
-		
-		
-		
+
+
+
 		mL.getGlobal("debug");
 		mL.getField(mL.getTop(), "traceback");
 		mL.remove(-2);

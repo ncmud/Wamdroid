@@ -136,6 +136,7 @@ public class PluginParser extends BasePluginParser {
 				if(d.getName().equals("bootstrap") || d.isExecute()) {
 					//run this script.
 					LuaState pL = p.getLuaState();
+					if (pL == null) continue;
 					String dataDir = null;
 					mContext = parent.getContext();
 					try {
