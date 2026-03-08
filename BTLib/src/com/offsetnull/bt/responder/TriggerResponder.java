@@ -13,12 +13,11 @@ import com.offsetnull.bt.window.TextTree;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Parcelable;
 
 
-public abstract class TriggerResponder implements Parcelable {
+public abstract class TriggerResponder {
 
-	
+
 	public static final int RESPONDER_TYPE_TOAST = 101;
 	public static final int RESPONDER_TYPE_NOTIFICATION = 102;
 	public static final int RESPONDER_TYPE_ACK = 103;
@@ -26,41 +25,41 @@ public abstract class TriggerResponder implements Parcelable {
 	public static final int RESPONDER_TYPE_COLOR = 105;
 	public static final int RESPONDER_TYPE_REPLACE = 106;
 	public static final int RESPONDER_TYPE_GAG = 107;
-	
+
 	public enum RESPONDER_TYPE {
 		NOTIFICATION(RESPONDER_TYPE_NOTIFICATION),
 		TOAST(RESPONDER_TYPE_TOAST),
 		ACK(RESPONDER_TYPE_ACK),
-		SCRIPT(RESPONDER_TYPE_SCRIPT), 
+		SCRIPT(RESPONDER_TYPE_SCRIPT),
 		REPLACE(RESPONDER_TYPE_REPLACE),
 		COLOR(RESPONDER_TYPE_COLOR),
 		GAG(RESPONDER_TYPE_GAG);
 		private int value;
-		
+
 		private RESPONDER_TYPE(int i) {
 			value = i;
 		}
-		
+
 		public int getIntVal() {
 			return value;
 		}
 	}
-	
+
 	private RESPONDER_TYPE type;
-	
+
 	public static final String FIRE_WINDOW_OPEN = "windowOpen";
 	public static final String FIRE_WINDOW_CLOSED = "windowClosed";
 	public static final String FIRE_ALWAYS = "always";
 	public static final String FIRE_NEVER = "none";
-	
+
 	public enum FIRE_WHEN {
 		WINDOW_CLOSED(FIRE_WINDOW_CLOSED),
 		WINDOW_OPEN(FIRE_WINDOW_OPEN),
 		WINDOW_BOTH(FIRE_ALWAYS),
 		WINDOW_NEVER(FIRE_NEVER);
-		
+
 		private String value;
-		
+
 		private FIRE_WHEN(String i) {
 			if(i != null) {
 				value = i;
@@ -68,14 +67,14 @@ public abstract class TriggerResponder implements Parcelable {
 				value = "always";
 			}
 		}
-			
+
 		public String getString() {
 			return value;
 		}
 	}
-	
+
 	private FIRE_WHEN fireType;
-	
+
 	public TriggerResponder(RESPONDER_TYPE pType) {
 		setType(pType);
 	}
@@ -87,7 +86,7 @@ public abstract class TriggerResponder implements Parcelable {
 	public RESPONDER_TYPE getType() {
 		return type;
 	}
-	
+
 	public void addFireType(FIRE_WHEN in) {
 		//will always be WINDOW_OPEN or WINDOW_CLOSED
 		switch(in) {
@@ -108,7 +107,7 @@ public abstract class TriggerResponder implements Parcelable {
 		}
 		//Log.e("RESPONDER","ADDED " + in.getString() + " FIRE TYPE NOW " + fireType.getString());
 	}
-	
+
 	public void removeFireType(FIRE_WHEN in) {
 		switch(in) {
 		case WINDOW_OPEN:
@@ -128,13 +127,12 @@ public abstract class TriggerResponder implements Parcelable {
 		default:
 			break;
 		}
-		
+
 		//Log.e("RESPONDER","REMOVED " + in.getString() + " FIRE TYPE NOW " + fireType.getString());
 	}
-	
+
 	public abstract boolean doResponse(Context c,TextTree tree,int lineNumber,ListIterator<TextTree.Line> iterator,TextTree.Line line,int start,int end,String matched,Object source,String displayname,String host,int port,int triggernumber,boolean windowIsOpen,Handler dispatcher,HashMap<String,String> captureMap,LuaState L,String name,String encoding) throws IteratorModifiedException;
 	public abstract TriggerResponder copy();
-	//public abstract void writeToParcel(Parcel in,int args);
 
 	public void setFireType(FIRE_WHEN fireType) {
 		this.fireType = fireType;
@@ -143,31 +141,31 @@ public abstract class TriggerResponder implements Parcelable {
 	public FIRE_WHEN getFireType() {
 		return fireType;
 	}
-	
+
 	Pattern replace = Pattern.compile("\\$(\\d+)"); // a $ followed by at least 1 digit.
 	Matcher replacer = replace.matcher("");
 	StringBuffer output = new StringBuffer("");
-	
+
 	public String translate(String input,HashMap<String,String> map) {
 		if(input == null) {
 			return "";
 		}
-		
+
 		if( input.equals("") || map == null || map.size() < 1) {
 			return input;
 		}
-		
-		
+
+
 		output.setLength(0);
-		
+
 		replacer.reset(input);
-		
-		
+
+
 		boolean found = false;
 		while(replacer.find()) {
 			found = true;
 			String desired = replacer.group(1);
-			
+
 			String replacetext = "";
 			if(map.containsKey(desired)) {
 				replacetext = map.get(desired);
@@ -175,20 +173,20 @@ public abstract class TriggerResponder implements Parcelable {
 				replacetext = "\\" + replacer.group(0);
 			}
 			replacer.appendReplacement(output, replacetext); //append with map data if exists, use the group count if not.
-			
+
 		}
-		
+
 		if(found) {
 			replacer.appendTail(output);
 			return output.toString();
 		} else {
 			return input;
 		}
-		
+
 	}
 
 	public abstract void saveResponderToXML(XmlSerializer out) throws IllegalArgumentException, IllegalStateException, IOException;
-	
-	
-	
+
+
+
 }

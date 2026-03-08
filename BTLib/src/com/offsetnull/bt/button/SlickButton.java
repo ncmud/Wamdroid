@@ -12,7 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.os.Bundle;
+
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
@@ -559,10 +559,7 @@ public class SlickButton extends View {
 	
 	public void iHaveChanged(SlickButtonData orig_data) {
 		Message modify = deleter.obtainMessage(MainWindow.MESSAGE_MODIFYBUTTON);
-		Bundle b = modify.getData();
-		b.putParcelable("ORIG_DATA", orig_data);
-		b.putParcelable("MOD_DATA", this.data);
-		modify.setData(b);
+		modify.obj = new SlickButtonData[]{orig_data, this.data};
 		deleter.sendMessage(modify);
 	}
 	

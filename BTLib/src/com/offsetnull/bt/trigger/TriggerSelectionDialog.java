@@ -1108,8 +1108,9 @@ public class TriggerSelectionDialog extends Dialog {
 				
 				break;
 			case MESSAGE_MOD_TRIGGER:
-				TriggerData from = msg.getData().getParcelable("old");
-				TriggerData to = msg.getData().getParcelable("new");
+				TriggerData[] pair = (TriggerData[])msg.obj;
+				TriggerData from = pair[0];
+				TriggerData to = pair[1];
 				
 
 				service.updateTrigger(from, to);

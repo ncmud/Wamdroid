@@ -4,23 +4,11 @@ import java.io.IOException;
 
 import org.xmlpull.v1.XmlSerializer;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-public class BooleanOption extends BaseOption implements Parcelable {
+public class BooleanOption extends BaseOption {
 
 
-	
 	public BooleanOption() {
 		type = TYPE.BOOLEAN;
-	}
-	
-	public BooleanOption(Parcel p) {
-		type = TYPE.BOOLEAN;
-		setTitle(p.readString());
-		setDescription(p.readString());
-		setKey(p.readString());
-		setValue((p.readInt() == 1) ? true : false);
 	}
 
 	@Override
@@ -54,35 +42,6 @@ public class BooleanOption extends BaseOption implements Parcelable {
 		}
 	}
 
-	@Override
-	public int describeContents() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel p, int flags) {
-		p.writeString(title);
-		p.writeString(description);
-		p.writeString(key);
-		if((Boolean)value == true) {
-			p.writeInt(1);
-		} else {
-			p.writeInt(0);
-		}
-	}
-
-	public static final Parcelable.Creator<BooleanOption> CREATOR = new Parcelable.Creator<BooleanOption>() {
-
-		public BooleanOption createFromParcel(Parcel arg0) {
-			return new BooleanOption(arg0);
-		}
-
-		public BooleanOption[] newArray(int arg0) {
-			return new BooleanOption[arg0];
-		}
-	};
-	
 	public void saveToXML(XmlSerializer out) throws IllegalArgumentException, IllegalStateException, IOException {
 		out.startTag("", "boolean");
 		out.attribute("", "key", this.key);

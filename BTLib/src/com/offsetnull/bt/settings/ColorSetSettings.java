@@ -1,12 +1,9 @@
 package com.offsetnull.bt.settings;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.offsetnull.bt.button.SlickButtonData;
 
-public class ColorSetSettings implements Parcelable {
-	
+public class ColorSetSettings {
+
 	private int selectedColor;
 	private int primaryColor;
 	private int flipColor;
@@ -19,16 +16,16 @@ public class ColorSetSettings implements Parcelable {
 	private boolean lockNewButtons;
 	private boolean lockMoveButtons;
 	private boolean lockEditButtons;
-	
+
 	public static final boolean DEFAULT_LOCKED = false;
 	public static final boolean DEFAULT_LOCKNEWBUTTONS = true;
 	public static final boolean DEFAULT_LOCKMOVEBUTTONS = false;
 	public static final boolean DEFAULT_LOCKEDITBUTTONS = false;
-	
+
 	public ColorSetSettings() {
 		toDefautls();
 	}
-	
+
 	public ColorSetSettings copy() {
 		ColorSetSettings tmp = new ColorSetSettings();
 		tmp.selectedColor = this.selectedColor;
@@ -45,7 +42,7 @@ public class ColorSetSettings implements Parcelable {
 		tmp.lockEditButtons = this.lockEditButtons;
 		return tmp;
 	}
-	
+
 	public void toDefautls() {
 		selectedColor = SlickButtonData.DEFAULT_SELECTED_COLOR;
 		primaryColor = SlickButtonData.DEFAULT_COLOR;
@@ -60,16 +57,16 @@ public class ColorSetSettings implements Parcelable {
 		lockMoveButtons = ColorSetSettings.DEFAULT_LOCKMOVEBUTTONS;
 		lockEditButtons = ColorSetSettings.DEFAULT_LOCKEDITBUTTONS;
 	}
-	
+
 	public boolean equals(Object o) {
 		if(o == this) return true;
-		
+
 		if(!(o instanceof ColorSetSettings)) {
 			return false;
 		}
-		
+
 		ColorSetSettings test = (ColorSetSettings)o;
-		
+
 		if(this.selectedColor != test.selectedColor) return false;
 		if(this.flipColor != test.flipColor) return false;
 		if(this.primaryColor != test.primaryColor) return false;
@@ -132,7 +129,7 @@ public class ColorSetSettings implements Parcelable {
 	public int getButtonWidth() {
 		return buttonWidth;
 	}
-	
+
 	public void setLabelSize(int labelSize) {
 		this.labelSize = labelSize;
 	}
@@ -140,83 +137,13 @@ public class ColorSetSettings implements Parcelable {
 	public int getLabelSize() {
 		return labelSize;
 	}
-	
+
 	public void setFlipLabelColor(int flipLabelColor) {
 		this.flipLabelColor = flipLabelColor;
 	}
 
 	public int getFlipLabelColor() {
 		return flipLabelColor;
-	}
-
-	public static final Parcelable.Creator<ColorSetSettings> CREATOR = new Parcelable.Creator<ColorSetSettings>() {
-
-		public ColorSetSettings createFromParcel(Parcel arg0) {
-			return new ColorSetSettings(arg0);
-		}
-
-		public ColorSetSettings[] newArray(int arg0) {
-			// TODO Auto-generated method stub
-			return new ColorSetSettings[arg0];
-		}
-	
-	
-	};
-	
-	public ColorSetSettings(Parcel p) {
-		readFromParcel(p);
-	}
-
-	public int describeContents() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void writeToParcel(Parcel d, int arg1) {
-		// TODO Auto-generated method stub
-		d.writeInt(labelColor);
-		d.writeInt(selectedColor);
-		d.writeInt(flipColor);
-		d.writeInt(primaryColor);
-		d.writeInt(buttonHeight);
-		d.writeInt(buttonWidth);
-		d.writeInt(labelSize);
-		d.writeInt(flipLabelColor);
-		d.writeInt(locked ? 1 : 0);
-		d.writeInt(lockNewButtons ? 1 : 0);
-		d.writeInt(lockMoveButtons ? 1 : 0);
-		d.writeInt(lockEditButtons ? 1 : 0);
-	}
-	
-	public void readFromParcel(Parcel in) {
-		labelColor = in.readInt();
-		selectedColor = in.readInt();
-		flipColor = in.readInt();
-		primaryColor = in.readInt();
-		buttonHeight = in.readInt();
-		buttonWidth = in.readInt();
-		labelSize = in.readInt();
-		flipLabelColor = in.readInt();
-		if(in.readInt() == 1) {
-			locked = true;
-		} else {
-			locked = false;
-		}
-		if(in.readInt() == 1) {
-			lockNewButtons = true;
-		} else {
-			lockNewButtons = false;
-		}
-		if(in.readInt() == 1) {
-			lockMoveButtons = true;
-		} else {
-			lockMoveButtons = false;
-		}
-		if(in.readInt() == 1) {
-			lockEditButtons = true;
-		} else {
-			lockEditButtons = false;
-		}
 	}
 
 	public void setLocked(boolean locked) {

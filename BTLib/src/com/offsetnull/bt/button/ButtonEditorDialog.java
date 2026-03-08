@@ -548,10 +548,7 @@ public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnCo
 			
 			
 			Message msg = deleter.obtainMessage(MainWindow.MESSAGE_MODIFYBUTTON);
-			Bundle b = msg.getData();
-			b.putParcelable("ORIG_DATA", the_button.getData());
-			b.putParcelable("MOD_DATA", fitbutton);
-			msg.setData(b);
+			msg.obj = new SlickButtonData[]{the_button.getData(), fitbutton};
 			deleter.sendMessage(msg);
 		}
 		

@@ -5,36 +5,11 @@ import java.math.BigInteger;
 
 import org.xmlpull.v1.XmlSerializer;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-public class IntegerOption extends BaseOption implements Parcelable {
+public class IntegerOption extends BaseOption {
 
 	public IntegerOption() {
 		this.type = TYPE.INTEGER;
 		this.setValue(new Integer(0));
-	}
-	
-	public IntegerOption(Parcel p) {
-		this.type = TYPE.INTEGER;
-		setTitle(p.readString());
-		setDescription(p.readString());
-		setKey(p.readString());
-		setValue(new Integer(p.readInt()));
-	}
-	
-	@Override
-	public int describeContents() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel p, int flags) {
-		p.writeString(title);
-		p.writeString(description);
-		p.writeString(key);
-		p.writeInt((Integer)getValue());
 	}
 
 	@Override
@@ -52,7 +27,7 @@ public class IntegerOption extends BaseOption implements Parcelable {
 					value = (Integer)num;
 				}
 			} catch(NumberFormatException e) {
-				
+
 			}
 		}
 	}
@@ -72,20 +47,9 @@ public class IntegerOption extends BaseOption implements Parcelable {
 	@Override
 	public void setDefaultValue(Object o) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	public static final Parcelable.Creator<IntegerOption> CREATOR = new Parcelable.Creator<IntegerOption>() {
 
-		public IntegerOption createFromParcel(Parcel arg0) {
-			return new IntegerOption(arg0);
-		}
-
-		public IntegerOption[] newArray(int arg0) {
-			return new IntegerOption[arg0];
-		}
-	};
-	
 	public void saveToXML(XmlSerializer out) throws IllegalArgumentException, IllegalStateException, IOException {
 		out.startTag("", "integer");
 		out.attribute("", "key", this.key);
