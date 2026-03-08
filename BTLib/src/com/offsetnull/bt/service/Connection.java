@@ -3340,12 +3340,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		} catch (Exception e) {
 			//dispatch error.
 			//do not copy files
-			try {
-				mService.dispatchSaveError(e.getLocalizedMessage());
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			mService.dispatchSaveError(e.getLocalizedMessage());
 			passed = false;
 		} finally {
 			if(passed) {
@@ -3433,12 +3428,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				extfilestream.write(writer.toString().getBytes());
 				extfilestream.close();
 				} catch(Exception e) {
-					try {
-						mService.dispatchPluginSaveError(currentplugin,e.getLocalizedMessage());
-					} catch (RemoteException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					mService.dispatchPluginSaveError(currentplugin,e.getLocalizedMessage());
 					passed = false;
 				} finally {
 					if(extfilestream != null) {
@@ -3826,11 +3816,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 					loadPlugins(tmpplugs, summary);
 				} else {
 					Log.e("XMLPARSE", "ERROR IN LOADING V2 SETTINGS, DID NOT FIND PROPER XMLVERSION NUMBER");
-					try {
-						mService.dispatchXMLError("Error " + verb.toLowerCase(Locale.US) + " settings, invalid or missing version attribute.\n");
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					mService.dispatchXMLError("Error " + verb.toLowerCase(Locale.US) + " settings, invalid or missing version attribute.\n");
 					return;
 				}
 				
@@ -3843,12 +3829,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
-			try {
-				mService.dispatchXMLError(e.getLocalizedMessage());
-				return;
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
+			mService.dispatchXMLError(e.getLocalizedMessage());
+			return;
 		}
 		
 		if (path == null) {

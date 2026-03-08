@@ -99,7 +99,7 @@ public class StellarService extends Service {
 	/** The currently "Selected" connection. */
 	private String mConnectionClutch = "";
 	/** The callback list of MainWindow activities that have bound to the Service. */
-	private RemoteCallbackList<IConnectionBinderCallback> mCallbacks = new RemoteCallbackList<IConnectionBinderCallback>();
+	private final List<ConnectionCallback> mCallbacks = new ArrayList<ConnectionCallback>();
 	/** The callback list of Launcher activities that have bound to the Service. */
 	private RemoteCallbackList<ILauncherCallback> mLauncherCallbacks = new RemoteCallbackList<ILauncherCallback>();
 	/** The remote callback target. */
@@ -241,18 +241,11 @@ public class StellarService extends Service {
 		//attempt to display the disconnection dialog.
 		if (c.getDisplay().equals(mConnectionClutch)) {
 		
-			final int n = mCallbacks.beginBroadcast();
-			for (int i = 0; i < n; i++) {
-				try {
-					mCallbacks.getBroadcastItem(i).doDisconnectNotice(c.getDisplay());
-				} catch (RemoteException e) {
-					throw new RuntimeException(e);
-				}
-				//notify listeners that data can be read
+			for (ConnectionCallback cb : mCallbacks) {
+				cb.doDisconnectNotice(c.getDisplay());
 			}
-			mCallbacks.finishBroadcast();
-			
-			if (n < 1) {
+
+			if (mCallbacks.isEmpty()) {
 				showDisconnectedNotification(c, c.getDisplay(), c.getHost(), c.getPort());
 			}
 		} else {
@@ -266,28 +259,22 @@ public class StellarService extends Service {
 	 * @param error The error message to show.
 	 * @throws RemoteException Thrown when something has gone wrong with the aidl bridge.
 	 */
-	public final void dispatchXMLError(final String error) throws RemoteException {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			mCallbacks.getBroadcastItem(i).displayXMLError(error);
+	public final void dispatchXMLError(final String error) {
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.displayXMLError(error);
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
-	public void dispatchSaveError(String error) throws RemoteException {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			mCallbacks.getBroadcastItem(i).displaySaveError(error);
+	public void dispatchSaveError(String error) {
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.displaySaveError(error);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
-	public void dispatchPluginSaveError(String plugin, String error) throws RemoteException {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			mCallbacks.getBroadcastItem(i).displayPluginSaveError(plugin,error);
+	public void dispatchPluginSaveError(String plugin, String error) {
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.displayPluginSaveError(plugin, error);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Enables Wifi KeepAlive. */
@@ -360,15 +347,9 @@ public class StellarService extends Service {
 	
 	/** Implementation of the visual bell callback. Called from a Connection. */
 	public final void doDisplayBell() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).doVisualBell();
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.doVisualBell();
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Disables the wifi keep alive. */
@@ -386,16 +367,9 @@ public class StellarService extends Service {
 	 * @param longtime true for Toast.LONG, false for Toast.SHORT
 	 */
 	public final void dispatchToast(final String message, final boolean longtime) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).showMessage(message, longtime);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
-			//notify listeners that data can be read
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.showMessage(message, longtime);
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Utility method for dispatching a generic error looking dialog on the foreground window.
@@ -403,16 +377,9 @@ public class StellarService extends Service {
 	 * @param message The message to display.
 	 */
 	public final void dispatchDialog(final String message) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).showDialog(message);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
-			//notify listeners that data can be read
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.showDialog(message);
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Gets a new unique id for notifications. Always increments the value so it will be unique with each call.
@@ -676,58 +643,32 @@ public class StellarService extends Service {
 	 */
 	public final void switchTo(final String display) {
 		setClutch(display);
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).markWindowsDirty();
-				mCallbacks.getBroadcastItem(i).loadWindowSettings();
-				mCallbacks.getBroadcastItem(i).loadSettings();
-				mCallbacks.getBroadcastItem(i).reloadBuffer();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.markWindowsDirty();
+			cb.loadWindowSettings();
+			cb.loadSettings();
+			cb.reloadBuffer();
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Generic method to make the currently active connection reload its windows. */
 	public final void reloadWindows() {
-		int n = mCallbacks.beginBroadcast();
-		
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(0).loadWindowSettings();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.loadWindowSettings();
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** The service bind target, this is given to the foreground process to make calls into the service. */
 	private class ServiceBinder extends IConnectionBinder.Stub {
 
 		@Override
-		public void registerCallback(final IConnectionBinderCallback c, final String host, final int port, final String display)
-				throws RemoteException {
-			if (c != null) {
-				mCallbacks.register(c);
-
-				if (!mConnections.containsKey(display)) {
-					this.setConnectionData(host, port, display);
-				} else {
-					mConnectionClutch = display;
-					c.loadWindowSettings();
-				}
-			}
+		public void registerCallback(final IConnectionBinderCallback c, final String host, final int port, final String display) {
+			// Dead code — onBind returns LocalBinder now
 		}
 
 		@Override
-		public void unregisterCallback(final IConnectionBinderCallback c)
-				throws RemoteException {
-			if (c !=  null) {
-				mCallbacks.unregister(c);
-			}
+		public void unregisterCallback(final IConnectionBinderCallback c) {
+			// Dead code — onBind returns LocalBinder now
 		}
 		
 		@Override
@@ -1410,26 +1351,22 @@ public class StellarService extends Service {
 
 	// ── Public methods for local (in-process) binding ──────────────────
 
-	public void registerCallback(final IConnectionBinderCallback c, final String host, final int port, final String display) {
+	public void registerCallback(final ConnectionCallback c, final String host, final int port, final String display) {
 		if (c != null) {
-			mCallbacks.register(c);
+			mCallbacks.add(c);
 
 			if (!mConnections.containsKey(display)) {
 				setConnectionData(host, port, display);
 			} else {
 				mConnectionClutch = display;
-				try {
-					c.loadWindowSettings();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				c.loadWindowSettings();
 			}
 		}
 	}
 
-	public void unregisterCallback(final IConnectionBinderCallback c) {
+	public void unregisterCallback(final ConnectionCallback c) {
 		if (c !=  null) {
-			mCallbacks.unregister(c);
+			mCallbacks.remove(c);
 		}
 	}
 
@@ -1952,16 +1889,9 @@ public class StellarService extends Service {
 	 * @param data the data to send.
 	 */
 	public final void sendRawDataToWindow(final byte[] data) {
-		//service.sendRawDataToWindow(data);
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).rawDataIncoming(data);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.rawDataIncoming(data);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Utility method for checking weather or not the window is showing.
@@ -1976,16 +1906,9 @@ public class StellarService extends Service {
 	 * has been folded into the plugin.
 	 */
 	public final void doClearAllButtons() {
-		
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).clearAllButtons();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.clearAllButtons();
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the working code to set the current color debug mode for the foreground window.
@@ -1993,28 +1916,16 @@ public class StellarService extends Service {
 	 * @param iarg The color debug mode to enter.
 	 */
 	public final void doExecuteColorDebug(final Integer iarg) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).executeColorDebug(iarg);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.executeColorDebug(iarg);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Working implementation of the dirty exit. That is to close the app without closing the connections first. */
 	public final void doDirtyExit() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).invokeDirtyExit();
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.invokeDirtyExit();
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Working implementation of the method that sets the fullscreen option in the foreground window.
@@ -2022,15 +1933,9 @@ public class StellarService extends Service {
 	 * @param set True for fullscreen, false for not fullscreen.
 	 */
 	public final void doExecuteFullscreen(final boolean set) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setScreenMode(set);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setScreenMode(set);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Working implementation of the method that pops up the keyboard in the foreground window.
@@ -2043,40 +1948,22 @@ public class StellarService extends Service {
 	 * @param doclose True to close the keyboard.
 	 */
 	public final void doShowKeyboard(final String text, final boolean dopopup, final boolean doadd, final boolean doflush, final boolean doclear, final boolean doclose) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).showKeyBoard(text, dopopup, doadd, doflush, doclear, doclose);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
-			//notify listeners that data can be read
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.showKeyBoard(text, dopopup, doadd, doflush, doclear, doclose);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Utility method to mark the foreground window settings as dirty, so they are reloaded at next opportunity. */
 	public final void markWindowsDirty() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).markWindowsDirty();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.markWindowsDirty();
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Utility method to mark the foreground window (non-window) settings as dirty so they are reloaded. */
 	public final void markSettingsDirty() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).markSettingsDirty();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.markSettingsDirty();
 		}
 	}
 
@@ -2085,17 +1972,9 @@ public class StellarService extends Service {
 	 * @param value True for keeplast, false for clear when command is sent.
 	 */
 	public final void dispatchKeepLast(final Boolean value) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setKeepLast((boolean) value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setKeepLast((boolean) value);
 		}
-		
-		mCallbacks.finishBroadcast();
-		
 	}
 	
 	/** Implementation of the working method that sets the foreground window trigger editor regex warning message state.
@@ -2103,17 +1982,9 @@ public class StellarService extends Service {
 	 * @param value True for show warning, false for no warning.
 	 */
 	public final void dispatchShowRegexWarning(final Boolean value) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setRegexWarning((boolean) value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setRegexWarning((boolean) value);
 		}
-		
-		mCallbacks.finishBroadcast();
-		
 	}
 	
 	/** Utility method that updates the internal lua libraries and files.
@@ -2262,15 +2133,9 @@ public class StellarService extends Service {
 	 * @param value Integer value, 1= portrait, 2=landscape, 3=auto
 	 */
 	public final void doExecuteSetOrientation(final Integer value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setOrientation(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setOrientation(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the keep screen on in the foreground window. 
@@ -2278,15 +2143,9 @@ public class StellarService extends Service {
 	 * @param value True, screen stays on, false screen does not stay on.
 	 */
 	public final void doExecuteKeepScreenOn(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setKeepScreenOn(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setKeepScreenOn(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the option for a fullscreen editor in the foreground window.
@@ -2294,15 +2153,9 @@ public class StellarService extends Service {
 	 * @param value True to use fullscreen editor, false to not.
 	 */
 	public final void doExecuteFullscreenEditor(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setUseFullscreenEditor(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setUseFullscreenEditor(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the preference for weather or not to use suggestions in the foreground window editor.
@@ -2310,15 +2163,9 @@ public class StellarService extends Service {
 	 * @param value True to use suggestions, false to not.
 	 */
 	public final void doExecuteUseSuggestions(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setUseSuggestions(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setUseSuggestions(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the compatibility mode preference for the foreground window's editor.
@@ -2326,15 +2173,9 @@ public class StellarService extends Service {
 	 * @param value True to use compatibility mode, false to not.
 	 */
 	public final void doExecuteCompatibilityMode(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setCompatibilityMode(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setCompatibilityMode(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 

@@ -101,7 +101,7 @@ import android.widget.Toast;
 
 import com.offsetnull.bt.R;
 import com.offsetnull.bt.service.StellarService;
-import com.offsetnull.bt.service.IConnectionBinderCallback;
+import com.offsetnull.bt.service.ConnectionCallback;
 import com.offsetnull.bt.alias.AliasData;
 import com.offsetnull.bt.alias.AliasSelectionDialog;
 import com.offsetnull.bt.alias.BetterAliasSelectionDialog;
@@ -2610,9 +2610,9 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	private BetterEditText.AnimationEndListener mInputBarAnimationListener = null;
 
 
-	private IConnectionBinderCallback.Stub the_callback = new IConnectionBinderCallback.Stub() {
+	private ConnectionCallback the_callback = new ConnectionCallback() {
 
-		public void dataIncoming(byte[] seq) throws RemoteException {
+		public void dataIncoming(byte[] seq) {
 			Message msg = myhandler.obtainMessage(MESSAGE_PROCESS);
 			Bundle b = new Bundle();
 			b.putByteArray("SEQ", seq);
@@ -2624,7 +2624,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			return windowShowing;
 		}
 
-		public void processedDataIncoming(CharSequence seq) throws RemoteException {
+		public void processedDataIncoming(CharSequence seq) {
 			Message msg = myhandler.obtainMessage(MESSAGE_PROCESSED); 
 			Bundle b = new Bundle();
 			b.putCharSequence("SEQ", seq);
@@ -2632,7 +2632,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(msg);
 		}
 
-		public void htmlDataIncoming(String html) throws RemoteException {
+		public void htmlDataIncoming(String html) {
 			Message msg = myhandler.obtainMessage(MESSAGE_HTMLINC);
 			Bundle b = new Bundle();
 			b.putString("HTML", html);
@@ -2641,7 +2641,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 
-		public void rawDataIncoming(byte[] raw) throws RemoteException {
+		public void rawDataIncoming(byte[] raw) {
 			
 			Message msg = myhandler.obtainMessage(MESSAGE_RAWINC,raw);
 			//Log.e("WINDOW","RECIEVING RAW");
@@ -2649,17 +2649,17 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 		
-		public void rawBufferIncoming(byte[] rawbuf) throws RemoteException {
+		public void rawBufferIncoming(byte[] rawbuf) {
 			Message msg = myhandler.obtainMessage(MESSAGE_BUFFINC,rawbuf);
 			myhandler.sendMessage(msg);
 			//Log.e("WINDOW","RECEIVING BUFFER: " + rawbuf.length());
 		}
 
-		public void loadSettings() throws RemoteException {
+		public void loadSettings() {
 			myhandler.sendEmptyMessage(MESSAGE_LOADSETTINGS);
 		}
 
-		public void displayXMLError(String error) throws RemoteException {
+		public void displayXMLError(String error) {
 			Message xmlerror = myhandler.obtainMessage(MESSAGE_XMLERROR);
 			xmlerror.obj = error;
 			myhandler.sendMessage(xmlerror);
@@ -2667,32 +2667,32 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		}
 
 		@Override
-		public void displaySaveError(String error) throws RemoteException {
+		public void displaySaveError(String error) {
 			Message saveerror = myhandler.obtainMessage(MESSAGE_SAVEERROR);
 			saveerror.obj = error;
 			myhandler.sendMessage(saveerror);
 		}
 		
 		@Override
-		public void displayPluginSaveError(String plugin, String error) throws RemoteException {
+		public void displayPluginSaveError(String plugin, String error) {
 			Message saveerror = myhandler.obtainMessage(MESSAGE_SAVEERROR);
 			saveerror.obj = error;
 			saveerror.getData().putString("PLUGIN", plugin);
 			myhandler.sendMessage(saveerror);
 		}
 
-		public void executeColorDebug(int arg) throws RemoteException {
+		public void executeColorDebug(int arg) {
 			Message colordebug = myhandler.obtainMessage(MESSAGE_COLORDEBUG);
 			colordebug.arg1 = arg;
 			myhandler.sendMessage(colordebug);
 		}
 
-		public void invokeDirtyExit() throws RemoteException {
+		public void invokeDirtyExit() {
 			myhandler.sendEmptyMessage(MESSAGE_DIRTYEXITNOW);
 			
 		}
 
-		public void showMessage(String message,boolean longtime) throws RemoteException {
+		public void showMessage(String message,boolean longtime) {
 			Message showmessage = myhandler.obtainMessage(MESSAGE_SHOWTOAST);
 			showmessage.obj = message;
 			if(longtime) {
@@ -2704,17 +2704,17 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 
-		public void showDialog(String message) throws RemoteException {
+		public void showDialog(String message) {
 			Message showdlg = myhandler.obtainMessage(MESSAGE_SHOWDIALOG);
 			showdlg.obj = message;
 			myhandler.sendMessage(showdlg);
 		}
 
-		public void doVisualBell() throws RemoteException {
+		public void doVisualBell() {
 			myhandler.sendEmptyMessage(MESSAGE_BELLTOAST);
 		}
 
-		public void setScreenMode(boolean fullscreen) throws RemoteException {
+		public void setScreenMode(boolean fullscreen) {
 			Message doScreenMode = myhandler.obtainMessage(MESSAGE_DOSCREENMODE);
 			if(fullscreen) {
 				doScreenMode.arg1 = 1;
@@ -2725,7 +2725,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(doScreenMode);
 		}
 
-		public void showKeyBoard(String txt,boolean popup,boolean add,boolean flush,boolean clear,boolean close) throws RemoteException {
+		public void showKeyBoard(String txt,boolean popup,boolean add,boolean flush,boolean clear,boolean close) {
 			if(flush) {
 				myhandler.sendEmptyMessage(MESSAGE_PROCESSINPUTWINDOW);
 				return;
@@ -2745,20 +2745,20 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_KEYBOARD,p,a,txt));
 		}
 
-		public void doDisconnectNotice(String display) throws RemoteException {
+		public void doDisconnectNotice(String display) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_DODISCONNECT, display));
 			
 		}
 
-		public void doLineBreak(int i) throws RemoteException {
+		public void doLineBreak(int i) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_LINEBREAK,new Integer(i)));
 		}
 
-		public void reloadButtons(String setName) throws RemoteException {
+		public void reloadButtons(String setName) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_CHANGEBUTTONSET,setName));
 		}
 		
-		public void clearAllButtons() throws RemoteException {
+		public void clearAllButtons() {
 			myhandler.sendEmptyMessage(MESSAGE_CLEARALLBUTTONS);
 		}
 		
@@ -2781,12 +2781,12 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(msg);*/
 		}
 
-		public void updateEnemy(int hp) throws RemoteException {
+		public void updateEnemy(int hp) {
 			//myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_ENEMYHP,hp,0));
 		}
 
 		public void updateVitals2(int hp, int mp, int maxhp, int maxmana,
-				int enemy) throws RemoteException {
+				int enemy) {
 			/*Message m = myhandler.obtainMessage(MESSAGE_VITALS2);
 			//if(this.get(list.data.MESSget(i))
 			Bundle b = m.getData();
@@ -2800,21 +2800,21 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(m);*/
 		}
 		
-		public void luaOmg(int stateIndex) throws RemoteException {
+		public void luaOmg(int stateIndex) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_TESTLUA,stateIndex,0));
 		}
 
-		public void updateTriggerDebugString(String str) throws RemoteException {
+		public void updateTriggerDebugString(String str) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_TRIGGERSTR,str));
 		}
 
-		public int getPort() throws RemoteException {
+		public int getPort() {
 			Intent i= MainWindow.this.getIntent();
 			
 			return (new Integer(i.getStringExtra("HOST")).intValue());
 		}
 
-		public String getHost() throws RemoteException {
+		public String getHost() {
 			// TODO Auto-generated method stub
 			Intent i= MainWindow.this.getIntent();
 			
@@ -2822,67 +2822,66 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 
-		public String getDisplay() throws RemoteException {
+		public String getDisplay() {
 			// TODO Auto-generated method stub
 			Intent i= MainWindow.this.getIntent();
 			
 			return i.getStringExtra("DISPLAY");
 		}
 
-		public void switchTo(String connection) throws RemoteException {
+		public void switchTo(String connection) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SWITCH,connection));
 		}
 
-		public void reloadBuffer() throws RemoteException {
+		public void reloadBuffer() {
 			myhandler.sendEmptyMessage(MESSAGE_RELOADBUFFER);
 		}
 
-		public void loadWindowSettings() throws RemoteException {
+		public void loadWindowSettings() {
 			myhandler.sendEmptyMessage(MESSAGE_INITIALIZEWINDOWS);
 		}
 		
-		public void markWindowsDirty() throws RemoteException {
+		public void markWindowsDirty() {
 			myhandler.sendEmptyMessage(MESSAGE_MARKWINDOWSDIRTY);
 		}
 
 		@Override
-		public void markSettingsDirty() throws RemoteException {
+		public void markSettingsDirty() {
 			myhandler.sendEmptyMessage(MESSAGE_MARKSETTINGSDIRTY);
 		}
 
 		@Override
-		public void setKeepLast(boolean keep) throws RemoteException {
+		public void setKeepLast(boolean keep) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SETKEEPLAST, (keep==true) ? 1 : 0, 0));
 		}
 
 		@Override
-		public void setOrientation(int orientation) throws RemoteException {
+		public void setOrientation(int orientation) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SETORIENTATION,orientation,0));
 		}
 
 		@Override
-		public void setKeepScreenOn(boolean value) throws RemoteException {
+		public void setKeepScreenOn(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SETKEEPSCREENON, (value == true) ? 1 : 0,0));
 		}
 
 		@Override
-		public void setUseFullscreenEditor(boolean value)
-				throws RemoteException {
+		public void setUseFullscreenEditor(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_USEFULLSCREENEDITOR,(value == true) ? 1 :0,0));
 		}
 
 		@Override
-		public void setUseSuggestions(boolean value) throws RemoteException {
+		public void setUseSuggestions(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_USESUGGESTIONS,(value==true) ? 1 : 0,0));
 		}
 
 		@Override
-		public void setCompatibilityMode(boolean value) throws RemoteException {
+		public void setCompatibilityMode(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_USECOMPATIBILITYMODE,(value==true) ? 1 : 0,0));
 		}
 
 		@Override
-		public void setRegexWarning(boolean value) throws RemoteException {
+		public void setRegexWarning(boolean value) {
 			// TODO Auto-generated method stub
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SHOWREGEXWARNING,(value==true) ? 1 : 0,0));
 		}
