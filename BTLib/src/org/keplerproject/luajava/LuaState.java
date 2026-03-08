@@ -24,6 +24,8 @@
 
 package org.keplerproject.luajava;
 
+import android.util.Log;
+
 /**
  * LuaState if the main class of LuaJava for the Java developer.
  * LuaState is a mapping of most of Lua's C API functions.
@@ -89,9 +91,12 @@ public class LuaState
    */
   static
   {
-	//System.loadLibrary("lua");
-    System.loadLibrary(LUAJAVA_LIB);
-    System.loadLibrary("sqlite3");
+    try {
+      System.loadLibrary(LUAJAVA_LIB);
+      System.loadLibrary("sqlite3");
+    } catch (UnsatisfiedLinkError e) {
+      Log.e("MUDWammer", "Native Lua libraries not available", e);
+    }
   }
 
   private CPtr luaState;
