@@ -293,10 +293,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * on the next pass of dispatch().
 	 */
 	private static boolean triggersDirty = false;
-	/** This variable is used in conjunction with mWindowCallbackMap to track WindowCallback connections
-	 * window names.
-	 */
-	private boolean mCallbacksStarted = false;
+	/** Manages window tokens, callbacks, and window-related operations. */
+	private ConnectionWindowManager mWindowManager;
 	/** String builder used by the alias parsing routine. */
 	private final StringBuffer mDataToServer = new StringBuffer();
 	/** String builder used by the alias parsing routine. */
@@ -316,10 +314,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	private final SparseArray<TriggerData> mSortedTriggerMap = new SparseArray<TriggerData>(0);
 	/** A utiltity object to keep track of the sorted order of plugins. */
 	private final SparseArray<Plugin> mTriggerPluginMap = new SparseArray<Plugin>(0);
-	/** Remote window callback list. Reduces overhead for needing to communicate with windows. */
-	private final List<WindowCallback> mWindowCallbacks = new ArrayList<>();
-	/** The list of window tokens in loaded order. */
-	private ArrayList<WindowToken> mWindows;
 	/** The auto reconnect limit helper varialbe. */
 	private Integer mAutoReconnectLimit;
 	/** The current auto reconnect attempt. */
@@ -380,12 +374,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Port indication for this connection. */
 	private int mPort;
 	
-	/** Synchronization target to manage window loading/unloading. */
-	private Object mWindowSynch = new Object();
-	
-	/** Mapping of window names to WindowCallback connections. */
-	private HashMap<String, WindowCallback> mWindowCallbackMap =
-			new HashMap<String, WindowCallback>();
 
 	
 	/** Instance of our parent service. This is bad. */
@@ -473,7 +461,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		mFinished.setLineBreakAt(TEN_MILLION);
 		mFinished.setMaxLines(TEN_THOUSAND);
 
-		mWindows = new ArrayList<WindowToken>();
+		mWindowManager = new ConnectionWindowManager();
 		
 		SharedPreferences sprefs = this.getContext().getSharedPreferences("STATUS_BAR_HEIGHT", 0);
 		mStatusBarHeight = sprefs.getInt("STATUS_BAR_HEIGHT", (int) (STATUS_BAR_DEFAULT_SIZE * this.getContext().getResources().getDisplayMetrics().density));
@@ -604,7 +592,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				
 				String name = (String) msg.obj;
 				
-				for (WindowToken tok : mWindows) {
+				for (WindowToken tok : mWindowManager.getWindows()) {
 					if (tok.getName().equals(name)) {
 						tok.setBufferText(set);
 					}
@@ -612,7 +600,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				break;
 			case MESSAGE_NEWWINDOW:
 				WindowToken tok = (WindowToken) msg.obj;
-				mWindows.add(tok);
+				mWindowManager.getWindows().add(tok);
 				break;
 			case MESSAGE_DRAWINDOW:
 				Connection.this.redrawWindow((String) msg.obj);
@@ -760,24 +748,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param name Name of the window that should invalidate it's text.
 	 */
 	protected final void doInvalidateWindowText(final String name) {
-
-		WindowCallback callback = mWindowCallbackMap.get(name);
-	
-		if (callback == null) {
-			return;
-		}
-		
-		WindowToken w = null;
-		for (int i = 0; i < mWindows.size(); i++) {
-			WindowToken tmp = mWindows.get(i);
-			if (tmp.getName().equals(name)) {
-				w = tmp;
-			}
-		}
-		
-		TextTree buffer = w.getBuffer();
-
-		callback.resetWithRawDataIncoming(buffer.dumpToBytes(true));
+		mWindowManager.doInvalidateWindowText(name);
 	}
 
 	/** Work horse method for WindowXCallS Lua function.
@@ -787,13 +758,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param o String argument to provide to @param function
 	 */
 	public final void windowXCallS(final String name, final String function, final Object o) {
-
-		WindowCallback c = mWindowCallbackMap.get(name);
-
-		if (c != null) {
-			c.xcallS(function, (String) o);
-		}
-
+		mWindowManager.windowXCallS(name, function, o);
 	}
 
 	/** Work horse method for WindowXCallB Lua function.
@@ -803,10 +768,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param bytes Bytes to provide as an argument to @param function
 	 */
 	protected final void windowXCallB(final String name, final String functions, final byte[] bytes) {
-		WindowCallback c = mWindowCallbackMap.get(name);
-		if (c != null) {
-			c.xcallB(functions, bytes);
-		}
+		mWindowManager.windowXCallB(name, functions, bytes);
 	}
 	
 	/** Work horse method for the CallPlugin Lua function.
@@ -827,11 +789,11 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Calling this method will reload the connection settings and all plugins. */
 	public final void reloadSettings() {
 
-		for (WindowCallback c : mWindowCallbackMap.values()) {
+		for (WindowCallback c : mWindowManager.getCallbackMap().values()) {
 			c.shutdown();
 		}
 
-		mWindowCallbackMap.clear();
+		mWindowManager.getCallbackMap().clear();
 		mService.markWindowsDirty();
 		loadInternalSettings();
 		
@@ -856,10 +818,10 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		HashMap<String, TextTree> bufferSaves = new HashMap<String, TextTree>();
 		
 		TextTree buffer = null;
-		if (mWindows.size() > 0) {
-			buffer = mWindows.get(0).getBuffer();
-			while (mWindows.size() > 0) {
-				WindowToken t = mWindows.remove(mWindows.size() - 1);
+		if (mWindowManager.getWindows().size() > 0) {
+			buffer = mWindowManager.getWindows().get(0).getBuffer();
+			while (mWindowManager.getWindows().size() > 0) {
+				WindowToken t = mWindowManager.getWindows().remove(mWindowManager.getWindows().size() - 1);
 				bufferSaves.put(t.getName(), t.getBuffer());
 			}
 		} 
@@ -876,9 +838,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			tmpw.setDisplayHost(mDisplay);
 		}
 		
-		mWindows.add(0, mSettings.getSettings().getWindows().get(MAIN_WINDOW));
+		mWindowManager.getWindows().add(0, mSettings.getSettings().getWindows().get(MAIN_WINDOW));
 		if (buffer == null) {
-			buffer = mWindows.get(0).getBuffer();
+			buffer = mWindowManager.getWindows().get(0).getBuffer();
 		} else {
 			buffer.addString("\n\n");
 		}
@@ -900,7 +862,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			mPluginMap.put(p.getName(), p);
 			p.sortTriggers();
 			if (p.getSettings().getWindows().size() > 0) {
-				mWindows.addAll(p.getSettings().getWindows().values());
+				mWindowManager.getWindows().addAll(p.getSettings().getWindows().values());
 			}
 			
 			p.pushOptionsToLua();
@@ -947,7 +909,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 						}
 						
 						if (p.getSettings().getWindows().size() > 0) {
-							mWindows.addAll(p.getSettings().getWindows().values());
+							mWindowManager.getWindows().addAll(p.getSettings().getWindows().values());
 						}
 						
 						p.pushOptionsToLua();
@@ -973,7 +935,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		//with the gmcpTriggerChar.
 		
 		if (bufferSaves != null) {
-			for (WindowToken w : mWindows) {
+			for (WindowToken w : mWindowManager.getWindows()) {
 				if (w != null) {
 					
 					if (bufferSaves.get(w.getName()) != null) {
@@ -1095,13 +1057,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param win Name of the window to redraw.
 	 */
 	protected final void redrawWindow(final String win) {
-
-			WindowCallback w = mWindowCallbackMap.get(win);
-			if (w == null) {
-				return;
-			}
-			w.redraw();
-
+		mWindowManager.redrawWindow(win);
 	}
 
 	/** Actual working method for the LineToWindow Lua function.
@@ -1110,36 +1066,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param line The TextTree.Line to send to @param target
 	 */
 	protected final void lineToWindow(final String target, final Object line) {
-		
-		for (WindowToken w : mWindows) {
-			if (w.getName().equals(target)) {
-				TextTree tmp = new TextTree();
-				tmp.setEncoding(mSettings.getEncoding());
-				if (line instanceof TextTree.Line) {
-					tmp.appendLine((TextTree.Line) line);
-				} else if (line instanceof String) {
-					try {
-						tmp.addBytesImpl(((String) line).getBytes(mSettings.getEncoding()));
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
-				}
-				tmp.updateMetrics();
-				byte[] lol = tmp.dumpToBytes(false);
-				
-				try {
-					w.getBuffer().addBytesImpl(lol);
-				} catch (UnsupportedEncodingException e) {
-					
-					e.printStackTrace();
-				}
-
-					WindowCallback c = mWindowCallbackMap.get(target);
-					if (c != null) {
-						c.rawDataIncoming(lol);
-					}
-			}
-		}
+		mWindowManager.lineToWindow(target, line, mSettings.getEncoding());
 	}
 	
 	/** Called from StellarService when the foreground window has started a new
@@ -1149,17 +1076,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param callback The WindowCallback associated with the window.
 	 */
 	public final void registerWindowCallback(final String name, final WindowCallback callback) {
-		synchronized (mWindowSynch) {
-		Log.e("LOG","REGISTERING WINDOW "+name + " mCallbacksStarte="+mCallbacksStarted);
-		Log.e("LOG","REGISTERING " + name);
-		mWindowCallbacks.add(callback);
-
-		mWindowCallbackMap.clear();
-		for (WindowCallback w : mWindowCallbacks) {
-			mWindowCallbackMap.put(w.getName(), w);
-		}
-		mCallbacksStarted = true;
-		}
+		mWindowManager.registerWindowCallback(name, callback);
 	}
 	
 	/** Called from StellarService when the foreground window has stopped and destroyed a
@@ -1168,18 +1085,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param callback The WindowCallback of the destroyed window.
 	 */
 	public final void unregisterWindowCallback(final WindowCallback callback) {
-		synchronized (mWindowSynch) {
-		Log.e("LOG","UNREGISTERING WINDOW "+" mCallbacksStarted="+mCallbacksStarted);
-		Log.e("LOG","UNREGISTERING " + callback.getName());
-		mWindowCallbacks.remove(callback);
-
-		mWindowCallbackMap.clear();
-		for (WindowCallback w : mWindowCallbacks) {
-			mWindowCallbackMap.put(w.getName(), w);
-		}
-
-		mCallbacksStarted = true;
-		}
+		mWindowManager.unregisterWindowCallback(callback);
 	}
 	
 	/** Called from the DataPumper when the net threads have been shut down.
@@ -1246,7 +1152,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param data The data to send.
 	 */
 	public void dispatchNoProcess(final byte[] data) {
-		mWindows.get(0).getBuffer().addBytesImplSimple(data);
+		mWindowManager.getWindows().get(0).getBuffer().addBytesImplSimple(data);
 		sendBytesToWindow(data);
 	}
 	
@@ -1325,7 +1231,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		}
 		
 		TextTree buffer = null;
-		for (WindowToken w : mWindows) {
+		for (WindowToken w : mWindowManager.getWindows()) {
 			if (w.getName().equals(MAIN_WINDOW)) {
 				buffer = w.getBuffer();
 			}
@@ -1578,11 +1484,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param data The bytes to send.
 	 */
 	public final void sendBytesToWindow(final byte[] data) {
-
-		WindowCallback c = mWindowCallbackMap.get(MAIN_WINDOW);
-		if (c != null) {
-			c.rawDataIncoming(data);
-		}
+		mWindowManager.sendBytesToWindow(data);
 	}
 	
 	/** Meat of the startup sequence. Starts the net threads after the settings have been loaded. */
@@ -2025,9 +1927,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 */
 	public final WindowToken[] getWindows() {
 		if (mLoaded) {
-			WindowToken[] tmp = new WindowToken[mWindows.size()];
-			tmp = mWindows.toArray(tmp);
-			return tmp;
+			return mWindowManager.getWindowsArray();
 		} else {
 			return null;
 		}
@@ -2108,13 +2008,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @return The WindowToken for the corresponding window name.
 	 */
 	public final WindowToken getWindowByName(final String desired) {
-		for (int i = 0; i < mWindows.size(); i++) {
-			WindowToken t = mWindows.get(i);
-			if (t.getName().equals(desired)) {
-				return t;
-			}
-		}
-		return null;
+		return mWindowManager.getWindowByName(desired);
 	}
 
 	/** Helper function to get the triggers for the main conenction settings.
@@ -2786,7 +2680,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 */
 	public final void handleWindowSettingsChanged(final String window, final String key, final String value) {
 
-			WindowCallback callback = mWindowCallbackMap.get(window);
+			WindowCallback callback = mWindowManager.getCallbackMap().get(window);
 			if (callback == null) {
 				return;
 			}
@@ -2957,7 +2851,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 */
 	private void doSetCullExtraneousColor(final Boolean value) {
 		mSettings.setRemoveExtraColor(value);
-		mWindows.get(0).getBuffer().setCullExtraneous(value);
+		mWindowManager.getWindows().get(0).getBuffer().setCullExtraneous(value);
 	}
 
 	/** Impelemntation of the keep wifi alive settings handler.
@@ -3028,12 +2922,12 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		if (mProcessor != null) {
 			this.mProcessor.setEncoding(value);
 		}
-		for (int i = 0; i < mWindows.size(); i++) {
-			WindowToken w = mWindows.get(i);
+		for (int i = 0; i < mWindowManager.getWindows().size(); i++) {
+			WindowToken w = mWindowManager.getWindows().get(i);
 			w.getBuffer().setEncoding(value);
 		}
 		
-		for (WindowCallback w : mWindowCallbackMap.values()) {
+		for (WindowCallback w : mWindowManager.getCallbackMap().values()) {
 			w.setEncoding(value);
 		}
 		
@@ -3162,7 +3056,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			}
 			if (d.mVisString != null && !d.mVisString.equals("")) {
 				if (mSettings.isLocalEcho()) {
-					mWindows.get(0).getBuffer().addBytesImplSimple(d.mVisString.getBytes(mSettings.getEncoding()));
+					mWindowManager.getWindows().get(0).getBuffer().addBytesImplSimple(d.mVisString.getBytes(mSettings.getEncoding()));
 					sendBytesToWindow(d.mVisString.getBytes(mSettings.getEncoding()));
 				}
 			}
@@ -3178,9 +3072,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @param amount The new buffer size value.
 	 */
 	public final void updateWindowBufferMaxValue(final String plugin, final String window, final int amount) {
-		for (WindowToken w : mWindows) {
+		for (WindowToken w : mWindowManager.getWindows()) {
 			if (w.getName().equals(window)) {
-				//WindowToken w = mWindows.get(0);
+				//WindowToken w = mWindowManager.getWindows().get(0);
 				w.setBufferSize(amount);
 			}
 		} 
@@ -3787,9 +3681,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			g.setType(LayoutGroup.LAYOUT_TYPE.normal);
 			g.setLandscapeParams(p);
 			g.setPortraitParams(p);
-			mWindows.add(0, token);
+			mWindowManager.getWindows().add(0, token);
 		} else {
-			mWindows.add(0, mSettings.getSettings().getWindows().get(MAIN_WINDOW));
+			mWindowManager.getWindows().add(0, mSettings.getSettings().getWindows().get(MAIN_WINDOW));
 		}
 		
 		mSettings.doBackgroundStartup();
@@ -3803,8 +3697,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		}
 		
 		buildTriggerSystem();
-		mWindows.get(0).getSettings().setListener(new WindowSettingsChangedListener(mWindows.get(0).getName()));
-		mSettings.getSettings().getOptions().addOptionAt(mWindows.get(0).getSettings(), FOUR);
+		mWindowManager.getWindows().get(0).getSettings().setListener(new WindowSettingsChangedListener(mWindowManager.getWindows().get(0).getName()));
+		mSettings.getSettings().getOptions().addOptionAt(mWindowManager.getWindows().get(0).getSettings(), FOUR);
 	}
 	
 	/** Attatches a WindowSettingsChangedListener to the given WindowToken.
@@ -3916,7 +3810,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	
 	/** Work horse routine that actually resets the settings. */
 	public final void doResetSettings() {
-		for (WindowCallback c : mWindowCallbackMap.values()) {
+		for (WindowCallback c : mWindowManager.getCallbackMap().values()) {
 			c.shutdown();
 		}
 		mService.markWindowsDirty();
