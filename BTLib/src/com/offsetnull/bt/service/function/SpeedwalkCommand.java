@@ -10,9 +10,9 @@ import com.offsetnull.bt.speedwalk.DirectionData;
 public class SpeedwalkCommand extends SpecialCommand {
 	
 	private HashMap<String,DirectionData> mDirections = null;
-	private com.offsetnull.bt.service.Connection.Data mData = null;
+	private com.offsetnull.bt.service.AliasManager.Data mData = null;
 	
-	public SpeedwalkCommand(HashMap<String,DirectionData> directions,com.offsetnull.bt.service.Connection.Data data) {
+	public SpeedwalkCommand(HashMap<String,DirectionData> directions,com.offsetnull.bt.service.AliasManager.Data data) {
 		this.commandName = "run";
 		mDirections = directions;
 		mData = data;
@@ -174,7 +174,7 @@ public class SpeedwalkCommand extends SpecialCommand {
 			}
 		}
 		
-		//mData = new com.offsetnull.bt.service.Connection.Data();
+		//mData = new com.offsetnull.bt.service.AliasManager.Data();
 		String cmd = buf.toString();
 		
 		mData.setCmdString(cmd.substring(0, cmd.length()-2)); //strip trailing crlf

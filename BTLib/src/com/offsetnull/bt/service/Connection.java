@@ -88,7 +88,7 @@ import android.util.Xml;
 import android.widget.RelativeLayout;
 
 /** Connection class implementation. */
-public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext, GMCPContext, TriggerContext {
+public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext, GMCPContext, TriggerContext, AliasContext {
 	
 	/** Initiates the connection with the server. */
 	public static final int MESSAGE_STARTUP = 1;
@@ -260,28 +260,16 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	private static final int NEGATIVE_TWO = -2;
 	
 	private TriggerManager mTriggerManager;
-	
+	private AliasManager mAliasManager;
 
 
-	
-	/** The configurable character denoting that the input to follow should be executed as a script. */
-	private static String mScriptBlock = "/";
+
 	
 	/** String name of the default output window. */
 	private static final String MAIN_WINDOW = "mainDisplay";
 	
 	/** Manages window tokens, callbacks, and window-related operations. */
 	private ConnectionWindowManager mWindowManager;
-	/** String builder used by the alias parsing routine. */
-	private final StringBuffer mDataToServer = new StringBuffer();
-	/** String builder used by the alias parsing routine. */
-	private final StringBuffer mDataToWindow = new StringBuffer();
-	/** Semicolon matching pattern. */
-	private final Pattern mSemicolon = Pattern.compile(";");
-	/** Semicolon matcher. */
-	private final Matcher mSemiMatcher = mSemicolon.matcher("");
-	/** String builder used by the alias parsing routine. */
-	private final StringBuffer mCommandBuilder = new StringBuffer();
 	/** The auto reconnect limit helper varialbe. */
 	private Integer mAutoReconnectLimit;
 	/** The current auto reconnect attempt. */
@@ -351,14 +339,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Value of CRLF. */
 	private String mCRLF = "\r\n";
 
-	/** The pattern for the .command. */
-	private Pattern mCommandPattern = Pattern.compile("^.(\\w+)\\s*(.*)$");
-	
-	/** The matcher for the .command. */
-	private Matcher mCommandMatcher = mCommandPattern.matcher("");
-	
-	/** The map of special commands. */
-	private HashMap<String, SpecialCommand> mSpecialCommands = new HashMap<String, SpecialCommand>();
 
 	/** Constant for the status bar height, useful for plugins, hard to get. */
 	private int mStatusBarHeight;
@@ -384,23 +364,25 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		mKeyboardCommand = new KeyboardCommand();
 		DisconnectCommand dccmd = new DisconnectCommand();
 		ReconnectCommand rccmd = new ReconnectCommand();
-		mSpeedwalkCommand = new SpeedwalkCommand(null, new Data());
+		mAliasManager = new AliasManager(this);
+		mSpeedwalkCommand = new SpeedwalkCommand(null, new AliasManager.Data());
 		LoadButtonsCommand lbcmd = new LoadButtonsCommand();
 		ClearButtonCommand cbcmd = new ClearButtonCommand();
-		mSpecialCommands.put(colordebug.commandName, colordebug);
-		mSpecialCommands.put(dirtyexit.commandName, dirtyexit);
-		mSpecialCommands.put(timercmd.commandName, timercmd);
-		mSpecialCommands.put(bellcmd.commandName, bellcmd);
-		mSpecialCommands.put(fscmd.commandName, fscmd);
-		mSpecialCommands.put(mKeyboardCommand.commandName, mKeyboardCommand);
-		mSpecialCommands.put("kb", mKeyboardCommand);
-		mSpecialCommands.put(dccmd.commandName, dccmd);
-		mSpecialCommands.put(rccmd.commandName, rccmd);
-		mSpecialCommands.put(mSpeedwalkCommand.commandName, mSpeedwalkCommand);
-		mSpecialCommands.put(lbcmd.commandName, lbcmd);
-		mSpecialCommands.put(cbcmd.commandName, cbcmd);
+		HashMap<String, SpecialCommand> specialCommands = mAliasManager.getSpecialCommands();
+		specialCommands.put(colordebug.commandName, colordebug);
+		specialCommands.put(dirtyexit.commandName, dirtyexit);
+		specialCommands.put(timercmd.commandName, timercmd);
+		specialCommands.put(bellcmd.commandName, bellcmd);
+		specialCommands.put(fscmd.commandName, fscmd);
+		specialCommands.put(mKeyboardCommand.commandName, mKeyboardCommand);
+		specialCommands.put("kb", mKeyboardCommand);
+		specialCommands.put(dccmd.commandName, dccmd);
+		specialCommands.put(rccmd.commandName, rccmd);
+		specialCommands.put(mSpeedwalkCommand.commandName, mSpeedwalkCommand);
+		specialCommands.put(lbcmd.commandName, lbcmd);
+		specialCommands.put(cbcmd.commandName, cbcmd);
 		SwitchWindowCommand swdcmd = new SwitchWindowCommand();
-		mSpecialCommands.put(swdcmd.commandName, swdcmd);
+		specialCommands.put(swdcmd.commandName, swdcmd);
 		
 		this.mDisplay = display;
 		this.mHost = host;
@@ -534,7 +516,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				}
 				if (pid != -1) {
 					FunctionCallbackCommand fcc = new FunctionCallbackCommand(pid, command, callback);
-					mSpecialCommands.put(fcc.commandName, fcc);
+					mAliasManager.getSpecialCommands().put(fcc.commandName, fcc);
 				}
 				break;
 			case MESSAGE_WINDOWBUFFER:
@@ -1064,385 +1046,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 
 
 	
-	/** Alias parsing and special command handling routine.
-	 * 
-	 * @param data The data on its way to the server in need of processing.
-	 * @return A Data object containing the string for the server and the string to the window.
-	 * @throws UnsupportedEncodingException Problem with the String<==>byte[] conversion indicating a bad encoding option.
-	 */
-	private Data processOutputData(final String data) throws UnsupportedEncodingException {
-		mDataToServer.setLength(0);
-		mDataToWindow.setLength(0);
-		String out = data;
-		if (out.endsWith("\n")) {
-			out = out.substring(0, out.length() - 2);
-		}
-		
-		if (out.equals("")) {
-			Data enter = new Data();
-			enter.mCmdString = "";
-			enter.mVisString = null;
-			return enter;
-		}
-		
-		if (out.equals(";;")) {
-			Data enter = new Data();
-			enter.mCmdString = ";" + mCRLF;
-			enter.mVisString = ";";
-			return enter;
-		}
-		List<String> list = null;
-		
-		if (mSettings.isSemiIsNewLine()) {
-			//commands = semicolon.split(out);
-			list = splitSemicolonSafe(out);
-			
-		} else {
-			list = new ArrayList<String>();
-			list.add(out);
-		}
-		StringBuffer holdover = new StringBuffer();
-		
-		ListIterator<String> iterator = list.listIterator();
-		while (iterator.hasNext()) {
-			String cmd = iterator.next();
-			
-			if (cmd.endsWith("~")) {
-				holdover.append(cmd.substring(0, cmd.length() - 1) + ";");
-			} else {
-				if (holdover.length() > 0) {
-					cmd = holdover.toString() + cmd;
-					holdover.setLength(0);
-				}
-				//2.5 run command through the global lua state
-				Data d = null;
-				
-				if (cmd.startsWith(mScriptBlock)) {
-					mSettings.runLuaString(cmd.substring(mScriptBlock.length(), cmd.length()));
-				} else {
-					d = processCommand(cmd);
-				}
-				//3 - do special command processing.
-				
-				//4 - handle command processing output
-				
-				if (d != null) {
-					boolean m = false;
-					if (d.mCmdString != null && d.mVisString != null) {
-						if (d.mCmdString.equals(d.mVisString)) {
-							m = true; //aliases & regular commands will always have the same cmdString and visString
-						}
-					}
-					
-					//5 - alias replacement				
-					if (d.mCmdString != null && !d.mCmdString.equals("")) {
-						boolean didReplace = false;
-						byte[] tmp = null;
-						for (int i = 0; i < mPlugins.size() + 1; i++) {
-							Plugin p = null;
-							if (i == 0) {
-								p = mSettings;
-							} else {
-								p = mPlugins.get(i - 1);
-							}
-							if (p.getSettings().getAliases().size() > 0) {
-								Boolean reprocess = true;
-								tmp = p.doAliasReplacement(d.mCmdString.getBytes(mSettings.getEncoding()), reprocess);
-								String tmpstr = new String(tmp, mSettings.getEncoding());
-								if (!d.mCmdString.equals(tmpstr)) {
-									//alias replaced, needs to be processed
-									
-									List<String> aliasCommands = null;
-									if (mSettings.isSemiIsNewLine()) {
-										aliasCommands = splitSemicolonSafe(tmpstr);
-									} else {
-										aliasCommands = new ArrayList<String>(1);  
-										aliasCommands.add(tmpstr);
-									}
-									for (String acmd : aliasCommands) {
-										iterator.add(acmd);
-									}
-									if (reprocess) {
-										for (int ax = 0; ax < aliasCommands.size(); ax++) {
-											iterator.previous();
-										}
-									}
-									didReplace = true;
-									i = mPlugins.size();
-								}
-							}
-						}
-							
-						if (!didReplace) {
-							if (tmp != null) {
-								if (m) {
-									String srv = new String(tmp, mSettings.getEncoding()) + mCRLF;
-									mDataToServer.append(new String(srv));
-									mDataToWindow.append(new String(tmp, mSettings.getEncoding()) + ";");
-								} else {
-									String srv = new String(tmp, mSettings.getEncoding()) + mCRLF;
-									mDataToServer.append(new String(srv));
-								}
-							} else {
-								mDataToServer.append(d.mCmdString + mCRLF);
-								mDataToWindow.append(d.mCmdString);
-							}
-						}
-							
-					}
-					
-						//dataToServer.append(d.cmdString + crlf);
-					if (d.mVisString != null && !d.mVisString.equals("")) {
-						if (!m) {
-							mDataToWindow.append(d.mVisString + ";");
-						}
-					}
-				}
-			
-
-			}
-		}
-		//7 - return Data packet with commands to send to server, and data to send to window.
-		Data d = new Data();
-		d.mCmdString = mDataToServer.toString();
-		d.mVisString = mDataToWindow.toString();
-		
-		if (d.mVisString.endsWith(";")) {
-			d.mVisString = d.mVisString.substring(0, d.mVisString.length() - 1);
-		}
-		if (!d.mVisString.endsWith(mCRLF)) {
-			d.mVisString = d.mVisString + mCRLF;
-		}
-		return d;
-	}
-	
-	/** Semicolon splitting routine that looks for ;; smartly.
-	 * 
-	 * @param string The string to process.
-	 * @return The resulting list of strings.
-	 */
-	private List<String> splitSemicolonSafe(final String string) {
-		List<String> list = new ArrayList<String>();
-		mSemiMatcher.reset(string);
-		boolean matched = false;
-		boolean append = false;
-		boolean firstSemi = true;
-		//int lastLength = -1;
-		while (mSemiMatcher.find()) {
-			matched = true;
-			mCommandBuilder.setLength(0);
-			
-			mSemiMatcher.appendReplacement(mCommandBuilder, "");
-			if (mCommandBuilder.length() == 0) {
-				append = true;
-				if (list.size() == 0) {
-					if (!firstSemi) {
-						list.add(";");
-					} else {
-						firstSemi = false; //don't add the first one, but add subsequent ones.
-					}
-				} else {
-					list.add(list.remove(list.size() - 1) + ";");
-				}
-			} else {
-				if (append) {
-					if (list.size() == 0) {
-						list.add(";");
-					} else {
-						list.add(list.remove(list.size() - 1) + mCommandBuilder.toString());
-					}
-					append = false;
-				} else {
-					list.add(mCommandBuilder.toString());
-				}
-				
-			}
-		} 
-		
-		if (!matched) {
-			list.add(string);
-		} else {
-			mCommandBuilder.setLength(0);
-			mSemiMatcher.appendTail(mCommandBuilder);
-			if (append) {
-				if(list.size() != 0) {
-					list.add(list.remove(list.size() - 1) + mCommandBuilder.toString());
-				}
-			} else {
-				list.add(mCommandBuilder.toString());
-			}
-		}
-		
-		mCommandBuilder.setLength(0);
-		return list;
-	}
-	
-	/** Utility class for alias replacement and special command parsing routine. */
-	public class Data {
-		/** The string to send to the server. */
-		private String mCmdString;
-		/** The string to echo back to the input window. */
-		private String mVisString;
-		/** Generic constructor. */
-		public Data() {
-			mCmdString = "";
-			mVisString = "";
-		}
-		/** Cmd string getter. 
-		 * 
-		 * @return The string.
-		 */
-		public final String getCmdString() {
-			return mCmdString;
-		}
-		/** Vis string getter.
-		 * 
-		 * @return The string.
-		 */
-		public final String getVisString() {
-			return mVisString;
-		}
-		/** Vis string setter. 
-		 * 
-		 * @param vis Desired string.
-		 */
-		public final void setVisString(final String vis) {
-			this.mVisString = vis;
-		}
-		/** Cmd string setter. 
-		 * 
-		 * @param cmd Desired string.
-		 */
-		public final void setCmdString(final String cmd) {
-			this.mCmdString = cmd;
-		}
-	}
-	
-	/** Data generator for outside package use of the Data class.
-	 * 
-	 * @return A new data
-	 */
-	/*public static Data makeData() {
-		return new Data();
-	}*/
-	
-	/** Generic command processor. This looks for "." commands.
-	 * 
-	 * @param cmd The input string to parse.
-	 * @return The Data object containing the string to return to the server and the string to return to the window.
-	 */
-	public final Data processCommand(final String cmd) {
-		Data data = new Data();
-		if (cmd.equals(".." + "\n") || cmd.equals("..")) {
-			synchronized (mSettings) {
-				String outputmsg = "\n" + Colorizer.getRedColor() + "Dot command processing ";
-				if (mSettings.isProcessPeriod()) {
-					//the_settings.setProcessPeriod(false);
-					overrideProcessPeriods(false);
-					outputmsg = outputmsg.concat("disabled.");
-				} else {
-					//the_settings.setProcessPeriod(true);
-					overrideProcessPeriods(true);
-					outputmsg = outputmsg.concat("enabled.");
-				}
-				outputmsg = outputmsg.concat(Colorizer.getWhiteColor() + "\n");
-				try {
-					sendBytesToWindow(outputmsg.getBytes(mSettings.getEncoding()));
-				} catch (UnsupportedEncodingException e) {
-					throw new RuntimeException(e);
-				}
-			}
-			
-			return null;
-		}
-		
-		
-		if (cmd.startsWith(".") && mSettings.isProcessPeriod()) {
-			
-			if (cmd.startsWith("..")) {
-				data.mCmdString = cmd.replace("..", ".");
-				data.mVisString = cmd.replace("..", ".");
-				return data;
-			}
-			
-			
-			mCommandMatcher.reset(cmd);
-			if (mCommandMatcher.find()) {
-				synchronized (mSettings) {
-					
-					//string should be of the form .aliasname |settarget can have whitespace|
-
-						String alias = mCommandMatcher.group(1);
-						String argument = mCommandMatcher.group(2);
-						
-						
-						if (mSettings.getSettings().getAliases().containsKey(alias)) {
-							//real argument
-							if (!argument.equals("")) {
-								AliasData mod = mSettings.getSettings().getAliases().remove(alias);
-								mod.setPost(argument);
-								mSettings.getSettings().getAliases().put(alias, mod);
-								data.mCmdString = "";
-								if (mSettings.isEchoAliasUpdates()) {
-									data.mVisString = "[" + alias + "=>" + argument + "]";
-								} else {
-									data.mVisString = "";
-								}
-								return data;
-							} else {
-								//display error message
-								String noargMessage = "\n" + Colorizer.getRedColor() + " Alias \"" + alias + "\" can not be set to nothing. Acceptable format is \"."
-													+ alias + " replacetext\"" + Colorizer.getWhiteColor() + "\n";
-								try {
-									sendBytesToWindow(noargMessage.getBytes(mSettings.getEncoding()));
-								} catch (UnsupportedEncodingException e) {
-									throw new RuntimeException(e);
-								}
-								return null;
-							}
-						} else if (mSpecialCommands.containsKey(alias)) {
-							//Log.e("SERVICE","SERVICE FOUND SPECIAL COMMAND: " + alias);
-							SpecialCommand command = mSpecialCommands.get(alias);
-							data = (Data) command.execute(argument, this);
-							return data;
-						} else {
-							//format error message.
-							
-							String error = Colorizer.getRedColor() + "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]\n";
-							error += "  \"" + alias + "\" is not a recognized alias or command.\n";
-							error += "   No data has been sent to the server. If you intended\n";
-							error += "   this to be done, please type \".." + alias + "\"\n";
-							error += "   To toggle command processing, input \"..\" with no arguments\n";
-							error += "[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]" + Colorizer.getWhiteColor() + "\n";  
-							
-							try {
-								sendBytesToWindow(error.getBytes(mSettings.getEncoding()));
-							} catch (UnsupportedEncodingException e) {
-								throw new RuntimeException(e);
-							}
-							return null;
-						}
-					}
-			}
-			return data;
-		} else {
-			data.mCmdString = cmd;
-			data.mVisString = cmd;
-			return data;
-		}
-		
-	}
-	
-	/** Overrides the process special commands setting and sets a new value.
-	 * 
-	 * @param value The new value for the process periods command.
-	 */
-	private void overrideProcessPeriods(final boolean value) {
-		synchronized (mSettings) { //not sure why this is here.
-			mSettings.setProcessPeriod(value);
-		}
-	}
-	
 	/** Switches to another open connection.
 	 * 
 	 * @param connection Name of the connection to switch to.
@@ -1781,7 +1384,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 */
 	public final ArrayList<String> getSystemCommands() {
 		ArrayList<String> list = new ArrayList<String>();
-		Set<String> keys = mSpecialCommands.keySet();
+		Set<String> keys = mAliasManager.getSpecialCommands().keySet();
 		for (String key : keys) {
 			list.add(key);
 		}
@@ -1826,27 +1429,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @return The processed command bytes.
 	 */
 	public final byte[] doKeyboardAliasReplace(final byte[] bytes, final Boolean reprocess) {
-		int count = mPlugins.size();
-		for (int i = 0; i < count; i++) {
-			Plugin p = mPlugins.get(i);
-			byte[] tmp = p.doAliasReplacement(bytes, reprocess);
-			if (tmp.length != bytes.length) {
-				return tmp;
-			} else {
-				boolean same = true;
-				for (int j = 0; j < tmp.length; j++) {
-					if (tmp[j] != bytes[j]) {
-						same = false;
-						j = tmp.length;
-					}
-				}
-				if (!same) {
-					return tmp;
-				}
-			}
-		}
-		
-		return bytes;
+		return mAliasManager.doKeyboardAliasReplace(bytes, reprocess);
 	}
 
 	/** Helper method that kicks off the reconnection sequence. */
@@ -2534,24 +2117,24 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		if (bytes == null || mSettings == null) {
 			return;
 		}
-		Data d = null;
+		AliasManager.Data d = null;
 		try {
-			d = processOutputData(new String(bytes, mSettings.getEncoding()));
+			d = mAliasManager.processOutputData(new String(bytes, mSettings.getEncoding()), this);
 		} catch (UnsupportedEncodingException e2) {
 			e2.printStackTrace();
 		}
-		
+
 		if (d == null) {
 			return;
 		}
-		
+
 		if (d.mCmdString.equals("") && (d.mVisString != null && d.mVisString.replaceAll("\\s", "").equals(""))) {
 			return;
 		}
-		
+
 		String nosemidata = null;
 		try {
-			
+
 			if (d.mCmdString != null && !d.mCmdString.equals("")) {
 				nosemidata = d.mCmdString;
 				byte[] sendtest = nosemidata.getBytes(mSettings.getEncoding());
@@ -2567,11 +2150,11 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 						count++;
 					}
 				}
-				
+
 				byte[] tosend = new byte[count];
 				buf.rewind();
 				buf.get(tosend, 0, count);
-				
+
 				if (mPump != null && mPump.isConnected()) {
 					mPump.sendData(tosend);
 				} else {
@@ -3640,6 +3223,16 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	@Override
 	public ConnectionWindowManager getWindowManager() {
 		return mWindowManager;
+	}
+
+	@Override
+	public Map<String, SpecialCommand> getSpecialCommands() {
+		return mAliasManager.getSpecialCommands();
+	}
+
+	@Override
+	public String getCRLF() {
+		return mCRLF;
 	}
 
 }
