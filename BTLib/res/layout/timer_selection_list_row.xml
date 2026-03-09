@@ -125,7 +125,7 @@
   	  </TableLayout>
   		
   		
-  	  <com.happygoatstudios.bt.timer.ProgressMeter
+  	  <com.offsetnull.bt.timer.ProgressMeter
   		android:id="@+id/timer_progress"
   		android:layout_width="match_parent"
   		android:layout_height="match_parent"

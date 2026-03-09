@@ -97,7 +97,7 @@
     	android:textColor="#9999FF"
     	android:text="|DOWN|"/>
 
-    <com.happygoatstudios.bt.window.BetterEditText
+    <com.offsetnull.bt.window.BetterEditText
     android:layout_width="match_parent"
     android:layout_height="20dip"
     android:height = "20dip"
@@ -147,7 +147,7 @@
     android:layout_above="@id/input_bar" 
     />
 
-     <com.happygoatstudios.bt.legacy.FixedViewFlipper 
+     <com.offsetnull.bt.legacy.FixedViewFlipper 
     	android:id="@+id/flippdipper"
     	android:layout_height="match_parent"
     	android:layout_width="match_parent"
@@ -161,7 +161,7 @@
     					android:layout_y="0px">
     				</RelativeLayout>
     				
-	 </com.happygoatstudios.bt.legacy.FixedViewFlipper> -->
+	 </com.offsetnull.bt.legacy.FixedViewFlipper> -->
 	
 
 </RelativeLayout>
