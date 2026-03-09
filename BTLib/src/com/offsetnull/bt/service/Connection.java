@@ -1112,14 +1112,16 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * @return The integer id of <b>variableName</b> or -1 if the class does not have a field named <b>variableName</b>.
 	 */
 	public static int getResId(final String variableName, final Context context, final Class<?> c) {
-
 	    try {
 	        Field idField = c.getDeclaredField(variableName);
-	        return idField.getInt(idField);
-	    } catch (Exception e) {
-	        e.printStackTrace();
+	        return idField.getInt(null);
+	    } catch (NoSuchFieldException e) {
+	        Log.e("Connection", "No resource field: " + variableName + " in " + c.getName());
 	        return -1;
-	    } 
+	    } catch (IllegalAccessException e) {
+	        Log.e("Connection", "Cannot access field: " + variableName + " in " + c.getName());
+	        return -1;
+	    }
 	}
 
 	/** Helper function to get a window by name.
