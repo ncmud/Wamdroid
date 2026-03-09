@@ -113,7 +113,7 @@
     android:layout_above="@id/textinput" 
     /> -->
 
-     <!-- <com.happygoatstudios.bt.legacy.FixedViewFlipper 
+     <!-- <com.offsetnull.bt.legacy.FixedViewFlipper 
     	android:id="@+id/flippdipper"
     	android:layout_height="match_parent"
     	android:layout_width="match_parent"
@@ -154,7 +154,7 @@
     			android:typeface="monospace"/> -->
     		
     	<!-- </ScrollView> -->	
-	 <!-- </com.happygoatstudios.bt.legacy.FixedViewFlipper> -->
+	 <!-- </com.offsetnull.bt.legacy.FixedViewFlipper> -->
 	
 
 </RelativeLayout>

@@ -12,6 +12,10 @@ android {
 		versionName "2.0"
 	}
 
+	buildFeatures {
+		viewBinding true
+	}
+
 	lint {
 		warningsAsErrors false
 		abortOnError false
