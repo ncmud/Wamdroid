@@ -36,7 +36,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Xml;
@@ -999,7 +998,7 @@ DeleteTriggerGroup("campaign_targets")
 		}
 
 		@Override
-		public int execute() throws LuaException, RemoteException,
+		public int execute() throws LuaException,
 				UnsupportedEncodingException {
 			String group = this.L.LcheckString(2);
 			
@@ -1857,7 +1856,7 @@ RegisterSpecialCommand("home","goHome")
 		//public Si
 
 		@Override
-		public int execute() throws LuaException, RemoteException, UnsupportedEncodingException {
+		public int execute() throws LuaException, UnsupportedEncodingException {
 			// TODO Auto-generated method stub
 			String str = this.L.LcheckString(2);
 			

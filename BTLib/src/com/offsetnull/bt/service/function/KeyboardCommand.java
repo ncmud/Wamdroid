@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.os.RemoteException;
-
 import com.offsetnull.bt.service.Connection;
 
 public class KeyboardCommand extends SpecialCommand {
