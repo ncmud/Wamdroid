@@ -3,7 +3,6 @@
  */
 package com.offsetnull.bt.service;
 
-import android.Manifest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
@@ -28,8 +26,6 @@ import java.util.regex.Pattern;
 
 import org.keplerproject.luajava.LuaState;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlSerializer;
-
 import com.offsetnull.bt.responder.script.ScriptResponder;
 import com.offsetnull.bt.script.ScriptData;
 import com.offsetnull.bt.service.function.BellCommand;
@@ -56,7 +52,6 @@ import com.offsetnull.bt.service.plugin.settings.PluginParser;
 import com.offsetnull.bt.service.plugin.settings.SettingsGroup;
 import com.offsetnull.bt.service.plugin.settings.VersionProbeParser;
 import com.offsetnull.bt.settings.ColorSetSettings;
-import com.offsetnull.bt.settings.ConfigurationLoader;
 import com.offsetnull.bt.settings.HyperSAXParser;
 import com.offsetnull.bt.settings.HyperSettings;
 import com.offsetnull.bt.speedwalk.DirectionData;
@@ -71,8 +66,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -81,14 +74,10 @@ import android.os.Message;
 
 
 
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 //import android.util.Log;
-import android.util.Xml;
-import android.widget.RelativeLayout;
-
 /** Connection class implementation. */
-public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext, GMCPContext, TriggerContext, AliasContext {
+public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext, GMCPContext, TriggerContext, AliasContext, SettingsContext {
 	
 	/** Initiates the connection with the server. */
 	public static final int MESSAGE_STARTUP = 1;
@@ -261,6 +250,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	
 	private TriggerManager mTriggerManager;
 	private AliasManager mAliasManager;
+	private SettingsPersistence mSettingsPersistence;
 
 
 
@@ -282,10 +272,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Global handler for the speedwalk command, useful for changing the settings. */
 	private SpeedwalkCommand mSpeedwalkCommand = null;
 	
-	/** Pattern for matching .xml extensions not case sensitive. */
-	private final Pattern mXMLExtensionPattern = Pattern.compile("^.+\\.[xX][mM][lL]$");
-	/** Matcher for matching .xml extensions not case sensitive. */
-	private final Matcher mXMLExtensionMatcher = mXMLExtensionPattern.matcher("");
 	
 	/** Main tracker for plugins, generic ordered list of plugins in the order they were loaded. */
 	private ArrayList<Plugin> mPlugins = null;
@@ -394,6 +380,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		mTriggerManager = new TriggerManager(this);
 
 		mWindowManager = new ConnectionWindowManager();
+		mSettingsPersistence = new SettingsPersistence(this);
 		
 		SharedPreferences sprefs = this.getContext().getSharedPreferences("STATUS_BAR_HEIGHT", 0);
 		mStatusBarHeight = sprefs.getInt("STATUS_BAR_HEIGHT", (int) (STATUS_BAR_DEFAULT_SIZE * this.getContext().getResources().getDisplayMetrics().density));
@@ -2194,196 +2181,15 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	
 	/** The main starting point for the save settings routine. This is called for a few different locations. */
 	public final void saveMainSettings() {
-		Pattern invalidchars = Pattern.compile("\\W");
-		Matcher replacebadchars = invalidchars.matcher(this.mDisplay);
-		String prefsname = replacebadchars.replaceAll("");
-		prefsname = prefsname.replaceAll("/", "");
-		String rootPath = prefsname + ".xml";
-		
-		//rootPath is the v1 settings file name.
-		String internal = mService.getApplicationContext().getApplicationInfo().dataDir + "/files/";
-		String oldpath = internal + rootPath;
-		exportSettings(oldpath);
+		mSettingsPersistence.saveMainSettings();
 	}
 	
 	/** Export settings routine. Called from either the main settings save routine or the export settings dialog.
-	 * 
+	 *
 	 * @param path File name to save to. Must be absolute from the OS root directory.
 	 */
 	public final void exportSettings(final String path) {
-		boolean domessage = false;
-		boolean addextra = false;
-		String filename = path;
-		int state = ContextCompat.checkSelfPermission(mService.getApplicationContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		boolean external = (state == PackageManager.PERMISSION_GRANTED) ? true : false;
-		File cachedir = this.getContext().getCacheDir();
-		String btdir = "/BlowTorch";
-		if (!filename.startsWith("/")) {
-			//mod
-			domessage = true;
-			File ext = Environment.getExternalStorageDirectory();
-			String dir = ConfigurationLoader.getConfigurationValue("exportDirectory", mService.getApplicationContext());
-			if(external) {
-				btdir = ext.getAbsolutePath() + "/" + dir + "/";
-				filename = ext.getAbsolutePath() + "/" + dir + "/" + filename;
-			} else {
-				btdir = mService.getApplicationContext().getExternalFilesDir(null).getAbsolutePath();
-				filename = mService.getApplicationContext().getExternalFilesDir(null).getAbsolutePath() + "/" + filename;
-			}
-			mXMLExtensionMatcher.reset(filename);
-			if (!mXMLExtensionMatcher.matches()) {
-				filename = filename + ".xml";
-				addextra = true;
-			}
-			
-			if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ECLAIR_MR1) {
-				cachedir = this.getContext().getExternalCacheDir();
-			} else {
-				String packagename = this.getContext().getPackageName();
-				cachedir = new File(Environment.getExternalStorageDirectory(),"/Android/data/"+packagename+"/cache/");
-			}
-		}
-		
-		//try to output the file.
-		boolean passed = true;
-		File file = new File(filename);
-		//File cachedir = this.getContext().getCacheDir();
-		FileOutputStream fos = null;
-		File tmpfile = null;
-		try {
-		tmpfile = File.createTempFile("settings", "xml",cachedir);
-		
-		fos = new FileOutputStream(tmpfile);
-		String foo = ConnectionSetttingsParser.outputXML(mSettings, mPlugins);
-		fos.write(foo.getBytes());
-		fos.close();
-		} catch (Exception e) {
-			//dispatch error.
-			//do not copy files
-			mService.dispatchSaveError(e.getLocalizedMessage());
-			passed = false;
-		} finally {
-			if(passed) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					//we are in real trouble here.
-				}
-				//need to make sure the directory is created.
-				File makeme = new File(btdir);
-				makeme.mkdirs();
-				//copy the file over to the real path.
-				boolean success = tmpfile.renameTo(file);
-				if(success) {
-					Log.e("BT","file shadow copy success");
-				} else {
-					Log.e("BT","file shadow copy failed");
-				}
-			} else {
-				if(fos != null) {
-					try {
-						fos.close();
-					} catch (IOException e) {
-						//real trouble.
-					}
-				}
-			}
-		}
-		
-		
-		for (String link : mLinkMap.keySet()) {
-			ArrayList<String> plugins  = mLinkMap.get(link);
-			boolean doExport = false;
-			String fullpath = "";
-			for (String plugin : plugins) {
-				Plugin p = mPluginMap.get(plugin);
-				if (p.getSettings().isDirty()) {
-					doExport = true;
-					fullpath = p.getFullPath();
-				}
-			}
-			
-			if (doExport) {
-				XmlSerializer out = Xml.newSerializer();
-				StringWriter writer = new StringWriter();
-				
-				File extfile = null;
-				FileOutputStream extfilestream = null;
-				passed = true;
-				File extcachedir = null;
-				if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ECLAIR_MR1) {
-					extcachedir = this.getContext().getExternalCacheDir();
-				} else {
-					String packagename = this.getContext().getPackageName();
-					extcachedir = new File(Environment.getExternalStorageDirectory(),"/Android/data/"+packagename+"/cache/");
-				}
-				//File cachedir = this.getContext().getCacheDir();
-				//FileOutputStream fos = null;
-				File tmppluginfile = null;
-				String currentplugin = "";
-				try {
-				
-				out.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-				out.setOutput(writer);
-				out.startDocument("UTF-8", true);
-				out.startTag("", "blowtorch");
-				out.attribute("", "xmlversion", "2");
-				out.startTag("", "plugins");
-				
-				for (String plugin :plugins) {
-					currentplugin = plugin;
-					Plugin p = mPluginMap.get(plugin);
-					PluginParser.saveToXml(out, p);
-					p.getSettings().setDirty(false);
-				}
-				
-				out.endTag("", "plugins");
-				out.endTag("", "blowtorch");
-				out.endDocument();
-				
-				tmppluginfile = File.createTempFile("plugin_settings", "xml",extcachedir);
-				
-				extfile = new File(fullpath);
-				extfilestream = new FileOutputStream(tmppluginfile);
-				extfilestream.write(writer.toString().getBytes());
-				extfilestream.close();
-				} catch(Exception e) {
-					mService.dispatchPluginSaveError(currentplugin,e.getLocalizedMessage());
-					passed = false;
-				} finally {
-					if(extfilestream != null) {
-						try {
-							extfilestream.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					
-					if(passed) {
-						//try and copy the file over.
-						long start = System.currentTimeMillis();
-						boolean success = tmppluginfile.renameTo(extfile);
-						int duraction = (int)(System.currentTimeMillis() - start);
-						if(success) {
-							Log.e("BT","Plugin shadow copy success, took " + duraction);
-						} else {
-							Log.e("BT","Plugin shadow copy failure, took " + duraction);
-						}
-					}
-				}
-			}
-			
-		}
-		
-		
-		if (domessage) {
-			String message = "Settings Exported to " + filename;
-			if (addextra) {
-				message = message + "\n.xml extension added.";
-			}
-			mService.dispatchToast(message, true);
-		}
+		mSettingsPersistence.exportSettings(path);
 	}
 	
 	/** Access point for the foreground window to initate a custom export action with the provided path.
@@ -2780,37 +2586,10 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		}
 	}
 	
-	/** Build settings page routine. This is used by the settings loading routine. 
-	 * The reason why the magic number 4 is used is that is the position of the window settings in the
-	 * settings list is similar to the position of the menu item in the v1 client.
-	 */
-	@SuppressWarnings("deprecation")
+	/** Build settings page routine. This is used by the settings loading routine. */
 	private void buildSettingsPage() {
-		if (mSettings.getSettings().getWindows().size() < 1) {
-			WindowToken token = new WindowToken(MAIN_WINDOW, null, null, mDisplay);
-			RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			LayoutGroup g = new LayoutGroup();
-			g.setType(LayoutGroup.LAYOUT_TYPE.normal);
-			g.setLandscapeParams(p);
-			g.setPortraitParams(p);
-			mWindowManager.getWindows().add(0, token);
-		} else {
-			mWindowManager.getWindows().add(0, mSettings.getSettings().getWindows().get(MAIN_WINDOW));
-		}
-		
-		mSettings.doBackgroundStartup();
-		for (Plugin pl : mPlugins) {
-			pl.doBackgroundStartup();
-		}
-		
-		mSettings.buildAliases();
-		for (Plugin pl : mPlugins) {
-			pl.buildAliases();
-		}
-		
+		mSettingsPersistence.buildSettingsPage();
 		buildTriggerSystem();
-		mWindowManager.getWindows().get(0).getSettings().setListener(new WindowSettingsChangedListener(mWindowManager.getWindows().get(0).getName()));
-		mSettings.getSettings().getOptions().addOptionAt(mWindowManager.getWindows().get(0).getSettings(), FOUR);
 	}
 	
 	/** Attatches a WindowSettingsChangedListener to the given WindowToken.
@@ -2854,65 +2633,16 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	}
 	
 	/** Utility method that generates the font size necessary to fit 80 chars to the window width.
-	 * 
+	 *
 	 * @return the font size that will produce nearest to 80 chars as possible.
 	 */
 	private int calculate80CharFontSize() {
-		int windowWidth = mService.getResources().getDisplayMetrics().widthPixels;
-		if (mService.getResources().getDisplayMetrics().heightPixels > windowWidth) {
-			windowWidth = mService.getResources().getDisplayMetrics().heightPixels;
-		}
-		float fontSize = MIN_FONT_SIZE;
-		float delta = 1.0f;
-		Paint p = new Paint();
-		p.setTextSize(MIN_FONT_SIZE);
-		//p.setTypeface(Typeface.createFromFile(service.getFontName()));
-		p.setTypeface(Typeface.MONOSPACE);
-		boolean done = false;
-		
-		float charWidth = p.measureText("A");
-		float charsPerLine = windowWidth / charWidth;
-		
-		if (charsPerLine < TARGET_FIT_WIDTH) {
-			//for QVGA screens, this test will always fail on the first step.
-			done = true;
-		} else {
-			fontSize += delta;
-			p.setTextSize(fontSize);
-		}
-		
-		while (!done) {
-			charWidth = p.measureText("A");
-			charsPerLine = windowWidth / charWidth;
-			if (charsPerLine < TARGET_FIT_WIDTH) {
-				done = true;
-				fontSize -= delta; //return to the previous font size that produced > 80 characters.
-			} else {
-				fontSize += delta;
-				p.setTextSize(fontSize);
-			}
-		}
-		return (int) fontSize;
+		return mSettingsPersistence.calculate80CharFontSize();
 	}
-	
+
 	/** Starts the recursive settings initialization routine to set all the settings loaded from the serialized settings file. */
 	private void initSettings() {
-		initSetting(mSettings.getSettings().getOptions());
-	}
-	
-	/** Recursive settings initializations routine. 
-	 * 
-	 * @param s the SettingsGroup to dump.
-	 */
-	private void initSetting(final SettingsGroup s) {
-		for (Option o : s.getOptions()) {
-			if (o instanceof SettingsGroup) {
-				initSetting((SettingsGroup) o);
-			} else {
-				BaseOption tmp = (BaseOption) o;
-				this.updateSetting(o.getKey(), tmp.getValue().toString());
-			}
-		}
+		mSettingsPersistence.initSettings();
 	}
 
 	/** Entry point for the foreground window to reset the settings for this connection. */
@@ -3233,6 +2963,16 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	@Override
 	public String getCRLF() {
 		return mCRLF;
+	}
+
+	@Override
+	public Map<String, ArrayList<String>> getLinkMap() {
+		return mLinkMap;
+	}
+
+	@Override
+	public SettingsChangedListener createWindowSettingsChangedListener(final String windowName) {
+		return new WindowSettingsChangedListener(windowName);
 	}
 
 }
