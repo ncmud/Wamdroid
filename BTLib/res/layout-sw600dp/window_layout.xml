@@ -3,13 +3,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/window_container"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     
  <!--  <RelativeLayout
 	android:layout_height="wrap_content"
 	android:minHeight="40dip"
-	android:layout_width="fill_parent"
+	android:layout_width="match_parent"
 	android:id="@+id/input_bar"
 	android:layout_alignParentBottom="true"
 	android:layout_alignParentLeft="true">-->
@@ -43,7 +43,7 @@
     <LinearLayout
         android:id="@+id/inputbar"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         >
@@ -59,7 +59,7 @@
     	android:text="|DOWN|"/>
     
     <com.offsetnull.bt.window.BetterEditText
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight = "40dip"
     android:textSize="24sp"
@@ -88,7 +88,7 @@
     
     <View
         android:layout_height="3dip"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_above="@id/inputbar"
         android:id="@+id/divider"
         android:background="#FF444488"/>
@@ -96,7 +96,7 @@
 	<!--  android:lineSpacingExtra = "-2sp" -->
     
     <!-- <View 
-    android:layout_width = "fill_parent" 
+    android:layout_width = "match_parent" 
     android:layout_height = "3px"
     android:id = "@+id/filler"
     android:background = "#FF9999FF"
@@ -105,7 +105,7 @@
     /> -->
     
     <!-- <View 
-    android:layout_width = "fill_parent" 
+    android:layout_width = "match_parent" 
     android:layout_height = "3px"
     android:id = "@+id/filler2"
     android:background = "#FFFF0000"
@@ -115,26 +115,26 @@
 
      <!-- <com.happygoatstudios.bt.legacy.FixedViewFlipper 
     	android:id="@+id/flippdipper"
-    	android:layout_height="fill_parent"
-    	android:layout_width="fill_parent"
+    	android:layout_height="match_parent"
+    	android:layout_width="match_parent"
     	android:layout_above="@id/filler"> -->
     	
     	
  <!--   <ScrollView 
     		android:id="@+id/secscroller"
-    		android:layout_height="fill_parent"
-   	 		android:layout_width="fill_parent"> -->
+    		android:layout_height="match_parent"
+   	 		android:layout_width="match_parent"> -->
     			<!-- <TextView  
-    				android:layout_width="fill_parent" 
-   					android:layout_height="fill_parent" 
+    				android:layout_width="match_parent" 
+   					android:layout_height="match_parent" 
     				android:text="@string/hello2"
    					android:textSize="12sp"
     				android:typeface="monospace"
     				android:id="@+id/tv2" /> -->
     				<!-- <RelativeLayout 
     					android:id="@+id/slickholder"
-    					android:layout_width="fill_parent"
-    					android:layout_height="fill_parent"
+    					android:layout_width="match_parent"
+    					android:layout_height="match_parent"
     					android:layout_alignParentTop="true"
     					android:layout_alignParentLeft="true"
     					android:layout_alignParentRight="true"
@@ -145,12 +145,12 @@
     <!--	</ScrollView> -->
     	<!-- <ScrollView
     	    android:id="@+id/thrirdscroller"
-    		android:layout_height="fill_parent"
-   	 		android:layout_width="fill_parent"> -->
+    		android:layout_height="match_parent"
+   	 		android:layout_width="match_parent"> -->
     		<!--  <WebView
     			android:id="@+id/webview"
-    			android:layout_height="fill_parent"
-    			android:layout_width="fill_parent"
+    			android:layout_height="match_parent"
+    			android:layout_width="match_parent"
     			android:typeface="monospace"/> -->
     		
     	<!-- </ScrollView> -->	

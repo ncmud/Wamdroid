@@ -4,8 +4,8 @@
   <windows>
     <window name="mainDisplay" id="6666">
       <layoutGroup target="normal">
-      	<layout orientation="landscape" above="40" alignParentLeft="true" width="fill_parent" height="fill_parent" />
-        <layout orientation="portrait" above="40" alignParentLeft="true" width="fill_parent" height="fill_parent" />
+      	<layout orientation="landscape" above="40" alignParentLeft="true" width="match_parent" height="match_parent" />
+        <layout orientation="portrait" above="40" alignParentLeft="true" width="match_parent" height="match_parent" />
       </layoutGroup>
       <options/>
     </window>
@@ -46,8 +46,8 @@ xPos="130" yPos="183" label="CLEAR" moveMethod="0" command=".clearbuttons" />
   	 	<windows>
   	 		<window name="button_window" id="10203" script="buttonwindow">
   	 			<layoutGroup target="normal">
-  	 				<layout orientation="landscape" height="fill_parent" width="fill_parent" above="40"/>
-  	 				<layout orientation="portrait" height="fill_parent" width="fill_parent" above="40"/>
+  	 				<layout orientation="landscape" height="match_parent" width="match_parent" above="40"/>
+  	 				<layout orientation="portrait" height="match_parent" width="match_parent" above="40"/>
   	 			</layoutGroup>
   	 		</window>
   	 	</windows>

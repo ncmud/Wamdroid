@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
+  android:layout_width="match_parent"
   android:layout_height="wrap_content">
   
   <TextView
     android:id = "@+id/displayname"
-  	android:layout_width="fill_parent"
+  	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
   	android:textSize="25sp"
   	android:textStyle="bold"
@@ -17,7 +17,7 @@
   	/>
   <TextView
   	android:id = "@+id/hoststring"
-  	android:layout_width = "fill_parent"
+  	android:layout_width = "match_parent"
   	android:layout_height = "wrap_content"
   	android:layout_below = "@id/displayname"
   	android:layout_alignParentLeft="true"
@@ -32,7 +32,7 @@
   	
   	/>
   <!--  <ImageView
-  	android:layout_width="fill_parent"
+  	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
   	android:src="@drawable/dashedline"/> -->
 

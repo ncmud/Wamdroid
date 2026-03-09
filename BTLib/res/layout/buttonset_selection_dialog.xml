@@ -4,12 +4,12 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/buttonsetselectionlayout"
 	android:layout_width="280dip"
-	android:layout_height="fill_parent"
+	android:layout_height="match_parent"
 	android:scrollbarStyle="insideInset">
 	
 	<TextView
 		android:id="@+id/titlebar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:text="SELECT BUTTON SET"
@@ -39,12 +39,12 @@
 		android:id="@+id/buttonset_scroller"
 		android:layout_alignParentTop="true"
 		android:layout_width="420px"
-		android:layout_height="fill_parent"
+		android:layout_height="match_parent"
 		android:layout_above="@id/new_buttonset_button"> -->
 		
 		<ListView
 			android:id="@+id/buttonset_list"
-			android:layout_height="fill_parent"
+			android:layout_height="match_parent"
 			android:layout_above="@id/new_buttonset_button"
 			android:layout_below="@id/titlebar"
 			android:layout_width="420px"/>

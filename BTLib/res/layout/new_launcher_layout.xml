@@ -6,8 +6,8 @@
 		android:layout_height = "wrap_content"
 		android:layout_width = "wrap_content">
 	<ImageView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
 		android:scaleType="centerCrop"
 		android:src="@drawable/background"/>
 
@@ -86,7 +86,7 @@
 		<FrameLayout
 			android:id="@+id/timer_frame"
 			android:layout_width = "300dip"
-			android:layout_height="fill_parent"
+			android:layout_height="match_parent"
 			android:layout_margin="0dip"
 			android:padding="0dip"
 			android:layout_alignParentRight="true"
@@ -96,7 +96,7 @@
 			android:id = "@+id/connection_list"
 			android:layout_alignParentRight = "true"
 
-			android:layout_height = "fill_parent"
+			android:layout_height = "match_parent"
 			android:layout_width = "300dip"
 			android:divider= "#00000000">
 			
@@ -104,7 +104,7 @@
 		<TextView
 			android:id="@+id/launcher_empty"
 			android:layout_width="300dip"
-			android:layout_height="fill_parent"
+			android:layout_height="match_parent"
 			android:text="No connections.\nNew connections can be made with the button below."
 			android:textColor="#AA222222"
 			android:background="#AAAAAAAA"

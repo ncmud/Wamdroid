@@ -19,7 +19,7 @@
 	
 	<TextView
 		android:id="@+id/titlebar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:layout_alignBottom="@id/optionsbutton"
@@ -59,20 +59,20 @@
 		
 	<FrameLayout
 		android:id="@+id/frame"
-		android:layout_width = "fill_parent"
-		android:layout_height="fill_parent"
+		android:layout_width = "match_parent"
+		android:layout_height="match_parent"
 		android:layout_margin="0dip"
 		android:padding="0dip"
 		android:layout_above="@id/add"
 		android:layout_below="@id/titlebar">
 		<ListView
 			android:id="@+id/list"
-			android:layout_height="fill_parent"
+			android:layout_height="match_parent"
 			android:layout_width="280dip"/>
 		<TextView
 			android:id="@+id/empty"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
 			android:text="No items to display."
 			android:textColor="#FFFFFFFF"
 			android:background="#FF000000"
@@ -85,7 +85,7 @@
 	
 	<ListView
 	    android:id="@+id/optionslist"
-	    android:layout_width="fill_parent"
+	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_below="@id/optionsbutton"
 	 	android:layout_marginRight="20dip"

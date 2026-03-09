@@ -6247,7 +6247,7 @@
     <issue
         id="UselessParent"
         message="This `ScrollView` layout or its `LinearLayout` parent is possibly unnecessary"
-        errorLine1="   &lt;ScrollView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:id=&quot;@+id/btn_editor_advanced_scroll_containter&quot;>"
+        errorLine1="   &lt;ScrollView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:id=&quot;@+id/btn_editor_advanced_scroll_containter&quot;>"
         errorLine2="    ~~~~~~~~~~">
         <location
             file="res/layout-land/button_properties_dialog_tabbed.xml"
@@ -6258,7 +6258,7 @@
     <issue
         id="UselessParent"
         message="This `ScrollView` layout or its `LinearLayout` parent is possibly unnecessary"
-        errorLine1="   &lt;ScrollView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:id=&quot;@+id/btn_editor_advanced_scroll_containter&quot;>"
+        errorLine1="   &lt;ScrollView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:id=&quot;@+id/btn_editor_advanced_scroll_containter&quot;>"
         errorLine2="    ~~~~~~~~~~">
         <location
             file="res/layout/button_properties_dialog_tabbed.xml"
@@ -6335,7 +6335,7 @@
     <issue
         id="UselessParent"
         message="This `TableLayout` layout or its `LinearLayout` parent is unnecessary"
-        errorLine1="  &lt;TableLayout android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:stretchColumns=&quot;*&quot;>"
+        errorLine1="  &lt;TableLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:stretchColumns=&quot;*&quot;>"
         errorLine2="   ~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_ack_dialog.xml"
@@ -6346,7 +6346,7 @@
     <issue
         id="UselessParent"
         message="This `TableLayout` layout or its `LinearLayout` parent is unnecessary"
-        errorLine1="  &lt;TableLayout android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:stretchColumns=&quot;*&quot;>"
+        errorLine1="  &lt;TableLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:stretchColumns=&quot;*&quot;>"
         errorLine2="   ~~~~~~~~~~~">
         <location
             file="res/layout/responder_ack_dialog.xml"
@@ -6379,7 +6379,7 @@
     <issue
         id="UselessParent"
         message="This `TableLayout` layout or its `LinearLayout` parent is unnecessary"
-        errorLine1="  &lt;TableLayout android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:stretchColumns=&quot;*&quot;>"
+        errorLine1="  &lt;TableLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:stretchColumns=&quot;*&quot;>"
         errorLine2="   ~~~~~~~~~~~">
         <location
             file="res/layout/responder_script_dialog.xml"
@@ -8051,7 +8051,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -8062,7 +8062,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                                                            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -8073,7 +8073,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -8084,7 +8084,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -8095,7 +8095,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -8106,7 +8106,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -8117,7 +8117,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -8128,7 +8128,7 @@
     <issue
         id="SmallSp"
         message="Avoid using sizes smaller than `11sp`: `10sp`"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14585,7 +14585,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Play sound?&quot;, should use `@string` resource"
-        errorLine1="       &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="       &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14596,7 +14596,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Play sound?&quot;, should use `@string` resource"
-        errorLine1="       &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="       &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14607,7 +14607,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Sound: default&quot;, should use `@string` resource"
-        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14618,7 +14618,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Sound: default&quot;, should use `@string` resource"
-        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="       &lt;TextView android:id=&quot;@+id/responder_notification_sound_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Sound: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14629,7 +14629,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Vibrate?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14640,7 +14640,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Vibrate?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14651,7 +14651,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Currently: default&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14662,7 +14662,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Currently: default&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_vibrate_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14673,7 +14673,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Show Lights?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14684,7 +14684,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Show Lights?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14695,7 +14695,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Currently: default&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14706,7 +14706,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Currently: default&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:id=&quot;@+id/responder_notification_lights_extra&quot; android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Currently: default&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14717,7 +14717,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Spawn New?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14728,7 +14728,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Spawn New?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -14739,7 +14739,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Spawn a new notification every time?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -14750,7 +14750,7 @@
     <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Spawn a new notification every time?&quot;, should use `@string` resource"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn a new notification every time?&quot; android:layout_marginRight=&quot;30dip&quot; android:layout_marginLeft=&quot;30dip&quot; android:textStyle=&quot;italic&quot; android:textSize=&quot;10sp&quot;/>"
         errorLine2="                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -17390,7 +17390,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginRight` with `android:layout_marginEnd=&quot;10sp&quot;` to better support right-to-left layouts"
-        errorLine1="   &lt;LinearLayout android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;vertical&quot; android:layout_marginRight=&quot;10sp&quot;>"
+        errorLine1="   &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;vertical&quot; android:layout_marginRight=&quot;10sp&quot;>"
         errorLine2="                                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/button_properties_dialog_tabbed.xml"
@@ -17401,7 +17401,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginRight` with `android:layout_marginEnd=&quot;10sp&quot;` to better support right-to-left layouts"
-        errorLine1="   &lt;LinearLayout android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;vertical&quot; android:layout_marginRight=&quot;10sp&quot;>"
+        errorLine1="   &lt;LinearLayout android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:orientation=&quot;vertical&quot; android:layout_marginRight=&quot;10sp&quot;>"
         errorLine2="                                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/button_properties_dialog_tabbed.xml"
@@ -18996,7 +18996,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="       &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="       &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -19007,7 +19007,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="       &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="       &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Play sound?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -19040,7 +19040,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -19051,7 +19051,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Vibrate?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -19084,7 +19084,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -19095,7 +19095,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Show Lights?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"
@@ -19128,7 +19128,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout-land/responder_notification_dialog.xml"
@@ -19139,7 +19139,7 @@
     <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;30dip&quot;` to better support right-to-left layouts"
-        errorLine1="     &lt;TextView android:layout_width=&quot;fill_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
+        errorLine1="     &lt;TextView android:layout_width=&quot;match_parent&quot; android:layout_height=&quot;wrap_content&quot; android:text=&quot;Spawn New?&quot; android:layout_marginLeft=&quot;30dip&quot; android:gravity=&quot;center&quot; android:textStyle=&quot;bold&quot; android:textSize=&quot;20sp&quot;/>"
         errorLine2="                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="res/layout/responder_notification_dialog.xml"

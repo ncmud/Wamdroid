@@ -8,7 +8,7 @@
   
   <TextView
 		android:id="@+id/titlebar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:text="DIRECTIONS"
@@ -30,7 +30,7 @@
 
   
   <Button
-  	android:layout_width="fill_parent"
+  	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
   	android:text="New Direction"
   	android:id="@+id/new_dir_button"
@@ -40,22 +40,22 @@
 
   <FrameLayout
 		android:id="@+id/sw_frame"
-		android:layout_width = "fill_parent"
-		android:layout_height="fill_parent"
+		android:layout_width = "match_parent"
+		android:layout_height="match_parent"
 		android:layout_margin="0dip"
 		android:padding="0dip"
 		android:layout_above="@id/new_dir_button"
   		android:layout_below="@id/titlebar">
   <ListView
   	android:layout_width="300dip"
-  	android:layout_height="fill_parent"
+  	android:layout_height="match_parent"
   	android:id="@+id/sw_list"
   	/>
   	
   	<TextView
 			android:id="@+id/sw_empty"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
 			android:text="No directions to display.\nNew directions can be made with the button below."
 			android:textColor="#FFFFFFFF"
 			android:background="#FF000000"

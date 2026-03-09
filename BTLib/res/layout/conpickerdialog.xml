@@ -29,12 +29,12 @@
   <ListView
   	android:id="@+id/connectionlist"
   	android:layout_width="275px"
-  	android:layout_height="fill_parent" 
+  	android:layout_height="match_parent" 
   	android:layout_above="@id/startbutton"/>
   <!--  <TextView
 		android:id = "@+id/emptymessage"
 		android:layout_height = "wrap_content"
-		android:layout_width = "fill_parent"
+		android:layout_width = "match_parent"
 		android:layout_above = "@id/startbutton"
 		android:text = "Make a new item bitch..."/>
   	-->
