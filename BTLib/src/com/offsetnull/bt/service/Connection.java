@@ -86,19 +86,16 @@ import android.os.Handler;
 import android.os.Message;
 
 
-import android.os.SystemClock;
 
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
 //import android.util.Log;
 import android.util.Xml;
-import android.view.Gravity;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 /** Connection class implementation. */
-public class Connection implements SettingsChangedListener, ConnectionPluginCallback {
+public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext {
 	
 	/** Initiates the connection with the server. */
 	public static final int MESSAGE_STARTUP = 1;
@@ -221,19 +218,19 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	private static final int MESSAGE_CALLPLUGIN = 35;
 	
 	/** Sent from the timer command. */
-	private static final int MESSAGE_TIMERINFO = 36;
-	
+	static final int MESSAGE_TIMERINFO = 36;
+
 	/** Sent from the timer command. */
-	private static final int MESSAGE_TIMERSTART = 37;
-	
+	static final int MESSAGE_TIMERSTART = 37;
+
 	/** Sent from the timer command. */
-	private static final int MESSAGE_TIMERPAUSE = 38;
-	
+	static final int MESSAGE_TIMERPAUSE = 38;
+
 	/** Sent from the timer command. */
-	private static final int MESSAGE_TIMERRESET = 39;
-	
+	static final int MESSAGE_TIMERRESET = 39;
+
 	/** Sent from the timer command. */
-	private static final int MESSAGE_TIMERSTOP = 40;
+	static final int MESSAGE_TIMERSTOP = 40;
 	
 	/** GMCP payload minimum size. */
 	private static final int GMCP_PAYLOAD_SIZE = 5;
@@ -244,11 +241,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** 500 ms timeout, generic timeout or other. */
 	private static final int FIVE_HUNDRED_MILLIS = 500;
 	
-	/** 1000 mm. */
-	private static final double ONE_THOUSAND_MILLIS = 1000.0;
-	
-	/** Toast message offset from the top of the screen. */
-	private static final double TOAST_MESSAGE_TOP_OFFSET = 50.0;
 	/** Very large value. */
 	private static final int TEN_MILLION = 10000000;
 	
@@ -396,22 +388,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			new HashMap<String, WindowCallback>();
 
 	
-	/** Enum used for the Timer command action ordinals. */
-	private enum TIMER_ACTION {
-		/** Play action.*/
-		PLAY,
-		/** Pause action. */
-		PAUSE,
-		/** Reset action.*/
-		RESET,
-		/** Info action.*/
-		INFO,
-		/** Stop action. */
-		STOP,
-		/** No action. */
-		NONE
-	}
-	
 	/** Instance of our parent service. This is bad. */
 	private StellarService mService = null;
 	
@@ -420,7 +396,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	
 	/** The main settings wad/plugin. */
 	private ConnectionSettingsPlugin mSettings = null;
-	
+
+	private TimerManager mTimerManager;
+
 	/** The keyboard command instance, not sure why this is here. */
 	private KeyboardCommand mKeyboardCommand;
 	
@@ -452,7 +430,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		
 		ColorDebugCommand colordebug = new ColorDebugCommand();
 		DirtyExitCommand dirtyexit = new DirtyExitCommand();
-		TimerCommand timercmd = new TimerCommand();
+		mTimerManager = new TimerManager(this);
+		TimerManager.TimerCommand timercmd = new TimerManager.TimerCommand();
 		BellCommand bellcmd = new BellCommand();
 		FullScreenCommand fscmd = new FullScreenCommand();
 		mKeyboardCommand = new KeyboardCommand();
@@ -519,19 +498,19 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				mIsConnected = false;
 				break;
 			case MESSAGE_TIMERSTOP:
-				doTimerAction((String) msg.obj, msg.arg2, TIMER_ACTION.STOP);
+				mTimerManager.handleAction((String) msg.obj, msg.arg2, TimerManager.TimerAction.STOP);
 				break;
 			case MESSAGE_TIMERSTART:
-				doTimerAction((String) msg.obj, msg.arg2, TIMER_ACTION.PLAY);
+				mTimerManager.handleAction((String) msg.obj, msg.arg2, TimerManager.TimerAction.PLAY);
 				break;
 			case MESSAGE_TIMERRESET:
-				doTimerAction((String) msg.obj, msg.arg2, TIMER_ACTION.RESET);
+				mTimerManager.handleAction((String) msg.obj, msg.arg2, TimerManager.TimerAction.RESET);
 				break;
 			case MESSAGE_TIMERINFO:
-				doTimerAction((String) msg.obj, msg.arg2, TIMER_ACTION.INFO);
+				mTimerManager.handleAction((String) msg.obj, msg.arg2, TimerManager.TimerAction.INFO);
 				break;
 			case MESSAGE_TIMERPAUSE:
-				doTimerAction((String) msg.obj, msg.arg2, TIMER_ACTION.PAUSE);
+				mTimerManager.handleAction((String) msg.obj, msg.arg2, TimerManager.TimerAction.PAUSE);
 				break;
 			case MESSAGE_CALLPLUGIN:
 				String ptmp = msg.getData().getString("PLUGIN");
@@ -1266,7 +1245,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * 
 	 * @param data The data to send.
 	 */
-	private void dispatchNoProcess(final byte[] data) {
+	public void dispatchNoProcess(final byte[] data) {
 		mWindows.get(0).getBuffer().addBytesImplSimple(data);
 		sendBytesToWindow(data);
 	}
@@ -4145,178 +4124,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		return mPluginMap.containsKey(desired);
 	}
 	
-	/** Utility class providing the .timer command. */
-	private class TimerCommand extends SpecialCommand {
-		/** Acceptable timer action strings. */
-		private ArrayList<String> mTimerActions = new ArrayList<String>();
-		/** Ordinal capture group. */
-		private final int mOrdinalGroupIndex = 3;
-		/** Silent marker. */
-		private final int mSilent = 50;
-		/** Generic constructor. */
-		public TimerCommand() {
-			this.commandName = "timer";
-			mTimerActions.add("play");
-			mTimerActions.add("pause");
-			mTimerActions.add("info");
-			mTimerActions.add("reset");
-			mTimerActions.add("stop");
-		}
-		/** Execute method for this command.
-		 * 
-		 * @param o parameter object.
-		 * @param c connection that called this function
-		 * @return whatever this function returns.
-		 */
-		public Object execute(final Object o, final Connection c)  {
-			//example argument " info 0"
-			//regex = "^\s+(\S+)\s+(\d+)";
-			Pattern p = Pattern.compile("^\\s*(\\S+)\\s+(\\S+)\\s*(\\S*)");
-			
-			Matcher m = p.matcher((String) o);
-			
-			if (m.matches()) {
-				//extract arguments
-				String action = m.group(1).toLowerCase(Locale.US);
-				String ordinal = m.group(2);
-				String silent = "";
-				if (m.groupCount() > 2) {
-					silent = m.group(mOrdinalGroupIndex);
-				}
-				if (!mTimerActions.contains(action)) {
-					//error with bad action.
-					dispatchNoProcess(getErrorMessage("Timer action arguemnt " + action + " is invalid.", "Acceptable arguments are \"play\",\"pause\",\"reset\",\"stop\" and \"info\".").getBytes());
-					return null;
-				}
-				int domsg = mSilent;
-				if (!silent.equals("")) {
-					domsg = 0;
-				}
-				
-				if (action.equals("info")) {
-					mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_TIMERINFO, ordinal));
-					return null;
-				}
-				if (action.equals("reset")) {
-					mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_TIMERRESET, 0, domsg, ordinal));
-					return null;
-				}
-				if (action.equals("play")) {
-					//play
-					mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_TIMERSTART, 0, domsg, ordinal));
-					return null;
-				}
-				if (action.equals("pause")) {
-					mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_TIMERPAUSE, 0, domsg, ordinal));
-					return null;
-				}
-				if (action.equals("stop")) {
-					mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_TIMERSTOP, 0, domsg, ordinal));
-					return null;
-				}
-			} else {
-				dispatchNoProcess(getErrorMessage("Timer command: \".timer " + (String) o + "\" is invalid.", "Timer function format \".timer action index [silent]\"\n"
-							+ "Where action is \"play\",\"pause\",\"reset\" or \"info\".\nIndex is the timer index displayed in the timer selection list.").getBytes());
-			}
-			
-			return null;
-			
-		}
-	}
-	
-	/** Work horse method for the timer command.
-	 * 
-	 * @param obj The name of the timer.
-	 * @param arg2 The silent flag (0 = silent, anything else = not silent).
-	 * @param action The action that was harvested from the entry point.
-	 */
-	private void doTimerAction(final String obj, final int arg2, final TIMER_ACTION action) {
-		//check for valid ordinals.
-		boolean found = false;
-		Plugin host = null;
-		if (mSettings.getSettings().getTimers().containsKey(obj)) {
-			host = mSettings;
-			found = true;
-		} else {
-			//check plugins
-			for (Plugin p : mPlugins) {
-				if (p.getSettings().getTimers().containsKey(obj)) {
-					host = p;
-					found = true;
-				}
-			}
-		}
-		boolean silent = false;
-		if (arg2 == 0) {
-			silent = true;
-		}
-		
-		if (!found) {
-			//show error message.
-			dispatchNoProcess(SpecialCommand.getErrorMessage("Timer command error", "No timer with name " + obj + " found.").getBytes());
-		} else {
-			switch (action) {
-			case PLAY:
-				host.startTimer(obj);
-				if (!silent) {
-					toast("Timer " + obj + " started.");
-				}
-				break;
-			case PAUSE:
-				host.pauseTimer(obj);
-				if (!silent) {
-					toast("Timer " + obj + " paused.");
-				}
-				break;
-			case RESET:
-				host.resetTimer(obj);
-				if (!silent) {
-					toast("Timer " + obj + " reset.");
-				}
-				break;
-			case STOP:
-				host.pauseTimer(obj);
-				host.resetTimer(obj);
-				if (!silent) {
-					toast("Timer " + obj + " stopped.");
-				}
-				break;
-			case INFO:
-				TimerData t = host.getSettings().getTimers().get(obj);
-				if (t.isPlaying()) {
-					long now = SystemClock.elapsedRealtime();
-					long dur = now - t.getStartTime();
-					int sec = t.getSeconds() - (int) (dur / ONE_THOUSAND_MILLIS);
-					toast(obj + ": " + sec + "s");
-				} else {
-					if (t.getRemainingTime() != t.getSeconds()) {
-						int sec = t.getSeconds() - t.getRemainingTime();
-						toast("Timer " + obj + " is paused, " + sec + " remain.");
-					} else {
-						toast("Timer " + obj + " is not running.");
-					}
-				}
-				break;
-			case NONE:
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	
-	/** Utility method for putting up a generic toast message.
-	 * 
-	 * @param str The string to use for the toast message.
-	 */
-	private void toast(final String str) {
-		Context c = this.getContext();
-		Toast t = Toast.makeText(c, str, Toast.LENGTH_SHORT);
-		float density = c.getResources().getDisplayMetrics().density;
-		t.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, (int) (TOAST_MESSAGE_TOP_OFFSET * density));
-		t.show();
-	}
-	
 	/** Getter for mHandler.
 	 * 
 	 * @return The handler associated with this connection.
@@ -4332,7 +4139,12 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	public final ArrayList<Plugin> getPlugins() {
 		return mPlugins;
 	}
-	
+
+	@Override
+	public ConnectionSettingsPlugin getConnectionSettings() {
+		return mSettings;
+	}
+
 	/** Getter for mPump.
 	 * 
 	 * @return the data pump for this connection.
