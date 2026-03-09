@@ -43,7 +43,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
-import android.os.RemoteException;
 import android.text.ClipboardManager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -2481,12 +2480,7 @@ activity = GetActivity()
 				//Message msg = mMainWindowHandler.obtainMessage(MainWindow.MESSAGE_PLUGINXCALLS,foo.getString());
 				
 				String ret;
-				try {
-					ret = mParent.getPluginOption(mOwner, key);
-				} catch (RemoteException e) {
-					L.pushNil();
-					return 1;
-				}
+				ret = mParent.getPluginOption(mOwner, key);
 				
 				//msg.getData().putString("PLUGIN",mOwner);
 				//msg.getData().putString("FUNCTION", function);
@@ -2933,7 +2927,7 @@ end
 		}
 
 		@Override
-		public int execute() throws LuaException, RemoteException {
+		public int execute() throws LuaException {
 			String desired = this.getParam(2).getString();
 			boolean result = mParent.isPluginInstalled(desired);
 			//parent.isPluginInstalled();
@@ -2967,7 +2961,7 @@ WindowBroadcast("adjustZOrder","now")
 		}
 
 		@Override
-		public int execute() throws LuaException, RemoteException {
+		public int execute() throws LuaException {
 			String function = this.getParam(2).getString();
 			String data = this.getParam(3).getString();
 			mParent.windowBroadcast(function, data);
@@ -3002,7 +2996,7 @@ WindowCall("button_window","loadButtonSet","default")
 		}
 
 		@Override
-		public int execute() throws LuaException, RemoteException {
+		public int execute() throws LuaException {
 			String window = this.getParam(2).getString();
 			String function = this.getParam(3).getString();
 			String data = this.getParam(4).getString();
@@ -3039,7 +3033,7 @@ end
 			}
 
 			@Override
-			public int execute() throws LuaException, RemoteException {
+			public int execute() throws LuaException {
 				String desired = this.getParam(2).getString();
 				String function = this.getParam(2).getString();
 				boolean ret = mParent.checkWindowSupports(desired,function);

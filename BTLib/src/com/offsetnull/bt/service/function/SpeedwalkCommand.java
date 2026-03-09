@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import android.os.RemoteException;
-
 import com.offsetnull.bt.service.Connection;
 import com.offsetnull.bt.speedwalk.DirectionData;
 

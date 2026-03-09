@@ -26,8 +26,6 @@ package org.keplerproject.luajava;
 
 import java.io.UnsupportedEncodingException;
 
-import android.os.RemoteException;
-
 /**
  * JavaFunction is a class that can be used to implement a Lua function in Java.
  * JavaFunction is an abstract class, so in order to use it you must extend this 
@@ -49,10 +47,9 @@ public abstract class JavaFunction
 	 * always the first parameter received. Values passed back as results
 	 * of the function must be pushed onto the stack.
 	 * @return The number of values pushed onto the stack.
-	 * @throws RemoteException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
-	public abstract int execute() throws LuaException, RemoteException, UnsupportedEncodingException;
+	public abstract int execute() throws LuaException, UnsupportedEncodingException;
 	
 	/**
 	 * Constructor that receives a LuaState.

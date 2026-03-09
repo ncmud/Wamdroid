@@ -55,7 +55,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
@@ -3203,7 +3202,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 
 	@Override
-	public boolean isPluginInstalled(String desired) throws RemoteException {
+	public boolean isPluginInstalled(String desired) {
 		boolean ret = service.isPluginInstalled(desired);
 		return ret;
 	}
@@ -3235,7 +3234,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 
 	@Override
-	public String getPluginOption(String plugin, String value) throws RemoteException {
+	public String getPluginOption(String plugin, String value) {
 		String ret = service.getPluginOption(plugin,value);
 		return ret;
 	}

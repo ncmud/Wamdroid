@@ -1,7 +1,5 @@
 package com.offsetnull.bt.service.function;
 
-import android.os.RemoteException;
-
 import com.offsetnull.bt.service.Connection;
 import com.offsetnull.bt.service.plugin.settings.BaseOption;
 
