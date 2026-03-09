@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -552,481 +553,9 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
         
 		
 		//assign my handler
-		myhandler = new Handler() {
-			public void handleMessage(Message msg) {
-				//EditText input_box = (EditText)findViewById(R.id.textinput);
-				switch(msg.what) {
-				case MESSAGE_SHOWREGEXWARNING:
-					mShowRegexWarning = (msg.arg1 == 1) ? true : false;
-					break;
-				case MESSAGE_CLOSEOPTIONSDIALOG:
-					closeOptionsDialog();
-					break;
-				case MESSAGE_EXPORTSETTINGS:
-					MainWindow.this.doExportSettings((String)msg.obj);
-					break;
-				case MESSAGE_DORESETSETTINGS:
-					MainWindow.this.doResetSettings();
-					break;
-				case MESSAGE_USECOMPATIBILITYMODE:
-					MainWindow.this.setUseCompatibilityMode((msg.arg1 == 1) ? true : false);
-					break;
-				case MESSAGE_USESUGGESTIONS:
-					MainWindow.this.setUseSuggestions( (msg.arg1 == 1) ? true : false);
-					break;
-				case MESSAGE_USEFULLSCREENEDITOR:
-					MainWindow.this.setUseFullscreenEditor((msg.arg1 == 1) ? true : false);
-					break;
-				case MESSAGE_SETKEEPSCREENON:
-					MainWindow.this.setKeepScreenOn((msg.arg1 == 1) ? true : false);
-					break;
-				case MESSAGE_SETORIENTATION:
-					MainWindow.this.setOrientation(msg.arg1);
-					break;
-				case MESSAGE_DISPLAYLUAERROR:
-					MainWindow.this.dispatchLuaError((String)msg.obj);
-					break;
-				case MESSAGE_POPMENUSTACK:
-					MainWindow.this.popMenuStack();
-					break;
-				case MESSAGE_PUSHMENUSTACK:
-					MainWindow.this.pushMenuStack((String)msg.obj,msg.getData().getString("CALLBACK"));
-					break;
-				case MESSAGE_SETKEEPLAST:
-					MainWindow.this.setKeepLast((msg.arg1 == 1) ? true : false);
-					break;
-				case MESSAGE_MARKSETTINGSDIRTY:
-					MainWindow.this.markSettingsDirty();
-					break;
-				case MESSAGE_MARKWINDOWSDIRTY:
-					MainWindow.this.markWindowsDirty();
-					break;
-				case MESSAGE_WINDOWBUFFERMAXCHANGED:
-					String pluginl = msg.getData().getString("PLUGIN");
-					String window = msg.getData().getString("WINDOW");
-					int amount = msg.arg1;
-					service.updateWindowBufferMaxValue(pluginl,window,amount);
-					break;
-				case MESSAGE_PLUGINXCALLS:
-					//Map map = (Map)msg.obj;
-					String plugin = msg.getData().getString("PLUGIN");
-					String function = msg.getData().getString("FUNCTION");
-					service.pluginXcallS(plugin,function,(String)msg.obj);
-					break;
-				case MESSAGE_ADDOPTIONCALLBACK:
-					Bundle datab = msg.getData();
-//					String pWin,String title,String callback,Drawable res
-					ScriptOptionCallback cb = null;
-					if(msg.obj instanceof Drawable) {
-						cb = new ScriptOptionCallback(datab.getString("window"),
-								datab.getString("title"),
-								datab.getString("funcName"),
-								(Drawable)msg.obj);
-					} else {
-						cb = new ScriptOptionCallback(datab.getString("window"),
-								datab.getString("title"),
-								datab.getString("funcName"),
-								null);
-					}
-					scriptCallbacks.add(0, cb);
-					//if(supportsActionBar()) {
-						MainWindow.this.invalidateOptionsMenu();
-					//}
-					break;
-				case MESSAGE_INITIALIZEWINDOWS:
-					//Log.e("WINDOW","INITIALIZE WINDOWS CALLED");
-					//windowsInitialized = false;
-					scriptCallbacks.clear();
-					//if(supportsActionBar()) {
-						MainWindow.this.invalidateOptionsMenu();
-					//}
-					
-					loadSettings();
-					MainWindow.this.initiailizeWindows();
-					
-					service.initXfer();
-					break;
-				case MESSAGE_SWITCH:
-					//mConnection.
-					MainWindow.this.unbindService(mConnection);
-					
-					//MainWindow.this.bin
-					String serviceBindAction = ConfigurationLoader.getConfigurationValue("serviceBindAction", MainWindow.this);
-					SharedPreferences.Editor edit = MainWindow.this.getSharedPreferences("CONNECT_TO", Context.MODE_PRIVATE).edit();
-					edit.putString("CONNECT_TO", MainWindow.this.getIntent().getStringExtra("DISPLAY"));
-					edit.commit();
-					MainWindow.this.bindService(new Intent(serviceBindAction, null, MainWindow.this.getApplicationContext(), StellarService.class),mConnection, 0);
-					//MainWindow.this.bindService(n, conn, flags)
-					
-					break;
-				case MESSAGE_TRIGGERSTR:
-					
-					break;
-				case MESSAGE_TESTLUA:
-					//LuaState exist = LuaStateFactory.getExistingState(msg.arg1);
-					//exist.LdoString("Note(\"Fooooooo\")");
-					break;
-				case MESSAGE_LAUNCHURL:
-					Pattern urlPattern = Pattern.compile(TextTree.urlFinderString);
-					Matcher urlMatcher = urlPattern.matcher((String)msg.obj);
-					if(urlMatcher.find()) {
-						String url = "";
-						if(urlMatcher.group(1) == null || urlMatcher.group(1).equals("")) {
-							if(urlMatcher.group(2) == null || !urlMatcher.group(2).equals("")) {
-								url = "http://"+urlMatcher.group(2);
-							}
-						} else {
-							url = urlMatcher.group(1);
-						}
-						if(!url.equals("")) {
-							Intent web_help = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
-							startActivity(web_help);
-						}
-					}
-					break;
-				case MESSAGE_RENAWS:
-					//try {
-						//TODO: NAWS WORK
-						//service.setDisplayDimensions(screen2.CALCULATED_LINESINWINDOW, screen2.CALCULATED_ROWSINWINDOW);
-					//} catch (RemoteException e5) {
-						
-						//e5.printStackTrace();
-					//}
-					break;
-				case MESSAGE_CLEARINPUTWINDOW:
-					ClearKeyboard();
-					break;
-				case MESSAGE_CLOSEINPUTWINDOW:
-				case MESSAGE_HIDEKEYBOARD:
-					HideKeyboard();
-					break;
-				case MESSAGE_LINEBREAK:
-					//screen2.setLineBreaks((Integer)msg.obj);
-					break;
-				case MESSAGE_SENDBUTTONDATA:
-					
-					try {
-						service.sendData(((String)msg.obj).getBytes(service.getEncoding()));
+		myhandler = new MainWindowHandler(this);
+		extporthandler = new ExportHandler(this);
 
-					} catch (UnsupportedEncodingException e) {
-
-						e.printStackTrace();
-					}
-					//screen2.jumpToZero();
-					break;
-				case MESSAGE_DODISCONNECT:
-					//Log.e("WINDOW","SHOW MESSAGE");
-					DoDisconnectMessage((String)msg.obj);
-					break;
-				case MESSAGE_KEYBOARD:
-					boolean add = (msg.arg2 > 0) ? true : false;
-					boolean popup = (msg.arg1 > 0) ? true : false;
-					String text = (String)msg.obj;
-					
-					if(!add) {
-						//reset text
-						mInputBox.setText(text);
-						mInputBox.setSelection(mInputBox.getText().toString().length());
-					} else {
-						//append text
-						mInputBox.setText(mInputBox.getText().toString() + text);
-						mInputBox.setSelection(mInputBox.getText().toString().length());
-					}
-					
-					if(popup) {
-						InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-						mgr.showSoftInput(mInputBox, InputMethodManager.SHOW_FORCED);
-						mInputBox.setOnTouchListener(null);
-					}
-				
-					break;
-				case MESSAGE_DOSCREENMODE:
-					boolean fullscreen = false;
-					if(msg.arg1 == 1) {
-						fullscreen = true;
-					}
-					boolean needschange = false;
-					if(fullscreen && !isFullScreen) {
-						//switch to fullscreen.
-						
-							//service.setFullScreen(true);
-						isFullScreen = true;
-					    MainWindow.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-					    MainWindow.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-					    needschange = true;
-						
-					}
-					
-					if(!fullscreen && isFullScreen) {
-						//switch to non full screen.
-						
-						//service.setFullScreen(false);
-						isFullScreen = false;
-						MainWindow.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-						MainWindow.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-					
-						//MainWindow.this.findViewById(R.id.window_container).requestLayout();
-						needschange = true;
-						
-					}
-					
-					if(needschange) {
-						
-						//screen2.doDelayedDraw(100);
-						
-					}
-					
-					//try {
-					//	this.sendMessage(this.obtainMessage(MESSAGE_CHANGEBUTTONSET,service.getLastSelectedSet()));
-					//} catch (RemoteException e5) {
-					//	throw new RuntimeException(e5);
-					//}
-					
-					
-					break;
-				case MESSAGE_BELLTOAST:
-					Toast belltoast = Toast.makeText(MainWindow.this, "No actual message.", Toast.LENGTH_LONG);
-					//t.setView(view);
-					
-					
-					LayoutInflater li = (LayoutInflater) MainWindow.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					View v = li.inflate(R.layout.bell_toast, null);
-					//TextView tv = (TextView) v.findViewById(R.id.message);
-					//tv.setText(message);
-					
-					belltoast.setView(v);
-					float density = MainWindow.this.getResources().getDisplayMetrics().density;
-					belltoast.setGravity(Gravity.TOP|Gravity.RIGHT, (int)(40*density), (int)(30*density));
-					belltoast.setDuration(Toast.LENGTH_SHORT);
-					belltoast.show();
-					break;
-				case MESSAGE_LOCKUNDONE:
-					//MainWindow.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-					//screen2.forceDraw();
-					//screen2.invalidate();
-					//Log.e("WINDOW","ATTEMPTING TO FORCE REDRAW THE SCREEN");
-					break;
-				case MESSAGE_HFPRESS:
-					DoHapticFeedbackPress();
-					break;
-				case MESSAGE_HFFLIP:
-					DoHapticFeedbackFlip();
-					break;
-				case MESSAGE_SHOWDIALOG:
-					AlertDialog.Builder dbuilder = new AlertDialog.Builder(MainWindow.this);
-					dbuilder.setTitle("ERROR");
-					dbuilder.setMessage((String)msg.obj);
-					dbuilder.setCancelable(true);
-					//dbuilder.set
-					dbuilder.setPositiveButton("Close Window", new DialogInterface.OnClickListener() {
-						
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-							cleanExit();
-							MainWindow.this.finish();
-							
-						}
-					});
-					
-					AlertDialog dlg = dbuilder.create();
-					dlg.show();
-					
-					break;
-				case MESSAGE_SHOWTOAST:
-					//Toast t = null;
-					//if(msg.arg1 == 1) {
-					//	t = Toast.makeText(MainWindow.this, (String)msg.obj, Toast.LENGTH_LONG);
-					//} else {
-					//	t = Toast.makeText(MainWindow.this, (String)msg.obj, Toast.LENGTH_SHORT);
-					//}
-					//t.show();
-
-					Snackbar bar = Snackbar.make(findViewById(R.id.window_container), (String)msg.obj,
-							Snackbar.LENGTH_INDEFINITE)
-							.setAction(android.R.string.ok,new View.OnClickListener() {
-								@Override
-								public void onClick(View view) {
-
-								}});
-
-					View snackbarView = bar.getView();
-					TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-					textView.setMaxLines(5);  // show multiple line
-					bar.show();
-					break;
-
-				case MESSAGE_DOHAPTICFEEDBACK:
-					DoHapticFeedback();
-					break;
-				case MESSAGE_DIRTYEXITNOW:
-					//the service via an entered command ".closewindow" or something, to bypass the window asking if you want to close
-					dirtyExit();
-					MainWindow.this.finish();
-					break;
-				case MESSAGE_COLORDEBUG:
-					//execute color debug.
-					//screen2.setColorDebugMode(msg.arg1);
-					//TODO: COLOR DEBUG MODE
-					break;
-				case MESSAGE_XMLERROR:
-					//got an xml error, need to display it.
-					String xmlerror = (String)msg.obj;
-					AlertDialog.Builder builder = new AlertDialog.Builder(MainWindow.this);
-					builder.setPositiveButton("Acknowledge.", new DialogInterface.OnClickListener() {
-						
-						public void onClick(DialogInterface arg0, int arg1) {
-							arg0.dismiss();
-						}
-					});
-					
-					builder.setMessage("XML Error: " + xmlerror + "\nSettings have not been loaded.");
-					builder.setTitle("Problem with XML File.");
-					
-					
-					//tvtmp.setText("TESTING");
-					//builder.setView(tvtmp);
-					
-					
-					AlertDialog error = builder.create();
-					error.show();
-					TextView tvtmp = (TextView)error.findViewById(android.R.id.message);
-					tvtmp.setTypeface(Typeface.MONOSPACE);
-					
-					break;
-				case MESSAGE_SAVEERROR:
-					String saveerror = (String)msg.obj;
-					AlertDialog.Builder sbuilder = new AlertDialog.Builder(MainWindow.this);
-					sbuilder.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
-						
-						public void onClick(DialogInterface arg0, int arg1) {
-							arg0.dismiss();
-						}
-					});
-					
-					sbuilder.setMessage(saveerror + "\nSettings have not been saved.");
-					sbuilder.setTitle("Error Saving Settings");
-					
-					
-					//tvtmp.setText("TESTING");
-					//builder.setView(tvtmp);
-					
-					
-					AlertDialog serror = sbuilder.create();
-					serror.show();
-					TextView stvtmp = (TextView)serror.findViewById(android.R.id.message);
-					stvtmp.setTypeface(Typeface.MONOSPACE);
-					break;
-				case MESSAGE_PLUGINSAVEERROR:
-					String pserror = (String)msg.obj;
-					
-					AlertDialog.Builder psbuilder = new AlertDialog.Builder(MainWindow.this);
-					psbuilder.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
-						
-						public void onClick(DialogInterface arg0, int arg1) {
-							arg0.dismiss();
-						}
-					});
-					
-					psbuilder.setMessage(pserror + "\nPlugin has not been saved.");
-					psbuilder.setTitle("Error Saving Plugin");
-					
-					
-					//tvtmp.setText("TESTING");
-					//builder.setView(tvtmp);
-					
-					
-					AlertDialog pserrord = psbuilder.create();
-					pserrord.show();
-					TextView pstvtmp = (TextView)pserrord.findViewById(android.R.id.message);
-					pstvtmp.setTypeface(Typeface.MONOSPACE);
-					break;
-				case MESSAGE_LOADSETTINGS:
-					//the service is connected at this point, so the service is alive and settings are loaded
-					//Log.e("WINDOW","CALLBACK INDICATED RELOADING OF SETTINGS");
-					loadSettings();
-					break;
-				case MESSAGE_PROCESSINPUTWINDOW:
-					
-					//input_box.debug(5);
-					
-					String pdata = mInputBox.getText().toString();
-					history.addCommand(pdata);
-					Character cr = new Character((char)13);
-					Character lf = new Character((char)10);
-					String crlf = cr.toString() + lf.toString();
-					pdata = pdata.concat(crlf);
-					//ByteBuffer buf = ByteBuffer.allocate(pdata.length());
-					ByteBuffer buf = null;
-					try {
-						String enc = service.getEncoding();
-						if(enc == null) {
-							Log.e("uh oh","null pointer incoming");
-						}
-						
-						buf = ByteBuffer.allocate(pdata.getBytes(service.getEncoding()).length);
-					} catch (UnsupportedEncodingException e2) {
-						throw new RuntimeException(e2);
-					}
-					
-					
-					try {
-						buf.put(pdata.getBytes(service.getEncoding()));
-					} catch (UnsupportedEncodingException e) {
-
-						e.printStackTrace();
-					}
-				
-					buf.rewind();
-				
-					byte[] buffbytes = buf.array();
-
-					service.sendData(buffbytes);
-					myhandler.sendEmptyMessage(MainWindow.MESSAGE_RESETINPUTWINDOW);
-					break;
-				case MESSAGE_RESETINPUTWINDOW:
-					//Log.e("WINDOW","Attempting to reset input bar.");
-					
-					//try {
-						if(isKeepLast) {
-							mInputBox.setSelection(0, mInputBox.getText().length());
-							mInputBox.selectAll();
-							historyWidgetKept = true;
-						} else {
-							mInputBox.clearComposingText();
-							mInputBox.setText("");
-						}
-						
-						com.offsetnull.bt.window.Window w = (com.offsetnull.bt.window.Window) MainWindow.this.findViewById(MAIN_WINDOW_ID);
-						if(w != null) {
-							w.jumpToStart();
-						}
-						//} catch (RemoteException e1) {
-					//	throw new RuntimeException(e1);
-					//}
-					break;
-				case MESSAGE_RAWINC:
-					
-					//screen2.addBytes((byte[])msg.obj, false);
-					
-					break;
-				case MESSAGE_BUFFINC:
-					
-					//screen2.addBytes((byte[])msg.obj,true);
-					break;
-				case MESSAGE_SENDDATAOUT:
-					service.sendData((byte[])msg.obj);
-					//screen2.jumpToZero();
-					
-					
-					break;
-				default:
-					break;
-				}
-			}
-
-			
-		};
-		
 		//EditText input_box = (EditText)findViewById(R.id.textinput);
 		//BetterEditText bet = (BetterEditText)input_box;
 		//bet.setListener(mInputBarAnimationListener);
@@ -1333,7 +862,478 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 
 		//Log.e("Window","End on create");
 	}
-	
+
+	private void handleMainMessage(Message msg) {
+		//EditText input_box = (EditText)findViewById(R.id.textinput);
+		switch(msg.what) {
+		case MESSAGE_SHOWREGEXWARNING:
+			mShowRegexWarning = (msg.arg1 == 1) ? true : false;
+			break;
+		case MESSAGE_CLOSEOPTIONSDIALOG:
+			closeOptionsDialog();
+			break;
+		case MESSAGE_EXPORTSETTINGS:
+			doExportSettings((String)msg.obj);
+			break;
+		case MESSAGE_DORESETSETTINGS:
+			doResetSettings();
+			break;
+		case MESSAGE_USECOMPATIBILITYMODE:
+			setUseCompatibilityMode((msg.arg1 == 1) ? true : false);
+			break;
+		case MESSAGE_USESUGGESTIONS:
+			setUseSuggestions( (msg.arg1 == 1) ? true : false);
+			break;
+		case MESSAGE_USEFULLSCREENEDITOR:
+			setUseFullscreenEditor((msg.arg1 == 1) ? true : false);
+			break;
+		case MESSAGE_SETKEEPSCREENON:
+			setKeepScreenOn((msg.arg1 == 1) ? true : false);
+			break;
+		case MESSAGE_SETORIENTATION:
+			setOrientation(msg.arg1);
+			break;
+		case MESSAGE_DISPLAYLUAERROR:
+			dispatchLuaError((String)msg.obj);
+			break;
+		case MESSAGE_POPMENUSTACK:
+			popMenuStack();
+			break;
+		case MESSAGE_PUSHMENUSTACK:
+			pushMenuStack((String)msg.obj,msg.getData().getString("CALLBACK"));
+			break;
+		case MESSAGE_SETKEEPLAST:
+			setKeepLast((msg.arg1 == 1) ? true : false);
+			break;
+		case MESSAGE_MARKSETTINGSDIRTY:
+			markSettingsDirty();
+			break;
+		case MESSAGE_MARKWINDOWSDIRTY:
+			markWindowsDirty();
+			break;
+		case MESSAGE_WINDOWBUFFERMAXCHANGED:
+			String pluginl = msg.getData().getString("PLUGIN");
+			String window = msg.getData().getString("WINDOW");
+			int amount = msg.arg1;
+			service.updateWindowBufferMaxValue(pluginl,window,amount);
+			break;
+		case MESSAGE_PLUGINXCALLS:
+			//Map map = (Map)msg.obj;
+			String plugin = msg.getData().getString("PLUGIN");
+			String function = msg.getData().getString("FUNCTION");
+			service.pluginXcallS(plugin,function,(String)msg.obj);
+			break;
+		case MESSAGE_ADDOPTIONCALLBACK:
+			Bundle datab = msg.getData();
+//			String pWin,String title,String callback,Drawable res
+			ScriptOptionCallback cb = null;
+			if(msg.obj instanceof Drawable) {
+				cb = new ScriptOptionCallback(datab.getString("window"),
+						datab.getString("title"),
+						datab.getString("funcName"),
+						(Drawable)msg.obj);
+			} else {
+				cb = new ScriptOptionCallback(datab.getString("window"),
+						datab.getString("title"),
+						datab.getString("funcName"),
+						null);
+			}
+			scriptCallbacks.add(0, cb);
+			//if(supportsActionBar()) {
+				invalidateOptionsMenu();
+			//}
+			break;
+		case MESSAGE_INITIALIZEWINDOWS:
+			//Log.e("WINDOW","INITIALIZE WINDOWS CALLED");
+			//windowsInitialized = false;
+			scriptCallbacks.clear();
+			//if(supportsActionBar()) {
+				invalidateOptionsMenu();
+			//}
+
+			loadSettings();
+			initiailizeWindows();
+
+			service.initXfer();
+			break;
+		case MESSAGE_SWITCH:
+			//mConnection.
+			unbindService(mConnection);
+
+			//MainWindow.this.bin
+			String serviceBindAction = ConfigurationLoader.getConfigurationValue("serviceBindAction", MainWindow.this);
+			SharedPreferences.Editor edit = getSharedPreferences("CONNECT_TO", Context.MODE_PRIVATE).edit();
+			edit.putString("CONNECT_TO", getIntent().getStringExtra("DISPLAY"));
+			edit.commit();
+			bindService(new Intent(serviceBindAction, null, getApplicationContext(), StellarService.class),mConnection, 0);
+			//MainWindow.this.bindService(n, conn, flags)
+
+			break;
+		case MESSAGE_TRIGGERSTR:
+
+			break;
+		case MESSAGE_TESTLUA:
+			//LuaState exist = LuaStateFactory.getExistingState(msg.arg1);
+			//exist.LdoString("Note(\"Fooooooo\")");
+			break;
+		case MESSAGE_LAUNCHURL:
+			Pattern urlPattern = Pattern.compile(TextTree.urlFinderString);
+			Matcher urlMatcher = urlPattern.matcher((String)msg.obj);
+			if(urlMatcher.find()) {
+				String url = "";
+				if(urlMatcher.group(1) == null || urlMatcher.group(1).equals("")) {
+					if(urlMatcher.group(2) == null || !urlMatcher.group(2).equals("")) {
+						url = "http://"+urlMatcher.group(2);
+					}
+				} else {
+					url = urlMatcher.group(1);
+				}
+				if(!url.equals("")) {
+					Intent web_help = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+					startActivity(web_help);
+				}
+			}
+			break;
+		case MESSAGE_RENAWS:
+			//try {
+				//TODO: NAWS WORK
+				//service.setDisplayDimensions(screen2.CALCULATED_LINESINWINDOW, screen2.CALCULATED_ROWSINWINDOW);
+			//} catch (RemoteException e5) {
+
+				//e5.printStackTrace();
+			//}
+			break;
+		case MESSAGE_CLEARINPUTWINDOW:
+			ClearKeyboard();
+			break;
+		case MESSAGE_CLOSEINPUTWINDOW:
+		case MESSAGE_HIDEKEYBOARD:
+			HideKeyboard();
+			break;
+		case MESSAGE_LINEBREAK:
+			//screen2.setLineBreaks((Integer)msg.obj);
+			break;
+		case MESSAGE_SENDBUTTONDATA:
+
+			try {
+				service.sendData(((String)msg.obj).getBytes(service.getEncoding()));
+
+			} catch (UnsupportedEncodingException e) {
+
+				e.printStackTrace();
+			}
+			//screen2.jumpToZero();
+			break;
+		case MESSAGE_DODISCONNECT:
+			//Log.e("WINDOW","SHOW MESSAGE");
+			DoDisconnectMessage((String)msg.obj);
+			break;
+		case MESSAGE_KEYBOARD:
+			boolean add = (msg.arg2 > 0) ? true : false;
+			boolean popup = (msg.arg1 > 0) ? true : false;
+			String text = (String)msg.obj;
+
+			if(!add) {
+				//reset text
+				mInputBox.setText(text);
+				mInputBox.setSelection(mInputBox.getText().toString().length());
+			} else {
+				//append text
+				mInputBox.setText(mInputBox.getText().toString() + text);
+				mInputBox.setSelection(mInputBox.getText().toString().length());
+			}
+
+			if(popup) {
+				InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				mgr.showSoftInput(mInputBox, InputMethodManager.SHOW_FORCED);
+				mInputBox.setOnTouchListener(null);
+			}
+
+			break;
+		case MESSAGE_DOSCREENMODE:
+			boolean fullscreen = false;
+			if(msg.arg1 == 1) {
+				fullscreen = true;
+			}
+			boolean needschange = false;
+			if(fullscreen && !isFullScreen) {
+				//switch to fullscreen.
+
+					//service.setFullScreen(true);
+				isFullScreen = true;
+			    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+			    needschange = true;
+
+			}
+
+			if(!fullscreen && isFullScreen) {
+				//switch to non full screen.
+
+				//service.setFullScreen(false);
+				isFullScreen = false;
+				getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+				getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+				//MainWindow.this.findViewById(R.id.window_container).requestLayout();
+				needschange = true;
+
+			}
+
+			if(needschange) {
+
+				//screen2.doDelayedDraw(100);
+
+			}
+
+			//try {
+			//	this.sendMessage(this.obtainMessage(MESSAGE_CHANGEBUTTONSET,service.getLastSelectedSet()));
+			//} catch (RemoteException e5) {
+			//	throw new RuntimeException(e5);
+			//}
+
+
+			break;
+		case MESSAGE_BELLTOAST:
+			Toast belltoast = Toast.makeText(MainWindow.this, "No actual message.", Toast.LENGTH_LONG);
+			//t.setView(view);
+
+
+			LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View v = li.inflate(R.layout.bell_toast, null);
+			//TextView tv = (TextView) v.findViewById(R.id.message);
+			//tv.setText(message);
+
+			belltoast.setView(v);
+			float density = getResources().getDisplayMetrics().density;
+			belltoast.setGravity(Gravity.TOP|Gravity.RIGHT, (int)(40*density), (int)(30*density));
+			belltoast.setDuration(Toast.LENGTH_SHORT);
+			belltoast.show();
+			break;
+		case MESSAGE_LOCKUNDONE:
+			//MainWindow.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			//screen2.forceDraw();
+			//screen2.invalidate();
+			//Log.e("WINDOW","ATTEMPTING TO FORCE REDRAW THE SCREEN");
+			break;
+		case MESSAGE_HFPRESS:
+			DoHapticFeedbackPress();
+			break;
+		case MESSAGE_HFFLIP:
+			DoHapticFeedbackFlip();
+			break;
+		case MESSAGE_SHOWDIALOG:
+			AlertDialog.Builder dbuilder = new AlertDialog.Builder(MainWindow.this);
+			dbuilder.setTitle("ERROR");
+			dbuilder.setMessage((String)msg.obj);
+			dbuilder.setCancelable(true);
+			//dbuilder.set
+			dbuilder.setPositiveButton("Close Window", new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+					cleanExit();
+					finish();
+
+				}
+			});
+
+			AlertDialog dlg = dbuilder.create();
+			dlg.show();
+
+			break;
+		case MESSAGE_SHOWTOAST:
+			//Toast t = null;
+			//if(msg.arg1 == 1) {
+			//	t = Toast.makeText(MainWindow.this, (String)msg.obj, Toast.LENGTH_LONG);
+			//} else {
+			//	t = Toast.makeText(MainWindow.this, (String)msg.obj, Toast.LENGTH_SHORT);
+			//}
+			//t.show();
+
+			Snackbar bar = Snackbar.make(findViewById(R.id.window_container), (String)msg.obj,
+					Snackbar.LENGTH_INDEFINITE)
+					.setAction(android.R.string.ok,new View.OnClickListener() {
+						@Override
+						public void onClick(View view) {
+
+						}});
+
+			View snackbarView = bar.getView();
+			TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+			textView.setMaxLines(5);  // show multiple line
+			bar.show();
+			break;
+
+		case MESSAGE_DOHAPTICFEEDBACK:
+			DoHapticFeedback();
+			break;
+		case MESSAGE_DIRTYEXITNOW:
+			//the service via an entered command ".closewindow" or something, to bypass the window asking if you want to close
+			dirtyExit();
+			finish();
+			break;
+		case MESSAGE_COLORDEBUG:
+			//execute color debug.
+			//screen2.setColorDebugMode(msg.arg1);
+			//TODO: COLOR DEBUG MODE
+			break;
+		case MESSAGE_XMLERROR:
+			//got an xml error, need to display it.
+			String xmlerror = (String)msg.obj;
+			AlertDialog.Builder builder = new AlertDialog.Builder(MainWindow.this);
+			builder.setPositiveButton("Acknowledge.", new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface arg0, int arg1) {
+					arg0.dismiss();
+				}
+			});
+
+			builder.setMessage("XML Error: " + xmlerror + "\nSettings have not been loaded.");
+			builder.setTitle("Problem with XML File.");
+
+
+			//tvtmp.setText("TESTING");
+			//builder.setView(tvtmp);
+
+
+			AlertDialog error = builder.create();
+			error.show();
+			TextView tvtmp = (TextView)error.findViewById(android.R.id.message);
+			tvtmp.setTypeface(Typeface.MONOSPACE);
+
+			break;
+		case MESSAGE_SAVEERROR:
+			String saveerror = (String)msg.obj;
+			AlertDialog.Builder sbuilder = new AlertDialog.Builder(MainWindow.this);
+			sbuilder.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface arg0, int arg1) {
+					arg0.dismiss();
+				}
+			});
+
+			sbuilder.setMessage(saveerror + "\nSettings have not been saved.");
+			sbuilder.setTitle("Error Saving Settings");
+
+
+			//tvtmp.setText("TESTING");
+			//builder.setView(tvtmp);
+
+
+			AlertDialog serror = sbuilder.create();
+			serror.show();
+			TextView stvtmp = (TextView)serror.findViewById(android.R.id.message);
+			stvtmp.setTypeface(Typeface.MONOSPACE);
+			break;
+		case MESSAGE_PLUGINSAVEERROR:
+			String pserror = (String)msg.obj;
+
+			AlertDialog.Builder psbuilder = new AlertDialog.Builder(MainWindow.this);
+			psbuilder.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface arg0, int arg1) {
+					arg0.dismiss();
+				}
+			});
+
+			psbuilder.setMessage(pserror + "\nPlugin has not been saved.");
+			psbuilder.setTitle("Error Saving Plugin");
+
+
+			//tvtmp.setText("TESTING");
+			//builder.setView(tvtmp);
+
+
+			AlertDialog pserrord = psbuilder.create();
+			pserrord.show();
+			TextView pstvtmp = (TextView)pserrord.findViewById(android.R.id.message);
+			pstvtmp.setTypeface(Typeface.MONOSPACE);
+			break;
+		case MESSAGE_LOADSETTINGS:
+			//the service is connected at this point, so the service is alive and settings are loaded
+			//Log.e("WINDOW","CALLBACK INDICATED RELOADING OF SETTINGS");
+			loadSettings();
+			break;
+		case MESSAGE_PROCESSINPUTWINDOW:
+
+			//input_box.debug(5);
+
+			String pdata = mInputBox.getText().toString();
+			history.addCommand(pdata);
+			Character cr = new Character((char)13);
+			Character lf = new Character((char)10);
+			String crlf = cr.toString() + lf.toString();
+			pdata = pdata.concat(crlf);
+			//ByteBuffer buf = ByteBuffer.allocate(pdata.length());
+			ByteBuffer buf = null;
+			try {
+				String enc = service.getEncoding();
+				if(enc == null) {
+					Log.e("uh oh","null pointer incoming");
+				}
+
+				buf = ByteBuffer.allocate(pdata.getBytes(service.getEncoding()).length);
+			} catch (UnsupportedEncodingException e2) {
+				throw new RuntimeException(e2);
+			}
+
+
+			try {
+				buf.put(pdata.getBytes(service.getEncoding()));
+			} catch (UnsupportedEncodingException e) {
+
+				e.printStackTrace();
+			}
+
+			buf.rewind();
+
+			byte[] buffbytes = buf.array();
+
+			service.sendData(buffbytes);
+			myhandler.sendEmptyMessage(MainWindow.MESSAGE_RESETINPUTWINDOW);
+			break;
+		case MESSAGE_RESETINPUTWINDOW:
+			//Log.e("WINDOW","Attempting to reset input bar.");
+
+			//try {
+				if(isKeepLast) {
+					mInputBox.setSelection(0, mInputBox.getText().length());
+					mInputBox.selectAll();
+					historyWidgetKept = true;
+				} else {
+					mInputBox.clearComposingText();
+					mInputBox.setText("");
+				}
+
+				com.offsetnull.bt.window.Window w = (com.offsetnull.bt.window.Window) findViewById(MAIN_WINDOW_ID);
+				if(w != null) {
+					w.jumpToStart();
+				}
+				//} catch (RemoteException e1) {
+			//	throw new RuntimeException(e1);
+			//}
+			break;
+		case MESSAGE_RAWINC:
+
+			//screen2.addBytes((byte[])msg.obj, false);
+
+			break;
+		case MESSAGE_BUFFINC:
+
+			//screen2.addBytes((byte[])msg.obj,true);
+			break;
+		case MESSAGE_SENDDATAOUT:
+			service.sendData((byte[])msg.obj);
+			//screen2.jumpToZero();
+
+
+			break;
+		default:
+			break;
+		}
+	}
+
 	View.OnTouchListener mEditBoxTouchListener = new View.OnTouchListener() {
 		
 		@Override
@@ -1955,15 +1955,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 //	}
 
 
-	Handler extporthandler = new Handler() {
-		public void handleMessage(Message msg) {
-			//so we are kludging out the new button set dialog to just be a "string enterer" dialog.
-			//should be a full path /sdcard/something.xml
-			String filename = (String)msg.obj;
-			//Log.e("WINDOW","TRYING TO GET SERVICE TO WRITE A FILE FOR ME!");
-			service.exportSettingsToPath(filename);
-		}
-	};
+	Handler extporthandler = null;
 	
 	public void onBackPressed() {
 		//Log.e("WINDOW","BACK PRESSED TRAPPED");
@@ -3295,6 +3287,41 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 				break;
 			default:
 				break;
+		}
+	}
+
+	private static class MainWindowHandler extends Handler {
+		private final WeakReference<MainWindow> mActivity;
+
+		MainWindowHandler(MainWindow activity) {
+			mActivity = new WeakReference<>(activity);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			MainWindow self = mActivity.get();
+			if (self == null) {
+				return;
+			}
+			self.handleMainMessage(msg);
+		}
+	}
+
+	private static class ExportHandler extends Handler {
+		private final WeakReference<MainWindow> mActivity;
+
+		ExportHandler(MainWindow activity) {
+			mActivity = new WeakReference<>(activity);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			MainWindow self = mActivity.get();
+			if (self == null) {
+				return;
+			}
+			String filename = (String) msg.obj;
+			self.service.exportSettingsToPath(filename);
 		}
 	}
 }
