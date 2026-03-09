@@ -13,12 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.pm.ServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,8 +32,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteCallbackList;
-import android.os.RemoteException;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -46,7 +44,7 @@ import com.offsetnull.bt.service.plugin.settings.SettingsGroup;
 import com.offsetnull.bt.settings.ConfigurationLoader;
 import com.offsetnull.bt.alias.AliasData;
 
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import dalvik.system.PathClassLoader;
 
@@ -99,17 +97,29 @@ public class StellarService extends Service {
 	/** The currently "Selected" connection. */
 	private String mConnectionClutch = "";
 	/** The callback list of MainWindow activities that have bound to the Service. */
-	private RemoteCallbackList<IConnectionBinderCallback> mCallbacks = new RemoteCallbackList<IConnectionBinderCallback>();
+	private final List<ConnectionCallback> mCallbacks = new ArrayList<ConnectionCallback>();
 	/** The callback list of Launcher activities that have bound to the Service. */
-	private RemoteCallbackList<ILauncherCallback> mLauncherCallbacks = new RemoteCallbackList<ILauncherCallback>();
+	private final List<LauncherCallback> mLauncherCallbacks = new ArrayList<LauncherCallback>();
 	/** The remote callback target. */
-	private IConnectionBinder.Stub mBinder = new ServiceBinder();
-	
+	/** The local binder for in-process binding. */
+	private final LocalBinder mLocalBinder = new LocalBinder();
+
 	static {
-		System.loadLibrary("sqlite3");
-		System.loadLibrary("lua");
+		try {
+			System.loadLibrary("sqlite3");
+			System.loadLibrary("lua");
+		} catch (UnsatisfiedLinkError e) {
+			Log.e("MUDWammer", "Native Lua libraries not available", e);
+		}
 	}
-	
+
+	/** Binder for in-process (local) binding, replacing AIDL IPC. */
+	public class LocalBinder extends android.os.Binder {
+		public StellarService getService() {
+			return StellarService.this;
+		}
+	}
+
 	@Override
 	public void onLowMemory() {
 		//Log.e("SERVICE","The service has been requested to shore up memory usage, potentially going to be killed.");
@@ -228,18 +238,11 @@ public class StellarService extends Service {
 		//attempt to display the disconnection dialog.
 		if (c.getDisplay().equals(mConnectionClutch)) {
 		
-			final int n = mCallbacks.beginBroadcast();
-			for (int i = 0; i < n; i++) {
-				try {
-					mCallbacks.getBroadcastItem(i).doDisconnectNotice(c.getDisplay());
-				} catch (RemoteException e) {
-					throw new RuntimeException(e);
-				}
-				//notify listeners that data can be read
+			for (ConnectionCallback cb : mCallbacks) {
+				cb.doDisconnectNotice(c.getDisplay());
 			}
-			mCallbacks.finishBroadcast();
-			
-			if (n < 1) {
+
+			if (mCallbacks.isEmpty()) {
 				showDisconnectedNotification(c, c.getDisplay(), c.getHost(), c.getPort());
 			}
 		} else {
@@ -249,32 +252,25 @@ public class StellarService extends Service {
 	}
 	
 	/** Dispatches an error dialog in the foreground window.
-	 * 
+	 *
 	 * @param error The error message to show.
-	 * @throws RemoteException Thrown when something has gone wrong with the aidl bridge.
 	 */
-	public final void dispatchXMLError(final String error) throws RemoteException {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			mCallbacks.getBroadcastItem(i).displayXMLError(error);
+	public final void dispatchXMLError(final String error) {
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.displayXMLError(error);
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
-	public void dispatchSaveError(String error) throws RemoteException {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			mCallbacks.getBroadcastItem(i).displaySaveError(error);
+	public void dispatchSaveError(String error) {
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.displaySaveError(error);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
-	public void dispatchPluginSaveError(String plugin, String error) throws RemoteException {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			mCallbacks.getBroadcastItem(i).displayPluginSaveError(plugin,error);
+	public void dispatchPluginSaveError(String plugin, String error) {
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.displayPluginSaveError(plugin, error);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Enables Wifi KeepAlive. */
@@ -347,15 +343,9 @@ public class StellarService extends Service {
 	
 	/** Implementation of the visual bell callback. Called from a Connection. */
 	public final void doDisplayBell() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).doVisualBell();
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.doVisualBell();
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Disables the wifi keep alive. */
@@ -373,16 +363,9 @@ public class StellarService extends Service {
 	 * @param longtime true for Toast.LONG, false for Toast.SHORT
 	 */
 	public final void dispatchToast(final String message, final boolean longtime) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).showMessage(message, longtime);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
-			//notify listeners that data can be read
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.showMessage(message, longtime);
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Utility method for dispatching a generic error looking dialog on the foreground window.
@@ -390,16 +373,9 @@ public class StellarService extends Service {
 	 * @param message The message to display.
 	 */
 	public final void dispatchDialog(final String message) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).showDialog(message);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
-			//notify listeners that data can be read
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.showDialog(message);
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Gets a new unique id for notifications. Always increments the value so it will be unique with each call.
@@ -482,15 +458,9 @@ public class StellarService extends Service {
 		mNotificationManager.notify(id, note);
 		
 		//now, if the launcher connection list has a listener, we should notify it that a connection has gone
-		int n = mLauncherCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mLauncherCallbacks.getBroadcastItem(i).connectionDisconnected();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (LauncherCallback cb : mLauncherCallbacks) {
+			cb.connectionDisconnected();
 		}
-		mLauncherCallbacks.finishBroadcast();
 	}
 	
 	/** Method called when a connection has connected successfully.
@@ -550,12 +520,9 @@ public class StellarService extends Service {
 		
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 	
-		PendingIntent contentIntent = PendingIntent.getActivity(this, notificationID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, notificationID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-		String channelId = null;
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			channelId = createNotificationChannel(display);
-		}
+		String channelId = createNotificationChannel(display);
 		//note.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channelId);
 		Notification note = builder.setContentIntent(contentIntent)
@@ -571,7 +538,7 @@ public class StellarService extends Service {
 		
 		if (!mHasForegroundNotification) {
 			mForegroundNotificationId = notificationID;
-			this.startForeground(mForegroundNotificationId, note);
+			this.startForeground(mForegroundNotificationId, note, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
 			mHasForegroundNotification = true;
 		} else {
 			//int notificationId = notificationID;
@@ -586,7 +553,6 @@ public class StellarService extends Service {
 	 *
 	 * @param none
 	 */
-	@TargetApi(26)
 	public final String createNotificationChannel(final String display) {
 		String channelId = ConfigurationLoader.getConfigurationValue("ongoingNotificationLabel",this) + "_service" + "_" + display;
 		String channelName = ConfigurationLoader.getConfigurationValue("ongoingNotificationLabel",this);
@@ -626,7 +592,7 @@ public class StellarService extends Service {
 			//mNotificationManager.cancel(mForegroundNotificationId);
 			mForegroundNotificationId = tmpID;
 			mNotificationManager.cancel(tmpID);
-			this.startForeground(tmpID, tmpNote);
+			this.startForeground(tmpID, tmpNote, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
 		}
 		
 	}
@@ -650,7 +616,7 @@ public class StellarService extends Service {
 	 * @see Android AIDL docs.
 	 */
 	public final IBinder onBind(final Intent arg0) {
-		return mBinder;
+		return mLocalBinder;
 	}
 
 	/** Setter method for mConnectionClutch.
@@ -667,753 +633,565 @@ public class StellarService extends Service {
 	 */
 	public final void switchTo(final String display) {
 		setClutch(display);
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).markWindowsDirty();
-				mCallbacks.getBroadcastItem(i).loadWindowSettings();
-				mCallbacks.getBroadcastItem(i).loadSettings();
-				mCallbacks.getBroadcastItem(i).reloadBuffer();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.markWindowsDirty();
+			cb.loadWindowSettings();
+			cb.loadSettings();
+			cb.reloadBuffer();
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
 	/** Generic method to make the currently active connection reload its windows. */
 	public final void reloadWindows() {
-		int n = mCallbacks.beginBroadcast();
-		
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(0).loadWindowSettings();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.loadWindowSettings();
 		}
-		mCallbacks.finishBroadcast();
 	}
 	
-	/** The service bind target, this is given to the foreground process to make calls into the service. */
-	private class ServiceBinder extends IConnectionBinder.Stub {
 
-		@Override
-		public void registerCallback(final IConnectionBinderCallback c, final String host, final int port, final String display)
-				throws RemoteException {
-			if (c != null) {
-				mCallbacks.register(c);
+	// ── Public methods for local (in-process) binding ──────────────────
 
-				if (!mConnections.containsKey(display)) {
-					this.setConnectionData(host, port, display);
-				} else {
-					mConnectionClutch = display;
-					c.loadWindowSettings();
-				}
+	public void registerCallback(final ConnectionCallback c, final String host, final int port, final String display) {
+		if (c != null) {
+			mCallbacks.add(c);
+
+			if (!mConnections.containsKey(display)) {
+				setConnectionData(host, port, display);
+			} else {
+				mConnectionClutch = display;
+				c.loadWindowSettings();
 			}
 		}
+	}
 
-		@Override
-		public void unregisterCallback(final IConnectionBinderCallback c)
-				throws RemoteException {
-			if (c !=  null) {
-				mCallbacks.unregister(c);
-			}
+	public void unregisterCallback(final ConnectionCallback c) {
+		if (c !=  null) {
+			mCallbacks.remove(c);
 		}
-		
-		@Override
-		public void registerLauncherCallback(final ILauncherCallback c) {
-			if (c != null) {
-				mLauncherCallbacks.register(c);
-			}
-		}
-		
-		@Override
-		public void unregisterLauncherCallback(final ILauncherCallback c) {
-			if (c != null) {
-				mLauncherCallbacks.unregister(c);
-			}
-		}
+	}
 
-		@Override
-		public void initXfer() throws RemoteException {
-			mHandler.sendEmptyMessage(MESSAGE_STARTUP);
+	public void registerLauncherCallback(final LauncherCallback c) {
+		if (c != null) {
+			mLauncherCallbacks.add(c);
 		}
+	}
 
-		@Override
-		public void endXfer() throws RemoteException {
-			//doStartup();
-			Connection c = mConnections.get(mConnectionClutch);
-			c.sendDataToWindow("\n" + Colorizer.getRedColor() + "Connection terminated by user." + Colorizer.getWhiteColor() + "\n\n");
-			c.killNetThreads(true);
-			mConnections.get(mConnectionClutch).doDisconnect(true);
+	public void unregisterLauncherCallback(final LauncherCallback c) {
+		if (c != null) {
+			mLauncherCallbacks.remove(c);
 		}
+	}
 
-		@Override
-		public boolean isConnected() throws RemoteException {
-			if (mConnections.size() < 1) {
-				return false;
-			}
-			return mConnections.get(mConnectionClutch).isConnected();
-		}
+	public void initXfer() {
+		mHandler.sendEmptyMessage(MESSAGE_STARTUP);
+	}
 
-		@Override
-		public void sendData(final byte[] seq) throws RemoteException {
-			Handler handler = mConnections.get(mConnectionClutch).getHandler();
-			handler.sendMessage(handler.obtainMessage(Connection.MESSAGE_SENDDATA_BYTES, seq));
-		}
+	public void endXfer() {
+		Connection c = mConnections.get(mConnectionClutch);
+		c.sendDataToWindow("\n" + Colorizer.getRedColor() + "Connection terminated by user." + Colorizer.getWhiteColor() + "\n\n");
+		c.killNetThreads(true);
+		mConnections.get(mConnectionClutch).doDisconnect(true);
+	}
 
-		@Override
-		public void saveSettings() throws RemoteException {
-			Connection c = mConnections.get(mConnectionClutch);
-			if (c == null) { return; }
-			c.saveMainSettings();
-		}
-
-		@Override
-		public void setConnectionData(final String host, final int port, final String display)
-				throws RemoteException {
-			Message msg = mHandler.obtainMessage(MESSAGE_NEWCONENCTION);
-			Bundle b = msg.getData();
-			b.putString("DISPLAY", display);
-			b.putString("HOST", host);
-			b.putInt("PORT", port);
-			msg.setData(b);
-			mHandler.sendMessage(msg);
-			
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public List getSystemCommands() throws RemoteException {
-			return mConnections.get(mConnectionClutch).getSystemCommands();
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getAliases() throws RemoteException {
-			return mConnections.get(mConnectionClutch).getAliases();
-		}
-
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		@Override
-		public void setAliases(final Map map) throws RemoteException {
-			mConnections.get(mConnectionClutch).setAliases((HashMap<String, AliasData>) map);
-		}
-
-		@Override
-		public void loadSettingsFromPath(final String path) throws RemoteException {
-			mConnections.get(mConnectionClutch).startLoadSettingsSequence(path);
-		}
-
-		@Override
-		public void exportSettingsToPath(final String path) throws RemoteException {
-			mConnections.get(mConnectionClutch).exportSettings(path);
-		}
-
-		@Override
-		public void resetSettings() throws RemoteException {
-			mConnections.get(mConnectionClutch).resetSettings();
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getTriggerData() throws RemoteException {
-			HashMap<String, TriggerData> triggers = mConnections.get(mConnectionClutch).getTriggers();
-			
-			return triggers;
-		}
-		
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getPluginTriggerData(final String id) throws RemoteException {
-			return mConnections.get(mConnectionClutch).getPluginTriggers(id);
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getDirectionData() throws RemoteException {
-			return mConnections.get(mConnectionClutch).getDirectionData();
-		}
-
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		@Override
-		public void setDirectionData(final Map data) throws RemoteException {
-			mConnections.get(mConnectionClutch).setDirectionData((HashMap<String, DirectionData>) data);
-		}
-
-		@Override
-		public void newTrigger(final TriggerData data) throws RemoteException {
-			mConnections.get(mConnectionClutch).addTrigger(data);
-		}
-
-		@Override
-		public void updateTrigger(final TriggerData from, final TriggerData to)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).updateTrigger(from, to);
-			
-		}
-
-		@Override
-		public void deleteTrigger(final String which) throws RemoteException {
-			mConnections.get(mConnectionClutch).deleteTrigger(which);
-		}
-
-		@Override
-		public TriggerData getTrigger(final String pattern) throws RemoteException {
-			return mConnections.get(mConnectionClutch).getTrigger(pattern);
-		}
-
-		@Override
-		public boolean isKeepLast() throws RemoteException {
-			return mConnections.get(mConnectionClutch).isKeepLast();
-		}
-
-		@Override
-		public void setDisplayDimensions(final int rows, final int cols)
-				throws RemoteException {
-			Connection c = mConnections.get(mConnectionClutch);
-			if (c == null) {
-				return;
-			}
-			c.getProcessor().setDisplayDimensions(rows, cols);
-		}
-
-		@Override
-		public void reconnect(final String str) throws RemoteException {
-			String connection = str;
-			if (str == null || str.equals("")) {
-				connection = mConnectionClutch;
-			}
-			mConnections.get(connection).doReconnect();
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getTimers() throws RemoteException {
-			return mConnections.get(mConnectionClutch).getTimers();
-		}
-		
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getPluginTimers(final String plugin) throws RemoteException {
-			return mConnections.get(mConnectionClutch).getPluginTimers(plugin);
-		}
-
-		@Override
-		public TimerData getTimer(final String ordinal) throws RemoteException {
-			return mConnections.get(mConnectionClutch).getTimer(ordinal);
-		}
-
-		@Override
-		public void startTimer(final String ordinal) throws RemoteException {
-			mConnections.get(mConnectionClutch).playTimer(ordinal);
-		}
-
-		@Override
-		public void pauseTimer(final String ordinal) throws RemoteException {
-			mConnections.get(mConnectionClutch).pauseTimer(ordinal);
-		}
-
-		@Override
-		public void stopTimer(final String ordinal) throws RemoteException {
-			mConnections.get(mConnectionClutch).stopTimer(ordinal);
-		}
-		
-		@Override
-		public void startPluginTimer(final String plugin, final String ordinal) throws RemoteException {
-			mConnections.get(mConnectionClutch).playPluginTimer(plugin, ordinal);
-		}
-
-		@Override
-		public void pausePluginTimer(final String plugin, final String ordinal) throws RemoteException {
-			mConnections.get(mConnectionClutch).pausePluginTimer(plugin, ordinal);
-		}
-
-		@Override
-		public void stopPluginTimer(final String plugin, final String ordinal) throws RemoteException {
-			mConnections.get(mConnectionClutch).stopPluginTimer(plugin, ordinal);
-		}
-
-		@Override
-		public void updateTimer(final TimerData old, final TimerData newtimer)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).updateTimer(old, newtimer);
-		}
-
-		@Override
-		public void addTimer(final TimerData newtimer) throws RemoteException {
-			mConnections.get(mConnectionClutch).addTimer(newtimer);
-		}
-
-		@Override
-		public void removeTimer(final TimerData deltimer) throws RemoteException {
-			//TODO: THIS IS BLANK, CAN WE REMOVE TIMERS?!
-		}
-
-		@Override
-		public int getNextTimerOrdinal() throws RemoteException {
-			return 0;
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getTimerProgressWad() throws RemoteException {
-			return null;
-		}
-
-		@Override
-		public String getEncoding() throws RemoteException {
-			return (String) ((EncodingOption) mConnections.get(mConnectionClutch).getSettings().findOptionByKey("encoding")).getValue();
-		}
-
-		@Override
-		public String getConnectedTo() throws RemoteException {
-			return mConnectionClutch;
-		}
-		
-		@Override
-		public boolean isFullScreen() throws RemoteException {
-			return mConnections.get(mConnectionClutch).isFullScren();
-		}
-		
-		@Override
-		public void setTriggerEnabled(final boolean enabled, final String key)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).setTriggerEnabled(enabled, key);
-		}
-
-		@Override
-		public void setButtonSetLocked(final boolean locked, final String key)
-				throws RemoteException {
-			
-		}
-
-		@Override
-		public boolean isButtonSetLocked(final String key) throws RemoteException {
+	public boolean isConnected() {
+		if (mConnections.size() < 1) {
 			return false;
 		}
+		return mConnections.get(mConnectionClutch).isConnected();
+	}
 
-		@Override
-		public boolean isButtonSetLockedMoveButtons(final String key)
-				throws RemoteException {
-			return false;
-		}
+	public void sendData(final byte[] seq) {
+		Handler handler = mConnections.get(mConnectionClutch).getHandler();
+		handler.sendMessage(handler.obtainMessage(Connection.MESSAGE_SENDDATA_BYTES, seq));
+	}
 
-		@Override
-		public boolean isButtonSetLockedNewButtons(final String key)
-				throws RemoteException {
-			return false;
-		}
+	public void saveSettings() {
+		Connection c = mConnections.get(mConnectionClutch);
+		if (c == null) { return; }
+		c.saveMainSettings();
+	}
 
-		@Override
-		public boolean isButtonSetLockedEditButtons(final String key)
-				throws RemoteException {
-			return false;
-		}
+	public void setConnectionData(final String host, final int port, final String display) {
+		Message msg = mHandler.obtainMessage(MESSAGE_NEWCONENCTION);
+		Bundle b = msg.getData();
+		b.putString("DISPLAY", display);
+		b.putString("HOST", host);
+		b.putInt("PORT", port);
+		msg.setData(b);
+		mHandler.sendMessage(msg);
+	}
 
-		@Override
-		public void startNewConnection(final String host, final int port, final String display)
-				throws RemoteException {
-		}
+	@SuppressWarnings("rawtypes")
+	public List getSystemCommands() {
+		return mConnections.get(mConnectionClutch).getSystemCommands();
+	}
 
-		@Override
-		public void switchTo(final String display) throws RemoteException {
-			mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_SWITCH, display));
-		}
+	@SuppressWarnings("rawtypes")
+	public Map getAliases() {
+		return mConnections.get(mConnectionClutch).getAliases();
+	}
 
-		@Override
-		public boolean isConnectedTo(final String display) throws RemoteException {
-			return mConnections.keySet().contains(display);
-		}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setAliases(final Map map) {
+		mConnections.get(mConnectionClutch).setAliases((HashMap<String, AliasData>) map);
+	}
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public List getConnections() throws RemoteException {
-			List<String> tmp = new ArrayList<String>();
-			for (String key : mConnections.keySet()) {
-				tmp.add(key);
-			}
-			return tmp;
-		}
+	public void loadSettingsFromPath(final String path) {
+		mConnections.get(mConnectionClutch).startLoadSettingsSequence(path);
+	}
 
-		@Override
-		public WindowToken[] getWindowTokens() throws RemoteException {
-			if (mConnections == null || mConnections.size() == 0) { return null; }
-			return mConnections.get(mConnectionClutch).getWindows();
-		}
+	public void exportSettingsToPath(final String path) {
+		mConnections.get(mConnectionClutch).exportSettings(path);
+	}
 
-		@Override
-		public void registerWindowCallback(final String displayName, final String name, final IWindowCallback callback)
-				throws RemoteException {
-			Connection c = mConnections.get(displayName);
-			if (c != null) {
-				c.registerWindowCallback(name, callback);
-			} 
-		}
+	public void resetSettings() {
+		mConnections.get(mConnectionClutch).resetSettings();
+	}
 
-		@Override
-		public void unregisterWindowCallback(final String name,
-				final IWindowCallback callback) throws RemoteException {
-			Connection c = mConnections.get(name);
-			if (c != null) {
-				c.unregisterWindowCallback(callback);
-			}
-		}
+	@SuppressWarnings("rawtypes")
+	public Map getTriggerData() {
+		HashMap<String, TriggerData> triggers = mConnections.get(mConnectionClutch).getTriggers();
+		return triggers;
+	}
 
-		@Override
-		public String getScript(final String plugin, final String name)
-				throws RemoteException {
-			return mConnections.get(mConnectionClutch).getScript(plugin, name);
-		}
+	@SuppressWarnings("rawtypes")
+	public Map getPluginTriggerData(final String id) {
+		return mConnections.get(mConnectionClutch).getPluginTriggers(id);
+	}
 
-		@Override
-		public void reloadSettings() throws RemoteException {
-			mHandler.sendEmptyMessage(MESSAGE_RELOADSETTINGS);
-			
-		}
+	@SuppressWarnings("rawtypes")
+	public Map getDirectionData() {
+		return mConnections.get(mConnectionClutch).getDirectionData();
+	}
 
-		@Override
-		public void pluginXcallS(final String plugin, final String function, final String str)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).pluginXcallS(plugin, function, str);
-		}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setDirectionData(final Map data) {
+		mConnections.get(mConnectionClutch).setDirectionData((HashMap<String, DirectionData>) data);
+	}
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getPluginList() throws RemoteException {
-			
-			Connection c = mConnections.get(mConnectionClutch);
-			HashMap<String, String> list = new HashMap<String, String>();
-			
-			for (Plugin p : c.getPlugins()) {
-				String info = "";
-				info += p.getTriggerCount() + " T, ";
-				info += p.getAliasCount() + " A, ";
-				info += p.getTimerCount() + " C, ";
-				info += p.getScriptCount() + " S, ";
-				info += p.getStorageType();
-				list.put(p.getName(), info);
-			}
-			
-			return list;
-		}
-		
-		@SuppressWarnings("rawtypes")
-		@Override
-		public List getPluginsWithTriggers() {
-			ArrayList<String> list = new ArrayList<String>();
-			Connection c = mConnections.get(mConnectionClutch);
-			for (Plugin p : c.getPlugins()) {
-				if (p.getSettings().getTriggers().size() > 0) {
-					list.add(p.getName());
-				}
-			}
-			return list;
-		}
+	public void newTrigger(final TriggerData data) {
+		mConnections.get(mConnectionClutch).addTrigger(data);
+	}
 
-		@Override
-		public void newPluginTrigger(final String selectedPlugin, final TriggerData data)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).newPluginTrigger(selectedPlugin, data);
-		}
+	public void updateTrigger(final TriggerData from, final TriggerData to) {
+		mConnections.get(mConnectionClutch).updateTrigger(from, to);
+	}
 
-		@Override
-		public void updatePluginTrigger(final String selectedPlugin,
-				final TriggerData from, final TriggerData to) throws RemoteException {
-			mConnections.get(mConnectionClutch).updatePluginTrigger(selectedPlugin, from, to);
-		}
+	public void deleteTrigger(final String which) {
+		mConnections.get(mConnectionClutch).deleteTrigger(which);
+	}
 
-		@Override
-		public TriggerData getPluginTrigger(final String selectedPlugin, final String pattern)
-				throws RemoteException {
-			return mConnections.get(mConnectionClutch).getPluginTrigger(selectedPlugin, pattern);
-		}
+	public TriggerData getTrigger(final String pattern) {
+		return mConnections.get(mConnectionClutch).getTrigger(pattern);
+	}
 
-		@Override
-		public void setPluginTriggerEnabled(final String selectedPlugin,
-				final boolean enabled, final String key) throws RemoteException {
-			mConnections.get(mConnectionClutch).setPluginTriggerEnabled(selectedPlugin, enabled, key);
-		}
+	public boolean isKeepLast() {
+		return mConnections.get(mConnectionClutch).isKeepLast();
+	}
 
-		@Override
-		public void deletePluginTrigger(final String selectedPlugin, final String which)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).deletePluginTrigger(selectedPlugin, which);
+	public void setDisplayDimensions(final int rows, final int cols) {
+		Connection c = mConnections.get(mConnectionClutch);
+		if (c == null) {
+			return;
 		}
+		c.getProcessor().setDisplayDimensions(rows, cols);
+	}
 
-		@Override
-		public AliasData getAlias(final String key) throws RemoteException {
-			
-			return mConnections.get(mConnectionClutch).getAlias(key);
+	public void reconnect(final String str) {
+		String connection = str;
+		if (str == null || str.equals("")) {
+			connection = mConnectionClutch;
 		}
+		mConnections.get(connection).doReconnect();
+	}
 
-		@Override
-		public AliasData getPluginAlias(final String plugin, final String key)
-				throws RemoteException {
-			return mConnections.get(mConnectionClutch).getPluginAlias(plugin, key);
+	@SuppressWarnings("rawtypes")
+	public Map getTimers() {
+		return mConnections.get(mConnectionClutch).getTimers();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getPluginTimers(final String plugin) {
+		return mConnections.get(mConnectionClutch).getPluginTimers(plugin);
+	}
+
+	public TimerData getTimer(final String ordinal) {
+		return mConnections.get(mConnectionClutch).getTimer(ordinal);
+	}
+
+	public void startTimer(final String ordinal) {
+		mConnections.get(mConnectionClutch).playTimer(ordinal);
+	}
+
+	public void pauseTimer(final String ordinal) {
+		mConnections.get(mConnectionClutch).pauseTimer(ordinal);
+	}
+
+	public void stopTimer(final String ordinal) {
+		mConnections.get(mConnectionClutch).stopTimer(ordinal);
+	}
+
+	public void startPluginTimer(final String plugin, final String ordinal) {
+		mConnections.get(mConnectionClutch).playPluginTimer(plugin, ordinal);
+	}
+
+	public void pausePluginTimer(final String plugin, final String ordinal) {
+		mConnections.get(mConnectionClutch).pausePluginTimer(plugin, ordinal);
+	}
+
+	public void stopPluginTimer(final String plugin, final String ordinal) {
+		mConnections.get(mConnectionClutch).stopPluginTimer(plugin, ordinal);
+	}
+
+	public void updateTimer(final TimerData old, final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).updateTimer(old, newtimer);
+	}
+
+	public void addTimer(final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).addTimer(newtimer);
+	}
+
+	public void removeTimer(final TimerData deltimer) {
+		//TODO: THIS IS BLANK, CAN WE REMOVE TIMERS?!
+	}
+
+	public int getNextTimerOrdinal() {
+		return 0;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getTimerProgressWad() {
+		return null;
+	}
+
+	public String getEncoding() {
+		return (String) ((EncodingOption) mConnections.get(mConnectionClutch).getSettings().findOptionByKey("encoding")).getValue();
+	}
+
+	public String getConnectedTo() {
+		return mConnectionClutch;
+	}
+
+	public boolean isFullScreen() {
+		return mConnections.get(mConnectionClutch).isFullScren();
+	}
+
+	public void setTriggerEnabled(final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setTriggerEnabled(enabled, key);
+	}
+
+	public void setButtonSetLocked(final boolean locked, final String key) {
+	}
+
+	public boolean isButtonSetLocked(final String key) {
+		return false;
+	}
+
+	public boolean isButtonSetLockedMoveButtons(final String key) {
+		return false;
+	}
+
+	public boolean isButtonSetLockedNewButtons(final String key) {
+		return false;
+	}
+
+	public boolean isButtonSetLockedEditButtons(final String key) {
+		return false;
+	}
+
+	public void startNewConnection(final String host, final int port, final String display) {
+	}
+
+	public void switchToConnection(final String display) {
+		mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_SWITCH, display));
+	}
+
+	public boolean isConnectedTo(final String display) {
+		return mConnections.keySet().contains(display);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List getConnections() {
+		List<String> tmp = new ArrayList<String>();
+		for (String key : mConnections.keySet()) {
+			tmp.add(key);
 		}
+		return tmp;
+	}
 
-//		@SuppressWarnings("rawtypes")
-//		public Map getAliases(final String currentPlugin) throws RemoteException {
-//			
-//			return mConnections.get(mConnectionClutch).getAliases();
-//		}
-		
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Map getPluginAliases(final String currentPlugin) {
-			return mConnections.get(mConnectionClutch).getPluginAliases(currentPlugin);
+	public WindowToken[] getWindowTokens() {
+		if (mConnections == null || mConnections.size() == 0) { return null; }
+		return mConnections.get(mConnectionClutch).getWindows();
+	}
+
+	public void registerWindowCallback(final String displayName, final String name, final WindowCallback callback) {
+		Connection c = mConnections.get(displayName);
+		if (c != null) {
+			c.registerWindowCallback(name, callback);
 		}
+	}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		@Override
-		public void setPluginAliases(final String plugin, final Map map)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).setPluginAliases(plugin, (HashMap<String, AliasData>) map);
+	public void unregisterWindowCallback(final String name, final WindowCallback callback) {
+		Connection c = mConnections.get(name);
+		if (c != null) {
+			c.unregisterWindowCallback(callback);
 		}
+	}
 
-		@Override
-		public void deleteAlias(final String key) throws RemoteException {
-			mConnections.get(mConnectionClutch).deleteAlias(key);
-		}
+	public String getScript(final String plugin, final String name) {
+		return mConnections.get(mConnectionClutch).getScript(plugin, name);
+	}
 
-		@Override
-		public void deletePluginAlias(final String plugin, final String key)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).deletePluginAlias(plugin, key);
-		}
+	public void reloadSettings() {
+		mHandler.sendEmptyMessage(MESSAGE_RELOADSETTINGS);
+	}
 
-		@Override
-		public void setAliasEnabled(final boolean enabled, final String key)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).setAliasEnabled(enabled, key);
-			
-		}
+	public void pluginXcallS(final String plugin, final String function, final String str) {
+		mConnections.get(mConnectionClutch).pluginXcallS(plugin, function, str);
+	}
 
-		@Override
-		public void setPluginAliasEnabled(final String plugin, final boolean enabled,
-				final String key) throws RemoteException {
-			mConnections.get(mConnectionClutch).setPluginAliasEnabled(plugin, enabled, key);
-		}
+	@SuppressWarnings("rawtypes")
+	public Map getPluginList() {
+		Connection c = mConnections.get(mConnectionClutch);
+		HashMap<String, String> list = new HashMap<String, String>();
 
-		@Override
-		public TimerData getPluginTimer(final String plugin, final String name) throws RemoteException {
-			return mConnections.get(mConnectionClutch).getPluginTimer(plugin, name);
-		}
-
-		@Override
-		public void deleteTimer(final String name) throws RemoteException {
-			mConnections.get(mConnectionClutch).deleteTimer(name);
-		}
-
-		@Override
-		public void deletePluginTimer(final String plugin, final String name)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).deletePluginTimer(plugin, name);
-		}
-
-		@Override
-		public void updatePluginTimer(final String plugin, final TimerData old,
-				final TimerData newtimer) throws RemoteException {
-			mConnections.get(mConnectionClutch).updatePluginTimer(plugin, old, newtimer);
-		}
-
-		@Override
-		public void addPluginTimer(final String plugin, final TimerData newtimer)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).addPluginTimer(plugin, newtimer);
-		}
-
-		@Override
-		public SettingsGroup getSettings() throws RemoteException {
-			if (mConnections.size() == 0) { return null; }
-			Connection c = mConnections.get(mConnectionClutch);
-			if (c == null) { return null; }
-			return c.getSettings();
-		}
-
-		@Override
-		public SettingsGroup getPluginSettings(final String plugin)
-				throws RemoteException {
-			return mConnections.get(mConnectionClutch).getPluginSettings(plugin);
-		}
-
-		@Override
-		public void updateBooleanSetting(final String key, final boolean value)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).updateBooleanSetting(key, value);
-		}
-
-		@Override
-		public void updatePluginBooleanSetting(final String plugin, final String key,
-				final boolean value) throws RemoteException {
-			mConnections.get(mConnectionClutch).updatePluginBooleanSetting(plugin, key, value);
-		}
-
-		@Override
-		public void updateIntegerSetting(final String key, final int value)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).updateIntegerSetting(key, value);
-		}
-
-		@Override
-		public void updatePluginIntegerSetting(final String plugin, final String key,
-				final int value) throws RemoteException {
-			mConnections.get(mConnectionClutch).updatePluginIntegerSetting(plugin, key, value);
+		for (Plugin p : c.getPlugins()) {
+			String info = "";
+			info += p.getTriggerCount() + " T, ";
+			info += p.getAliasCount() + " A, ";
+			info += p.getTimerCount() + " C, ";
+			info += p.getScriptCount() + " S, ";
+			info += p.getStorageType();
+			list.put(p.getName(), info);
 		}
 
-		@Override
-		public void updateFloatSetting(final String key, final float value)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).updateFloatSetting(key, value);
-		}
+		return list;
+	}
 
-		@Override
-		public void updatePluginFloatSetting(final String plugin, final String key,
-				final float value) throws RemoteException {
-			mConnections.get(mConnectionClutch).updatePluginFloatSetting(plugin, key, value);
-		}
-
-		@Override
-		public void updateStringSetting(final String key, final String value)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).updateStringSetting(key, value);
-		}
-
-		@Override
-		public void updatePluginStringSetting(final String plugin, final String key,
-				final String value) throws RemoteException {
-			mConnections.get(mConnectionClutch).updatePluginStringSetting(plugin, key, value);
-		}
-
-		@Override
-		public void updateWindowBufferMaxValue(final String plugin, final String window,
-				final int amount) throws RemoteException {
-			mConnections.get(mConnectionClutch).updateWindowBufferMaxValue(plugin, window, amount);
-		}
-		
-		@Override
-		public void closeConnection(final String display) {
-			Connection c = mConnections.get(display);
-			if (c != null) {
-				c.shutdown();
-			
-				mConnections.remove(display);
+	@SuppressWarnings("rawtypes")
+	public List getPluginsWithTriggers() {
+		ArrayList<String> list = new ArrayList<String>();
+		Connection c = mConnections.get(mConnectionClutch);
+		for (Plugin p : c.getPlugins()) {
+			if (p.getSettings().getTriggers().size() > 0) {
+				list.add(p.getName());
 			}
 		}
-		
-		@Override
-		public void windowShowing(final boolean show) {
-			mWindowShowing = show;
-		}
+		return list;
+	}
 
-		@Override
-		public void dispatchLuaError(final String message) throws RemoteException {
-			mConnections.get(mConnectionClutch).dispatchLuaError(message);
-		}
-		
-		@Override
-		public void addLink(final String path) {
-			mConnections.get(mConnectionClutch).addLink(path);
-		}
+	public void newPluginTrigger(final String selectedPlugin, final TriggerData data) {
+		mConnections.get(mConnectionClutch).newPluginTrigger(selectedPlugin, data);
+	}
 
-		@Override
-		public void deletePlugin(final String plugin) throws RemoteException {
-			mConnections.get(mConnectionClutch).deletePlugin(plugin);
-		}
+	public void updatePluginTrigger(final String selectedPlugin, final TriggerData from, final TriggerData to) {
+		mConnections.get(mConnectionClutch).updatePluginTrigger(selectedPlugin, from, to);
+	}
 
-		@Override
-		public void setPluginEnabled(final String plugin, final boolean enabled)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).setPluginEnabled(plugin, enabled);
-		}
+	public TriggerData getPluginTrigger(final String selectedPlugin, final String pattern) {
+		return mConnections.get(mConnectionClutch).getPluginTrigger(selectedPlugin, pattern);
+	}
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public List getPluginsWithAliases() {
-			ArrayList<String> list = new ArrayList<String>();
-			Connection c = mConnections.get(mConnectionClutch);
-			for (Plugin p : c.getPlugins()) {
-				if (p.getSettings().getAliases().size() > 0) {
-					list.add(p.getName());
-				}
+	public void setPluginTriggerEnabled(final String selectedPlugin, final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setPluginTriggerEnabled(selectedPlugin, enabled, key);
+	}
+
+	public void deletePluginTrigger(final String selectedPlugin, final String which) {
+		mConnections.get(mConnectionClutch).deletePluginTrigger(selectedPlugin, which);
+	}
+
+	public AliasData getAlias(final String key) {
+		return mConnections.get(mConnectionClutch).getAlias(key);
+	}
+
+	public AliasData getPluginAlias(final String plugin, final String key) {
+		return mConnections.get(mConnectionClutch).getPluginAlias(plugin, key);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Map getPluginAliases(final String currentPlugin) {
+		return mConnections.get(mConnectionClutch).getPluginAliases(currentPlugin);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setPluginAliases(final String plugin, final Map map) {
+		mConnections.get(mConnectionClutch).setPluginAliases(plugin, (HashMap<String, AliasData>) map);
+	}
+
+	public void deleteAlias(final String key) {
+		mConnections.get(mConnectionClutch).deleteAlias(key);
+	}
+
+	public void deletePluginAlias(final String plugin, final String key) {
+		mConnections.get(mConnectionClutch).deletePluginAlias(plugin, key);
+	}
+
+	public void setAliasEnabled(final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setAliasEnabled(enabled, key);
+	}
+
+	public void setPluginAliasEnabled(final String plugin, final boolean enabled, final String key) {
+		mConnections.get(mConnectionClutch).setPluginAliasEnabled(plugin, enabled, key);
+	}
+
+	public TimerData getPluginTimer(final String plugin, final String name) {
+		return mConnections.get(mConnectionClutch).getPluginTimer(plugin, name);
+	}
+
+	public void deleteTimer(final String name) {
+		mConnections.get(mConnectionClutch).deleteTimer(name);
+	}
+
+	public void deletePluginTimer(final String plugin, final String name) {
+		mConnections.get(mConnectionClutch).deletePluginTimer(plugin, name);
+	}
+
+	public void updatePluginTimer(final String plugin, final TimerData old, final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).updatePluginTimer(plugin, old, newtimer);
+	}
+
+	public void addPluginTimer(final String plugin, final TimerData newtimer) {
+		mConnections.get(mConnectionClutch).addPluginTimer(plugin, newtimer);
+	}
+
+	public SettingsGroup getSettings() {
+		if (mConnections.size() == 0) { return null; }
+		Connection c = mConnections.get(mConnectionClutch);
+		if (c == null) { return null; }
+		return c.getSettings();
+	}
+
+	public SettingsGroup getPluginSettings(final String plugin) {
+		return mConnections.get(mConnectionClutch).getPluginSettings(plugin);
+	}
+
+	public void updateBooleanSetting(final String key, final boolean value) {
+		mConnections.get(mConnectionClutch).updateBooleanSetting(key, value);
+	}
+
+	public void updatePluginBooleanSetting(final String plugin, final String key, final boolean value) {
+		mConnections.get(mConnectionClutch).updatePluginBooleanSetting(plugin, key, value);
+	}
+
+	public void updateIntegerSetting(final String key, final int value) {
+		mConnections.get(mConnectionClutch).updateIntegerSetting(key, value);
+	}
+
+	public void updatePluginIntegerSetting(final String plugin, final String key, final int value) {
+		mConnections.get(mConnectionClutch).updatePluginIntegerSetting(plugin, key, value);
+	}
+
+	public void updateFloatSetting(final String key, final float value) {
+		mConnections.get(mConnectionClutch).updateFloatSetting(key, value);
+	}
+
+	public void updatePluginFloatSetting(final String plugin, final String key, final float value) {
+		mConnections.get(mConnectionClutch).updatePluginFloatSetting(plugin, key, value);
+	}
+
+	public void updateStringSetting(final String key, final String value) {
+		mConnections.get(mConnectionClutch).updateStringSetting(key, value);
+	}
+
+	public void updatePluginStringSetting(final String plugin, final String key, final String value) {
+		mConnections.get(mConnectionClutch).updatePluginStringSetting(plugin, key, value);
+	}
+
+	public void updateWindowBufferMaxValue(final String plugin, final String window, final int amount) {
+		mConnections.get(mConnectionClutch).updateWindowBufferMaxValue(plugin, window, amount);
+	}
+
+	public void closeConnection(final String display) {
+		Connection c = mConnections.get(display);
+		if (c != null) {
+			c.shutdown();
+			mConnections.remove(display);
+		}
+	}
+
+	public void windowShowing(final boolean show) {
+		mWindowShowing = show;
+	}
+
+	public void dispatchLuaError(final String message) {
+		mConnections.get(mConnectionClutch).dispatchLuaError(message);
+	}
+
+	public void addLink(final String path) {
+		mConnections.get(mConnectionClutch).addLink(path);
+	}
+
+	public void deletePlugin(final String plugin) {
+		mConnections.get(mConnectionClutch).deletePlugin(plugin);
+	}
+
+	public void setPluginEnabled(final String plugin, final boolean enabled) {
+		mConnections.get(mConnectionClutch).setPluginEnabled(plugin, enabled);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List getPluginsWithAliases() {
+		ArrayList<String> list = new ArrayList<String>();
+		Connection c = mConnections.get(mConnectionClutch);
+		for (Plugin p : c.getPlugins()) {
+			if (p.getSettings().getAliases().size() > 0) {
+				list.add(p.getName());
 			}
-			return list;
 		}
+		return list;
+	}
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public List getPluginsWithTimers() throws RemoteException {
-			ArrayList<String> list = new ArrayList<String>();
-			Connection c = mConnections.get(mConnectionClutch);
-			for (Plugin p : c.getPlugins()) {
-				if (p.getSettings().getTimers().size() > 0) {
-					list.add(p.getName());
-				}
+	@SuppressWarnings("rawtypes")
+	public List getPluginsWithTimers() {
+		ArrayList<String> list = new ArrayList<String>();
+		Connection c = mConnections.get(mConnectionClutch);
+		for (Plugin p : c.getPlugins()) {
+			if (p.getSettings().getTimers().size() > 0) {
+				list.add(p.getName());
 			}
-			return list;
 		}
+		return list;
+	}
 
-		@Override
-		public boolean isLinkLoaded(final String link) throws RemoteException {
-			boolean retval = mConnections.get(mConnectionClutch).isLinkLoaded(link);
-			return retval;
-		}
+	public boolean isLinkLoaded(final String link) {
+		boolean retval = mConnections.get(mConnectionClutch).isLinkLoaded(link);
+		return retval;
+	}
 
-		@Override
-		public String getPluginPath(final String plugin) throws RemoteException {
-			String path = mConnections.get(mConnectionClutch).getPluginPath(plugin);
-			if (path == null) { path = ""; }
-			return path;
-		}
+	public String getPluginPath(final String plugin) {
+		String path = mConnections.get(mConnectionClutch).getPluginPath(plugin);
+		if (path == null) { path = ""; }
+		return path;
+	}
 
-		@Override
-		public void dispatchLuaText(final String str) throws RemoteException {
-			mConnections.get(mConnectionClutch).dispatchLuaText(str);
-		}
+	public void dispatchLuaText(final String str) {
+		mConnections.get(mConnectionClutch).dispatchLuaText(str);
+	}
 
-		@Override
-		public void callPluginFunction(final String plugin, final String function)
-				throws RemoteException {
-			mConnections.get(mConnectionClutch).callPluginFunction(plugin, function);
-		}
+	public void callPluginFunction(final String plugin, final String function) {
+		mConnections.get(mConnectionClutch).callPluginFunction(plugin, function);
+	}
 
-		@Override
-		public boolean isPluginInstalled(final String desired) throws RemoteException {
-			return mConnections.get(mConnectionClutch).isPluginInstalled(desired);
-		}
+	public boolean isPluginInstalled(final String desired) {
+		return mConnections.get(mConnectionClutch).isPluginInstalled(desired);
+	}
 
-		@Override
-		public void setShowRegexWarning(boolean state) throws RemoteException {
-			mConnections.get(mConnectionClutch).updateBooleanSetting("show_regex_warning", state);
-		}
+	public void setShowRegexWarning(boolean state) {
+		mConnections.get(mConnectionClutch).updateBooleanSetting("show_regex_warning", state);
+	}
 
-		@Override
-		public String getPluginOption(String plugin, String key)
-				throws RemoteException {
-			//mConnections.get(mConnectionClutch).getPluginOptionValue(plugin,key);
-			
-			return mConnections.get(mConnectionClutch).getPluginOptionValue(plugin,key);
-		}
-
-	};
+	public String getPluginOption(String plugin, String key) {
+		return mConnections.get(mConnectionClutch).getPluginOptionValue(plugin,key);
+	}
 
 	/** Dispatches data to the foreground window.
 	 * 
 	 * @param data the data to send.
 	 */
 	public final void sendRawDataToWindow(final byte[] data) {
-		//service.sendRawDataToWindow(data);
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).rawDataIncoming(data);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.rawDataIncoming(data);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Utility method for checking weather or not the window is showing.
@@ -1428,16 +1206,9 @@ public class StellarService extends Service {
 	 * has been folded into the plugin.
 	 */
 	public final void doClearAllButtons() {
-		
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).clearAllButtons();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.clearAllButtons();
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the working code to set the current color debug mode for the foreground window.
@@ -1445,28 +1216,16 @@ public class StellarService extends Service {
 	 * @param iarg The color debug mode to enter.
 	 */
 	public final void doExecuteColorDebug(final Integer iarg) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).executeColorDebug(iarg);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.executeColorDebug(iarg);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Working implementation of the dirty exit. That is to close the app without closing the connections first. */
 	public final void doDirtyExit() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).invokeDirtyExit();
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.invokeDirtyExit();
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Working implementation of the method that sets the fullscreen option in the foreground window.
@@ -1474,15 +1233,9 @@ public class StellarService extends Service {
 	 * @param set True for fullscreen, false for not fullscreen.
 	 */
 	public final void doExecuteFullscreen(final boolean set) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setScreenMode(set);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setScreenMode(set);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Working implementation of the method that pops up the keyboard in the foreground window.
@@ -1495,40 +1248,22 @@ public class StellarService extends Service {
 	 * @param doclose True to close the keyboard.
 	 */
 	public final void doShowKeyboard(final String text, final boolean dopopup, final boolean doadd, final boolean doflush, final boolean doclear, final boolean doclose) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).showKeyBoard(text, dopopup, doadd, doflush, doclear, doclose);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
-			//notify listeners that data can be read
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.showKeyBoard(text, dopopup, doadd, doflush, doclear, doclose);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Utility method to mark the foreground window settings as dirty, so they are reloaded at next opportunity. */
 	public final void markWindowsDirty() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).markWindowsDirty();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.markWindowsDirty();
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Utility method to mark the foreground window (non-window) settings as dirty so they are reloaded. */
 	public final void markSettingsDirty() {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).markSettingsDirty();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.markSettingsDirty();
 		}
 	}
 
@@ -1537,17 +1272,9 @@ public class StellarService extends Service {
 	 * @param value True for keeplast, false for clear when command is sent.
 	 */
 	public final void dispatchKeepLast(final Boolean value) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setKeepLast((boolean) value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setKeepLast((boolean) value);
 		}
-		
-		mCallbacks.finishBroadcast();
-		
 	}
 	
 	/** Implementation of the working method that sets the foreground window trigger editor regex warning message state.
@@ -1555,17 +1282,9 @@ public class StellarService extends Service {
 	 * @param value True for show warning, false for no warning.
 	 */
 	public final void dispatchShowRegexWarning(final Boolean value) {
-		final int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setRegexWarning((boolean) value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setRegexWarning((boolean) value);
 		}
-		
-		mCallbacks.finishBroadcast();
-		
 	}
 	
 	/** Utility method that updates the internal lua libraries and files.
@@ -1714,15 +1433,9 @@ public class StellarService extends Service {
 	 * @param value Integer value, 1= portrait, 2=landscape, 3=auto
 	 */
 	public final void doExecuteSetOrientation(final Integer value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setOrientation(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setOrientation(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the keep screen on in the foreground window. 
@@ -1730,15 +1443,9 @@ public class StellarService extends Service {
 	 * @param value True, screen stays on, false screen does not stay on.
 	 */
 	public final void doExecuteKeepScreenOn(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setKeepScreenOn(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setKeepScreenOn(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the option for a fullscreen editor in the foreground window.
@@ -1746,15 +1453,9 @@ public class StellarService extends Service {
 	 * @param value True to use fullscreen editor, false to not.
 	 */
 	public final void doExecuteFullscreenEditor(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setUseFullscreenEditor(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setUseFullscreenEditor(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the preference for weather or not to use suggestions in the foreground window editor.
@@ -1762,15 +1463,9 @@ public class StellarService extends Service {
 	 * @param value True to use suggestions, false to not.
 	 */
 	public final void doExecuteUseSuggestions(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setUseSuggestions(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setUseSuggestions(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 	/** Implementation of the method that sets the compatibility mode preference for the foreground window's editor.
@@ -1778,15 +1473,9 @@ public class StellarService extends Service {
 	 * @param value True to use compatibility mode, false to not.
 	 */
 	public final void doExecuteCompatibilityMode(final Boolean value) {
-		int n = mCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			try {
-				mCallbacks.getBroadcastItem(i).setCompatibilityMode(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (ConnectionCallback cb : mCallbacks) {
+			cb.setCompatibilityMode(value);
 		}
-		mCallbacks.finishBroadcast();
 	}
 
 

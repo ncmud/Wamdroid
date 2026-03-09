@@ -84,11 +84,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteCallbackList;
-import android.os.RemoteException;
+
+
 import android.os.SystemClock;
 
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
 //import android.util.Log;
@@ -301,7 +301,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 * on the next pass of dispatch().
 	 */
 	private static boolean triggersDirty = false;
-	/** This variable is used in conjunction with mWindowCallbackMap to track IWindowCallback aidl connections
+	/** This variable is used in conjunction with mWindowCallbackMap to track WindowCallback connections
 	 * window names.
 	 */
 	private boolean mCallbacksStarted = false;
@@ -324,8 +324,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	private final SparseArray<TriggerData> mSortedTriggerMap = new SparseArray<TriggerData>(0);
 	/** A utiltity object to keep track of the sorted order of plugins. */
 	private final SparseArray<Plugin> mTriggerPluginMap = new SparseArray<Plugin>(0);
-	/** Remote window callback map. Reduces overhead for needing to communicate with windows. */
-	private final RemoteCallbackList<IWindowCallback> mWindowCallbacks = new RemoteCallbackList<IWindowCallback>();
+	/** Remote window callback list. Reduces overhead for needing to communicate with windows. */
+	private final List<WindowCallback> mWindowCallbacks = new ArrayList<>();
 	/** The list of window tokens in loaded order. */
 	private ArrayList<WindowToken> mWindows;
 	/** The auto reconnect limit helper varialbe. */
@@ -391,9 +391,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Synchronization target to manage window loading/unloading. */
 	private Object mWindowSynch = new Object();
 	
-	/** Mapping of window names to IWindowCallback aidl bridge connections. */
-	private HashMap<String, IWindowCallback> mWindowCallbackMap = 
-			new HashMap<String, IWindowCallback>();
+	/** Mapping of window names to WindowCallback connections. */
+	private HashMap<String, WindowCallback> mWindowCallbackMap =
+			new HashMap<String, WindowCallback>();
 
 	
 	/** Enum used for the Timer command action ordinals. */
@@ -586,11 +586,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				break;
 			case MESSAGE_INVALIDATEWINDOWTEXT:
 				String wname = (String) msg.obj;
-				try {
-					doInvalidateWindowText(wname);
-				} catch (RemoteException e4) {
-					e4.printStackTrace();
-				}
+				doInvalidateWindowText(wname);
 				break;
 			case MESSAGE_WINDOWXCALLS:
 				Object o = msg.obj;
@@ -599,21 +595,13 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				}
 				String token = msg.getData().getString("TOKEN");
 				String function = msg.getData().getString("FUNCTION");
-				try {
-					Connection.this.windowXCallS(token, function, o);
-				} catch (RemoteException e3) {
-					e3.printStackTrace();
-				}
+				Connection.this.windowXCallS(token, function, o);
 				break;
 			case MESSAGE_WINDOWXCALLB:
 				byte[] bytesa = (byte[]) msg.obj;
 				String tokens = msg.getData().getString("TOKEN");
 				String functions = msg.getData().getString("FUNCTION");
-				try {
-					Connection.this.windowXCallB(tokens, functions, bytesa);
-				} catch (RemoteException e3) {
-					e3.printStackTrace();
-				}
+				Connection.this.windowXCallB(tokens, functions, bytesa);
 				break;
 			case MESSAGE_ADDFUNCTIONCALLBACK:
 				Bundle data = msg.getData();
@@ -663,11 +651,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			case MESSAGE_LINETOWINDOW:
 				Object line = msg.obj;
 				String target = msg.getData().getString("TARGET");
-				try {
-					Connection.this.lineToWindow(target, line);
-				} catch (RemoteException e3) {
-					e3.printStackTrace();
-				}
+				Connection.this.lineToWindow(target, line);
 				break;
 			case MESSAGE_SENDDATA_STRING:
 				try {
@@ -793,13 +777,12 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	}
 
 	/** Work horse method for plugins to invalidate a target window's text.
-	 * 
+	 *
 	 * @param name Name of the window that should invalidate it's text.
-	 * @throws RemoteException Thrown when there is a problem with the aidl bridge.
 	 */
-	protected final void doInvalidateWindowText(final String name) throws RemoteException {
+	protected final void doInvalidateWindowText(final String name) {
 
-		IWindowCallback callback = mWindowCallbackMap.get(name);
+		WindowCallback callback = mWindowCallbackMap.get(name);
 	
 		if (callback == null) {
 			return;
@@ -819,15 +802,14 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	}
 
 	/** Work horse method for WindowXCallS Lua function.
-	 * 
+	 *
 	 * @param name Name of the target window.
 	 * @param function Name of the anonymous global function to call
 	 * @param o String argument to provide to @param function
-	 * @throws RemoteException Thrown when there is a problem with the aidl bridge.
 	 */
-	public final void windowXCallS(final String name, final String function, final Object o) throws RemoteException {
+	public final void windowXCallS(final String name, final String function, final Object o) {
 
-		IWindowCallback c = mWindowCallbackMap.get(name);
+		WindowCallback c = mWindowCallbackMap.get(name);
 
 		if (c != null) {
 			c.xcallS(function, (String) o);
@@ -836,14 +818,13 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	}
 
 	/** Work horse method for WindowXCallB Lua function.
-	 * 
+	 *
 	 * @param name Name of the target window.
 	 * @param functions Name of the anonymous global function to call.
 	 * @param bytes Bytes to provide as an argument to @param function
-	 * @throws RemoteException Thrown when there is a problem with the aidl bridge.
 	 */
-	protected final void windowXCallB(final String name, final String functions, final byte[] bytes) throws RemoteException {
-		IWindowCallback c = mWindowCallbackMap.get(name);
+	protected final void windowXCallB(final String name, final String functions, final byte[] bytes) {
+		WindowCallback c = mWindowCallbackMap.get(name);
 		if (c != null) {
 			c.xcallB(functions, bytes);
 		}
@@ -867,14 +848,10 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Calling this method will reload the connection settings and all plugins. */
 	public final void reloadSettings() {
 
-		for (IWindowCallback c : mWindowCallbackMap.values()) {
-			try {
-				c.shutdown();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (WindowCallback c : mWindowCallbackMap.values()) {
+			c.shutdown();
 		}
-		
+
 		mWindowCallbackMap.clear();
 		mService.markWindowsDirty();
 		loadInternalSettings();
@@ -1140,25 +1117,20 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 */
 	protected final void redrawWindow(final String win) {
 
-			IWindowCallback w = mWindowCallbackMap.get(win);
+			WindowCallback w = mWindowCallbackMap.get(win);
 			if (w == null) {
 				return;
 			}
-			try {
-					w.redraw();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			w.redraw();
 
 	}
 
 	/** Actual working method for the LineToWindow Lua function.
-	 * 
+	 *
 	 * @param target Name of the window to recieve the line.
 	 * @param line The TextTree.Line to send to @param target
-	 * @throws RemoteException Thrown when there is a problem with the aidl bridge.
 	 */
-	protected final void lineToWindow(final String target, final Object line) throws RemoteException {
+	protected final void lineToWindow(final String target, final Object line) {
 		
 		for (WindowToken w : mWindows) {
 			if (w.getName().equals(target)) {
@@ -1183,73 +1155,50 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 					e.printStackTrace();
 				}
 
-					IWindowCallback c = mWindowCallbackMap.get(target);
+					WindowCallback c = mWindowCallbackMap.get(target);
 					if (c != null) {
-						c.rawDataIncoming(lol);		
+						c.rawDataIncoming(lol);
 					}
 			}
 		}
 	}
 	
-	/** Called from the aidl bridge housing in StellarService when the foreground window has started a new
+	/** Called from StellarService when the foreground window has started a new
 	 * window and needs to let the Connection know that a new window is open for it.
-	 * 
+	 *
 	 * @param name The name of the new window.
-	 * @param callback The IWindowCallback aidl conenction object associated with the window.
+	 * @param callback The WindowCallback associated with the window.
 	 */
-	public final void registerWindowCallback(final String name, final IWindowCallback callback) {
+	public final void registerWindowCallback(final String name, final WindowCallback callback) {
 		synchronized (mWindowSynch) {
 		Log.e("LOG","REGISTERING WINDOW "+name + " mCallbacksStarte="+mCallbacksStarted);
-		if (mCallbacksStarted) {
-			mWindowCallbacks.finishBroadcast();
-		}
 		Log.e("LOG","REGISTERING " + name);
-		mWindowCallbacks.register(callback);
-		
-		int n = mWindowCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			IWindowCallback w = mWindowCallbacks.getBroadcastItem(i);
-			try {
-				mWindowCallbackMap.put(w.getName(), w);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		mWindowCallbacks.add(callback);
+
+		mWindowCallbackMap.clear();
+		for (WindowCallback w : mWindowCallbacks) {
+			mWindowCallbackMap.put(w.getName(), w);
 		}
 		mCallbacksStarted = true;
 		}
 	}
 	
-	/** Called from the aidl bridge housing in StellarService when the foreground window has stopped and destroyed a
-	 * window and needs to let the Connection know that the IWindowCallback is invalid.
-	 * 
-	 * @param callback The IWindowCallback aidl connection object of the destroyed window.
+	/** Called from StellarService when the foreground window has stopped and destroyed a
+	 * window and needs to let the Connection know that the WindowCallback is invalid.
+	 *
+	 * @param callback The WindowCallback of the destroyed window.
 	 */
-	public final void unregisterWindowCallback(final IWindowCallback callback) {
+	public final void unregisterWindowCallback(final WindowCallback callback) {
 		synchronized (mWindowSynch) {
 		Log.e("LOG","UNREGISTERING WINDOW "+" mCallbacksStarted="+mCallbacksStarted);
-		if (mCallbacksStarted) {
-			mWindowCallbacks.finishBroadcast();
-			//mCallbacksStarted = false;
-		}
-		try {
-			Log.e("LOG","UNREGISTERING " + callback.getName());
-		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		mWindowCallbacks.unregister(callback);
+		Log.e("LOG","UNREGISTERING " + callback.getName());
+		mWindowCallbacks.remove(callback);
 
 		mWindowCallbackMap.clear();
-		int n = mWindowCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			IWindowCallback w = mWindowCallbacks.getBroadcastItem(i);
-			try {
-				mWindowCallbackMap.put(w.getName(), w);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (WindowCallback w : mWindowCallbacks) {
+			mWindowCallbackMap.put(w.getName(), w);
 		}
-		
+
 		mCallbacksStarted = true;
 		}
 	}
@@ -1651,14 +1600,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 */
 	public final void sendBytesToWindow(final byte[] data) {
 
-		try {
-
-			IWindowCallback c = mWindowCallbackMap.get(MAIN_WINDOW);
-			if (c != null) {
-				c.rawDataIncoming(data);
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		WindowCallback c = mWindowCallbackMap.get(MAIN_WINDOW);
+		if (c != null) {
+			c.rawDataIncoming(data);
 		}
 	}
 	
@@ -2863,15 +2807,11 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	 */
 	public final void handleWindowSettingsChanged(final String window, final String key, final String value) {
 
-			IWindowCallback callback = mWindowCallbackMap.get(window);
+			WindowCallback callback = mWindowCallbackMap.get(window);
 			if (callback == null) {
 				return;
 			}
-			try {
-				callback.updateSetting(key, value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			callback.updateSetting(key, value);
 	}
 
 	@Override
@@ -3114,13 +3054,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			w.getBuffer().setEncoding(value);
 		}
 		
-		for (IWindowCallback w : mWindowCallbackMap.values()) {
-			//IWindowCallback w = mWindowCallbacks.getBroadcastItem(i);
-			try {
-				w.setEncoding(value);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (WindowCallback w : mWindowCallbackMap.values()) {
+			w.setEncoding(value);
 		}
 		
 		for (int i = 0; i < mPlugins.size(); i++) {
@@ -3340,12 +3275,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		} catch (Exception e) {
 			//dispatch error.
 			//do not copy files
-			try {
-				mService.dispatchSaveError(e.getLocalizedMessage());
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			mService.dispatchSaveError(e.getLocalizedMessage());
 			passed = false;
 		} finally {
 			if(passed) {
@@ -3433,12 +3363,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				extfilestream.write(writer.toString().getBytes());
 				extfilestream.close();
 				} catch(Exception e) {
-					try {
-						mService.dispatchPluginSaveError(currentplugin,e.getLocalizedMessage());
-					} catch (RemoteException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					mService.dispatchPluginSaveError(currentplugin,e.getLocalizedMessage());
 					passed = false;
 				} finally {
 					if(extfilestream != null) {
@@ -3564,7 +3489,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				if (path != null) { //import old buttons
 				
 				//slag out the old settings and RAM them into the new ones.
-				LuaState pL = buttonwindow.getLuaState();
+				LuaState pL = buttonwindow.getLuaState(); if (pL == null) { return; }
 				
 				pL.newTable();
 				for (String key : s.getButtonSets().keySet()) {
@@ -3735,7 +3660,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				} else {
 					//default settings are being loaded.
 					//run the adjustment for the new buttons
-					LuaState pL = buttonwindow.getLuaState();
+					LuaState pL = buttonwindow.getLuaState(); if (pL == null) { return; }
 					pL.getGlobal("debug");
 					pL.getField(-1, "traceback");
 					pL.getGlobal("alignDefaultButtons");
@@ -3809,7 +3734,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 					if (path == null) {
 						Plugin buttonwindow = tmpplugs.get(1);
 						//LuaState L = buttonwindow.getLuaState();
-						LuaState pL = buttonwindow.getLuaState();
+						LuaState pL = buttonwindow.getLuaState(); if (pL == null) { return; }
 						pL.getGlobal("debug");
 						pL.getField(-1, "traceback");
 						pL.getGlobal("alignDefaultButtons");
@@ -3826,11 +3751,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 					loadPlugins(tmpplugs, summary);
 				} else {
 					Log.e("XMLPARSE", "ERROR IN LOADING V2 SETTINGS, DID NOT FIND PROPER XMLVERSION NUMBER");
-					try {
-						mService.dispatchXMLError("Error " + verb.toLowerCase(Locale.US) + " settings, invalid or missing version attribute.\n");
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					mService.dispatchXMLError("Error " + verb.toLowerCase(Locale.US) + " settings, invalid or missing version attribute.\n");
 					return;
 				}
 				
@@ -3843,12 +3764,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
-			try {
-				mService.dispatchXMLError(e.getLocalizedMessage());
-				return;
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
+			mService.dispatchXMLError(e.getLocalizedMessage());
+			return;
 		}
 		
 		if (path == null) {
@@ -4020,12 +3937,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	
 	/** Work horse routine that actually resets the settings. */
 	public final void doResetSettings() {
-		for (IWindowCallback c : mWindowCallbackMap.values()) {
-			try {
-				c.shutdown();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for (WindowCallback c : mWindowCallbackMap.values()) {
+			c.shutdown();
 		}
 		mService.markWindowsDirty();
 		importSettings(null, true, true);

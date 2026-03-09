@@ -57,8 +57,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
 import android.text.InputType;
 import android.util.Log;
 //import android.util.Log;
@@ -100,8 +100,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
-import com.offsetnull.bt.service.IConnectionBinderCallback;
+import com.offsetnull.bt.service.StellarService;
+import com.offsetnull.bt.service.ConnectionCallback;
 import com.offsetnull.bt.alias.AliasData;
 import com.offsetnull.bt.alias.AliasSelectionDialog;
 import com.offsetnull.bt.alias.BetterAliasSelectionDialog;
@@ -125,8 +125,8 @@ import com.offsetnull.bt.trigger.BetterTriggerSelectionDialog;
 import com.offsetnull.bt.trigger.TriggerSelectionDialog;
 import com.offsetnull.bt.ui.SDCardUtils;
 
-import android.support.v7.app.AppCompatActivity;
-import android.support.v4.view.MenuItemCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 
 public class MainWindow extends AppCompatActivity implements MainWindowCallback,ActivityCompat.OnRequestPermissionsResultCallback {
 	
@@ -233,7 +233,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	Handler myhandler = null;
 	//boolean servicestarted = false;
 	
-	IConnectionBinder service = null;
+	StellarService service = null;
 	Processor the_processor = null;
 	private int statusBarHeight = 1;
 	//GestureDetector gestureDetector = null;
@@ -310,18 +310,13 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 
 		public void onServiceConnected(ComponentName arg0, IBinder arg1) {
 			//Log.e("window","starting onServiceConnected");
-			service = IConnectionBinder.Stub.asInterface(arg1); //turn the binder into something useful
-			
-			//register callback
-			try {
-				String display = MainWindow.this.getIntent().getStringExtra("DISPLAY");
-				String host = MainWindow.this.getIntent().getStringExtra("HOST");
-				int port = Integer.parseInt(MainWindow.this.getIntent().getStringExtra("PORT"));
-				service.registerCallback(the_callback,host,port,display);
-				
-			} catch (RemoteException e) {
-				//do nothing here, as there isn't much we can do
-			}
+			StellarService.LocalBinder binder = (StellarService.LocalBinder) arg1;
+			service = binder.getService();
+
+			String display = MainWindow.this.getIntent().getStringExtra("DISPLAY");
+			String host = MainWindow.this.getIntent().getStringExtra("HOST");
+			int port = Integer.parseInt(MainWindow.this.getIntent().getStringExtra("PORT"));
+			service.registerCallback(the_callback,host,port,display);
 			synchronized(serviceConnected) {
 				//Log.e("WINDOW","SERVICE CONNECTED, SENDING NOTIFICATION");
 				serviceConnected.notify();
@@ -333,12 +328,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		}
 
 		public void onServiceDisconnected(ComponentName arg0) {
-			try {
-				//Log.e("WINDOW","Attempting to unregister the callback due to unbinding");
-				if(service != null) service.unregisterCallback(the_callback);
-			} catch (RemoteException e) {
-				//do nothing here, as there isn't much we can do
-			}
+			if(service != null) service.unregisterCallback(the_callback);
 			
 			service = null;
 			
@@ -370,7 +360,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		titleBarHeight = sprefs.getInt("TITLE_BAR_HEIGHT", 0);
 		setContentView(R.layout.window_layout);
 
-		android.support.v7.widget.Toolbar myToolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
+		androidx.appcompat.widget.Toolbar myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
 
 		history = new CommandKeeper(10);
@@ -616,23 +606,13 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					String pluginl = msg.getData().getString("PLUGIN");
 					String window = msg.getData().getString("WINDOW");
 					int amount = msg.arg1;
-					try {
-						service.updateWindowBufferMaxValue(pluginl,window,amount);
-					} catch (RemoteException e3) {
-						// TODO Auto-generated catch block
-						e3.printStackTrace();
-					}
+					service.updateWindowBufferMaxValue(pluginl,window,amount);
 					break;
 				case MESSAGE_PLUGINXCALLS:
 					//Map map = (Map)msg.obj;
 					String plugin = msg.getData().getString("PLUGIN");
 					String function = msg.getData().getString("FUNCTION");
-					try {
-						service.pluginXcallS(plugin,function,(String)msg.obj);
-					} catch (RemoteException e9) {
-						// TODO Auto-generated catch block
-						e9.printStackTrace();
-					}
+					service.pluginXcallS(plugin,function,(String)msg.obj);
 					break;
 				case MESSAGE_ADDOPTIONCALLBACK:
 					Bundle datab = msg.getData();
@@ -665,12 +645,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					loadSettings();
 					MainWindow.this.initiailizeWindows();
 					
-					try {
-						service.initXfer();
-					} catch (RemoteException e5) {
-						// TODO Auto-generated catch block
-						e5.printStackTrace();
-					}
+					service.initXfer();
 					break;
 				case MESSAGE_SWITCH:
 					//mConnection.
@@ -733,11 +708,9 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					
 					try {
 						service.sendData(((String)msg.obj).getBytes(service.getEncoding()));
-						
-					} catch (RemoteException e) {
-						e.printStackTrace();
+
 					} catch (UnsupportedEncodingException e) {
-						
+
 						e.printStackTrace();
 					}
 					//screen2.jumpToZero();
@@ -878,7 +851,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 								}});
 
 					View snackbarView = bar.getView();
-					TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+					TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 					textView.setMaxLines(5);  // show multiple line
 					bar.show();
 					break;
@@ -994,18 +967,13 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 						buf = ByteBuffer.allocate(pdata.getBytes(service.getEncoding()).length);
 					} catch (UnsupportedEncodingException e2) {
 						throw new RuntimeException(e2);
-					} catch (RemoteException e2) {
-						throw new RuntimeException(e2);
 					}
 					
 					
 					try {
 						buf.put(pdata.getBytes(service.getEncoding()));
 					} catch (UnsupportedEncodingException e) {
-						
-						e.printStackTrace();
-					} catch (RemoteException e) {
-						
+
 						e.printStackTrace();
 					}
 				
@@ -1013,11 +981,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 				
 					byte[] buffbytes = buf.array();
 
-					try {
-						service.sendData(buffbytes);
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					service.sendData(buffbytes);
 					myhandler.sendEmptyMessage(MainWindow.MESSAGE_RESETINPUTWINDOW);
 					break;
 				case MESSAGE_RESETINPUTWINDOW:
@@ -1051,12 +1015,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					//screen2.addBytes((byte[])msg.obj,true);
 					break;
 				case MESSAGE_SENDDATAOUT:
-					try {
-						service.sendData((byte[])msg.obj);
-						
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					service.sendData((byte[])msg.obj);
 					//screen2.jumpToZero();
 					
 					
@@ -1329,15 +1288,15 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 
 		this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0x00FFFFFF));
 
-		this.getSupportActionBar().setDisplayOptions(0, android.support.v7.app.ActionBar.DISPLAY_SHOW_HOME);
-		this.getSupportActionBar().setDisplayOptions(0, android.support.v7.app.ActionBar.DISPLAY_SHOW_TITLE);
+		this.getSupportActionBar().setDisplayOptions(0, androidx.appcompat.app.ActionBar.DISPLAY_SHOW_HOME);
+		this.getSupportActionBar().setDisplayOptions(0, androidx.appcompat.app.ActionBar.DISPLAY_SHOW_TITLE);
 
 
 
 		Button b = new Button(this);
 		b.setBackgroundColor(0x00000000);
 		//b.setBackgroundColor(0x33FF0000);
-		android.support.v7.app.ActionBar.LayoutParams tmp2 = new android.support.v7.app.ActionBar.LayoutParams(android.support.v7.app.ActionBar.LayoutParams.MATCH_PARENT,android.support.v7.app.ActionBar.LayoutParams.WRAP_CONTENT);
+		androidx.appcompat.app.ActionBar.LayoutParams tmp2 = new androidx.appcompat.app.ActionBar.LayoutParams(androidx.appcompat.app.ActionBar.LayoutParams.MATCH_PARENT,androidx.appcompat.app.ActionBar.LayoutParams.WRAP_CONTENT);
 
 		LinearLayout.LayoutParams tmp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		b.setLayoutParams(tmp);
@@ -1366,11 +1325,11 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		});
 
 		//this.getSupportActionBar().setCustomView(b,tmp2);
-		//this.getSupportActionBar().setDisplayOptions(android.support.v7.app.ActionBar.DISPLAY_SHOW_CUSTOM);
+		//this.getSupportActionBar().setDisplayOptions(androidx.appcompat.app.ActionBar.DISPLAY_SHOW_CUSTOM);
 		//this.getSupportActionBar().setDisplayShowCustomEnabled(true);
 		//b.setEnabled(true);
 		//this.getSupportActionBar().setContent
-		//android.support.v7.widget.Toolbar parent =(android.support.v7.widget.Toolbar) customView.getParent();
+		//androidx.appcompat.widget.Toolbar parent =(androidx.appcompat.widget.Toolbar) customView.getParent();
 		//parent.setContentInsetsAbsolute(0,0);
 
 		//Log.e("Window","End on create");
@@ -1392,21 +1351,11 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	};
 	
 	protected void doExportSettings(String path) {
-		try {
-			service.exportSettingsToPath(path);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		service.exportSettingsToPath(path);
 	}
 
 	protected void doResetSettings() {
-		try {
-			service.resetSettings();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		service.resetSettings();
 	}
 
 	protected void setUseCompatibilityMode(boolean value) {
@@ -1440,21 +1389,11 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 
 	protected void dispatchLuaError(String obj) {
-		try {
-			service.dispatchLuaError(obj);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		service.dispatchLuaError(obj);
 	}
 	
 	public void dispatchLuaText(String obj) {
-		try {
-			service.dispatchLuaText(obj);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		service.dispatchLuaText(obj);
 	}
 
 	protected void popMenuStack() {
@@ -1545,32 +1484,23 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		err.setPositiveButton("Reconnect", new DialogInterface.OnClickListener() {
 			
 			public void onClick(DialogInterface dialog, int which) {
-				try {
-					service.reconnect(str);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				service.reconnect(str);
 			}
 		});
 		
 		err.setNegativeButton("Close", new DialogInterface.OnClickListener() {
 			
 			public void onClick(DialogInterface dialog, int which) {
-				try {
-					//if(service.getConnections().size() > 1) {
-						service.closeConnection(str);
-						//switch to the next one. service will do this for us.
-						
-					//} else {
-					
-						cleanExit();
-						dialog.dismiss();
-						MainWindow.this.finish();
-					//}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				//if(service.getConnections().size() > 1) {
+					service.closeConnection(str);
+					//switch to the next one. service will do this for us.
+
+				//} else {
+
+					cleanExit();
+					dialog.dismiss();
+					MainWindow.this.finish();
+				//}
 			}
 		});
 		
@@ -1707,12 +1637,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			//pd.show();
 			break;
 		case 1100:
-			try {
-				service.reloadSettings();
-			} catch (RemoteException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
+			service.reloadSettings();
 			break;
 		case 1000: //Help/About
 			AboutDialog abtdialog = new AboutDialog(this);
@@ -1729,19 +1654,10 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		case 800:
 			//myhandler.sendEmptyMessage(MESSAGE_DODISCONNECT);
 			//service.
-			try {
-				service.endXfer();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			service.endXfer();
 			break;
 		case 700:
-			try {
-				service.reconnect(service.getConnectedTo());
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
+			service.reconnect(service.getConnectedTo());
 			break;
 		case 300:
 			BetterTimerSelectionDialog sel = new BetterTimerSelectionDialog(this,service);
@@ -1946,12 +1862,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-			try {
-				service.loadSettingsFromPath(items[which]);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			service.loadSettingsFromPath(items[which]);
 		}
 		
 	}
@@ -2050,12 +1961,8 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			//so we are kludging out the new button set dialog to just be a "string enterer" dialog.
 			//should be a full path /sdcard/something.xml
 			String filename = (String)msg.obj;
-			try {
-				//Log.e("WINDOW","TRYING TO GET SERVICE TO WRITE A FILE FOR ME!");
-				service.exportSettingsToPath(filename);
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
-			}
+			//Log.e("WINDOW","TRYING TO GET SERVICE TO WRITE A FILE FOR ME!");
+			service.exportSettingsToPath(filename);
 		}
 	};
 	
@@ -2239,16 +2146,11 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 	
 	private boolean isServiceConnected() {
-		try {
-			if(service.isConnected()) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		if(service.isConnected()) {
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 	
 	public void cleanExit() {
@@ -2256,26 +2158,16 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		cleanupWindows();
 		//shut down the service
 		
-		try {
-			String connected = service.getConnectedTo();
-			if(connected != null) {
-				service.closeConnection(connected);
-			}
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String connected = service.getConnectedTo();
+		if(connected != null) {
+			service.closeConnection(connected);
 		}
 		
 		if(isBound) {
-			try {
-				if(service != null) {
-					service.unregisterCallback(the_callback);
-				}
-			} catch (RemoteException e) {
-				//e.printStackTrace();
+			if(service != null) {
+				service.unregisterCallback(the_callback);
 			}
-			
+
 			unbindService(mConnection);
 			
 			
@@ -2299,14 +2191,9 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//we dont want to kill the service
 		cleanupWindows();
 		if(isBound) {
-			
-			try {
-				//Log.e("WINDOW","Attempting to unregister the callback due to unbinding");
-				service.unregisterCallback(the_callback);
-			} catch (RemoteException e) {
-				//e.printStackTrace();
-			}
-			
+			//Log.e("WINDOW","Attempting to unregister the callback due to unbinding");
+			service.unregisterCallback(the_callback);
+
 			unbindService(mConnection);
 			//Log.e("WINDOW","Unbound connection at cleanExit");
 			isBound = false;
@@ -2371,26 +2258,20 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	public void onDestroy() {
 		
 		if(isBound) {
-			
-			try {
-				//Log.e("WINDOW","SAVING BUFFER IN SERVICE");
-				
-				if(service != null) {
-					//service.unregisterCallback(the_callback);
-					
-					service.unregisterCallback(the_callback);
-					service.unregisterCallback(the_callback);
-					
-					unbindService(mConnection);
-					
-					//saveSettings();
-				} else {
-					//uh oh, pausing with a null service, this should not happen
-					
-				}
-			} catch (RemoteException e) {
-				e.printStackTrace();
-				
+			//Log.e("WINDOW","SAVING BUFFER IN SERVICE");
+
+			if(service != null) {
+				//service.unregisterCallback(the_callback);
+
+				service.unregisterCallback(the_callback);
+				service.unregisterCallback(the_callback);
+
+				unbindService(mConnection);
+
+				//saveSettings();
+			} else {
+				//uh oh, pausing with a null service, this should not happen
+
 			}
 			isBound = false;
 			
@@ -2415,12 +2296,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//Log.e("WINDOW","onDestroy()");
 		//windowShowing = false;
 		if(service == null) { super.onPause(); return; };
-		try {
-			service.windowShowing(false);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		service.windowShowing(false);
 		//screen2.pauseDrawing();
 		//screen2.clearAllText();
 		isResumed = false;
@@ -2455,29 +2331,19 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 
 		} else {
 			//request buffer.
-			try {
-				if(service != null) {
-					service.windowShowing(true);
-				}
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			if(service != null) {
+				service.windowShowing(true);
 			}
 			Intent i = this.getIntent();
 			//Log.e("LOG","RESUMING WINDOW WITH INTENT: display="+i.getStringExtra("DISPLAY")+" host="+i.getStringExtra("HOST")+" port="+i.getStringExtra("PORT"));
 			String display = i.getStringExtra("DISPLAY");
 			
-			try {
-				if(service != null) {
+			if(service != null) {
 				if(!service.getConnectedTo().equals(display)) {
 					Log.e("LOG","ATTEMPTING TO SWITCH TO: " + display);
 					//this.cleanupWindows();
-					service.switchTo(display);
+					service.switchToConnection(display);
 				}
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			
 			
@@ -2542,8 +2408,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		boolean fontSizeChanged = false;
 		//boolean fullscreen_now = false;		
 		
-		try {
-			//calculate80CharFontSize();
+		//calculate80CharFontSize();
 			//ByteView.LINK_MODE hyperLinkMode = ByteView.LINK_MODE.HIGHLIGHT_COLOR_ONLY_BLAND;
 			
 			
@@ -2654,10 +2519,6 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			//im
 			//get the rest of the window options that are necessary to function
 			
-		} catch (RemoteException e1) {
-			throw new RuntimeException(e1);
-		}
-		
 		//initiailizeWindows();
 		//int i = R.id.textinput;
 	}
@@ -2749,9 +2610,9 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	private BetterEditText.AnimationEndListener mInputBarAnimationListener = null;
 
 
-	private IConnectionBinderCallback.Stub the_callback = new IConnectionBinderCallback.Stub() {
+	private ConnectionCallback the_callback = new ConnectionCallback() {
 
-		public void dataIncoming(byte[] seq) throws RemoteException {
+		public void dataIncoming(byte[] seq) {
 			Message msg = myhandler.obtainMessage(MESSAGE_PROCESS);
 			Bundle b = new Bundle();
 			b.putByteArray("SEQ", seq);
@@ -2763,7 +2624,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			return windowShowing;
 		}
 
-		public void processedDataIncoming(CharSequence seq) throws RemoteException {
+		public void processedDataIncoming(CharSequence seq) {
 			Message msg = myhandler.obtainMessage(MESSAGE_PROCESSED); 
 			Bundle b = new Bundle();
 			b.putCharSequence("SEQ", seq);
@@ -2771,7 +2632,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(msg);
 		}
 
-		public void htmlDataIncoming(String html) throws RemoteException {
+		public void htmlDataIncoming(String html) {
 			Message msg = myhandler.obtainMessage(MESSAGE_HTMLINC);
 			Bundle b = new Bundle();
 			b.putString("HTML", html);
@@ -2780,7 +2641,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 
-		public void rawDataIncoming(byte[] raw) throws RemoteException {
+		public void rawDataIncoming(byte[] raw) {
 			
 			Message msg = myhandler.obtainMessage(MESSAGE_RAWINC,raw);
 			//Log.e("WINDOW","RECIEVING RAW");
@@ -2788,17 +2649,17 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 		
-		public void rawBufferIncoming(byte[] rawbuf) throws RemoteException {
+		public void rawBufferIncoming(byte[] rawbuf) {
 			Message msg = myhandler.obtainMessage(MESSAGE_BUFFINC,rawbuf);
 			myhandler.sendMessage(msg);
 			//Log.e("WINDOW","RECEIVING BUFFER: " + rawbuf.length());
 		}
 
-		public void loadSettings() throws RemoteException {
+		public void loadSettings() {
 			myhandler.sendEmptyMessage(MESSAGE_LOADSETTINGS);
 		}
 
-		public void displayXMLError(String error) throws RemoteException {
+		public void displayXMLError(String error) {
 			Message xmlerror = myhandler.obtainMessage(MESSAGE_XMLERROR);
 			xmlerror.obj = error;
 			myhandler.sendMessage(xmlerror);
@@ -2806,32 +2667,32 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		}
 
 		@Override
-		public void displaySaveError(String error) throws RemoteException {
+		public void displaySaveError(String error) {
 			Message saveerror = myhandler.obtainMessage(MESSAGE_SAVEERROR);
 			saveerror.obj = error;
 			myhandler.sendMessage(saveerror);
 		}
 		
 		@Override
-		public void displayPluginSaveError(String plugin, String error) throws RemoteException {
+		public void displayPluginSaveError(String plugin, String error) {
 			Message saveerror = myhandler.obtainMessage(MESSAGE_SAVEERROR);
 			saveerror.obj = error;
 			saveerror.getData().putString("PLUGIN", plugin);
 			myhandler.sendMessage(saveerror);
 		}
 
-		public void executeColorDebug(int arg) throws RemoteException {
+		public void executeColorDebug(int arg) {
 			Message colordebug = myhandler.obtainMessage(MESSAGE_COLORDEBUG);
 			colordebug.arg1 = arg;
 			myhandler.sendMessage(colordebug);
 		}
 
-		public void invokeDirtyExit() throws RemoteException {
+		public void invokeDirtyExit() {
 			myhandler.sendEmptyMessage(MESSAGE_DIRTYEXITNOW);
 			
 		}
 
-		public void showMessage(String message,boolean longtime) throws RemoteException {
+		public void showMessage(String message,boolean longtime) {
 			Message showmessage = myhandler.obtainMessage(MESSAGE_SHOWTOAST);
 			showmessage.obj = message;
 			if(longtime) {
@@ -2843,17 +2704,17 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 
-		public void showDialog(String message) throws RemoteException {
+		public void showDialog(String message) {
 			Message showdlg = myhandler.obtainMessage(MESSAGE_SHOWDIALOG);
 			showdlg.obj = message;
 			myhandler.sendMessage(showdlg);
 		}
 
-		public void doVisualBell() throws RemoteException {
+		public void doVisualBell() {
 			myhandler.sendEmptyMessage(MESSAGE_BELLTOAST);
 		}
 
-		public void setScreenMode(boolean fullscreen) throws RemoteException {
+		public void setScreenMode(boolean fullscreen) {
 			Message doScreenMode = myhandler.obtainMessage(MESSAGE_DOSCREENMODE);
 			if(fullscreen) {
 				doScreenMode.arg1 = 1;
@@ -2864,7 +2725,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(doScreenMode);
 		}
 
-		public void showKeyBoard(String txt,boolean popup,boolean add,boolean flush,boolean clear,boolean close) throws RemoteException {
+		public void showKeyBoard(String txt,boolean popup,boolean add,boolean flush,boolean clear,boolean close) {
 			if(flush) {
 				myhandler.sendEmptyMessage(MESSAGE_PROCESSINPUTWINDOW);
 				return;
@@ -2884,20 +2745,20 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_KEYBOARD,p,a,txt));
 		}
 
-		public void doDisconnectNotice(String display) throws RemoteException {
+		public void doDisconnectNotice(String display) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_DODISCONNECT, display));
 			
 		}
 
-		public void doLineBreak(int i) throws RemoteException {
+		public void doLineBreak(int i) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_LINEBREAK,new Integer(i)));
 		}
 
-		public void reloadButtons(String setName) throws RemoteException {
+		public void reloadButtons(String setName) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_CHANGEBUTTONSET,setName));
 		}
 		
-		public void clearAllButtons() throws RemoteException {
+		public void clearAllButtons() {
 			myhandler.sendEmptyMessage(MESSAGE_CLEARALLBUTTONS);
 		}
 		
@@ -2920,12 +2781,12 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(msg);*/
 		}
 
-		public void updateEnemy(int hp) throws RemoteException {
+		public void updateEnemy(int hp) {
 			//myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_ENEMYHP,hp,0));
 		}
 
 		public void updateVitals2(int hp, int mp, int maxhp, int maxmana,
-				int enemy) throws RemoteException {
+				int enemy) {
 			/*Message m = myhandler.obtainMessage(MESSAGE_VITALS2);
 			//if(this.get(list.data.MESSget(i))
 			Bundle b = m.getData();
@@ -2939,21 +2800,21 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			myhandler.sendMessage(m);*/
 		}
 		
-		public void luaOmg(int stateIndex) throws RemoteException {
+		public void luaOmg(int stateIndex) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_TESTLUA,stateIndex,0));
 		}
 
-		public void updateTriggerDebugString(String str) throws RemoteException {
+		public void updateTriggerDebugString(String str) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_TRIGGERSTR,str));
 		}
 
-		public int getPort() throws RemoteException {
+		public int getPort() {
 			Intent i= MainWindow.this.getIntent();
 			
 			return (new Integer(i.getStringExtra("HOST")).intValue());
 		}
 
-		public String getHost() throws RemoteException {
+		public String getHost() {
 			// TODO Auto-generated method stub
 			Intent i= MainWindow.this.getIntent();
 			
@@ -2961,67 +2822,66 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 		}
 
-		public String getDisplay() throws RemoteException {
+		public String getDisplay() {
 			// TODO Auto-generated method stub
 			Intent i= MainWindow.this.getIntent();
 			
 			return i.getStringExtra("DISPLAY");
 		}
 
-		public void switchTo(String connection) throws RemoteException {
+		public void switchTo(String connection) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SWITCH,connection));
 		}
 
-		public void reloadBuffer() throws RemoteException {
+		public void reloadBuffer() {
 			myhandler.sendEmptyMessage(MESSAGE_RELOADBUFFER);
 		}
 
-		public void loadWindowSettings() throws RemoteException {
+		public void loadWindowSettings() {
 			myhandler.sendEmptyMessage(MESSAGE_INITIALIZEWINDOWS);
 		}
 		
-		public void markWindowsDirty() throws RemoteException {
+		public void markWindowsDirty() {
 			myhandler.sendEmptyMessage(MESSAGE_MARKWINDOWSDIRTY);
 		}
 
 		@Override
-		public void markSettingsDirty() throws RemoteException {
+		public void markSettingsDirty() {
 			myhandler.sendEmptyMessage(MESSAGE_MARKSETTINGSDIRTY);
 		}
 
 		@Override
-		public void setKeepLast(boolean keep) throws RemoteException {
+		public void setKeepLast(boolean keep) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SETKEEPLAST, (keep==true) ? 1 : 0, 0));
 		}
 
 		@Override
-		public void setOrientation(int orientation) throws RemoteException {
+		public void setOrientation(int orientation) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SETORIENTATION,orientation,0));
 		}
 
 		@Override
-		public void setKeepScreenOn(boolean value) throws RemoteException {
+		public void setKeepScreenOn(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SETKEEPSCREENON, (value == true) ? 1 : 0,0));
 		}
 
 		@Override
-		public void setUseFullscreenEditor(boolean value)
-				throws RemoteException {
+		public void setUseFullscreenEditor(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_USEFULLSCREENEDITOR,(value == true) ? 1 :0,0));
 		}
 
 		@Override
-		public void setUseSuggestions(boolean value) throws RemoteException {
+		public void setUseSuggestions(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_USESUGGESTIONS,(value==true) ? 1 : 0,0));
 		}
 
 		@Override
-		public void setCompatibilityMode(boolean value) throws RemoteException {
+		public void setCompatibilityMode(boolean value) {
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_USECOMPATIBILITYMODE,(value==true) ? 1 : 0,0));
 		}
 
 		@Override
-		public void setRegexWarning(boolean value) throws RemoteException {
+		public void setRegexWarning(boolean value) {
 			// TODO Auto-generated method stub
 			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_SHOWREGEXWARNING,(value==true) ? 1 : 0,0));
 		}
@@ -3056,42 +2916,28 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		windowsInitialized = true;
 		String displayname = "";
 		
-		try {
-			mWindows = service.getWindowTokens();
-			//displayname = service.getConnectedTo();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		mWindows = service.getWindowTokens();
+		//displayname = service.getConnectedTo();
 		
 		if(mWindows == null || mWindows.length == 0) {
-			//Exception e = new Exception("No windows to show.");
-			//throw new RuntimeException(e);
+			int retries = 0;
+			int maxRetries = 10;
 			synchronized(this) {
-				while(mWindows == null || mWindows.length == 0) {
+				while((mWindows == null || mWindows.length == 0) && retries < maxRetries) {
 					try {
 						this.wait(300);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					boolean done = false;
-					//while(!done) {
-						try {
-							mWindows = service.getWindowTokens();
-							if(mWindows != null) {
-								if(mWindows.length > 0) {
-									done = true;
-								}
-							}
-						} catch (RemoteException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					//}
+					mWindows = service.getWindowTokens();
+					retries++;
 				}
 			}
-		} 
+			if(mWindows == null || mWindows.length == 0) {
+				Log.w("MUDWammer", "No window tokens received after " + maxRetries + " retries, skipping window initialization");
+				return;
+			}
+		}
 			ApplicationInfo ai = null;
 			try {
 				ai = this.getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
@@ -3138,7 +2984,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//}
 
 		//bring the toolbar to the front
-		android.support.v7.widget.Toolbar myToolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.my_toolbar);
+		androidx.appcompat.widget.Toolbar myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
 		if(myToolbar != null) {
 			myToolbar.bringToFront();
 		}
@@ -3191,21 +3037,11 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			
 			//holder.addView(tmp);
 			
-			try {
-				String body = service.getScript(w.getPluginName(),w.getScriptName());
-				//TODO: this needs to be much harderly error checked.
-				tmp.loadScript(body);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String body = service.getScript(w.getPluginName(),w.getScriptName());
+			//TODO: this needs to be much harderly error checked.
+			tmp.loadScript(body);
 			tmp.setBufferText(w.isBufferText());
-			try {
-				service.registerWindowCallback(w.getDisplayHost(),w.getName(),tmp.getCallback());
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			service.registerWindowCallback(w.getDisplayHost(),w.getName(),tmp.getCallback());
 			
 			if(w.getBuffer() != null) {
 				//tmp.addBytes(w.getBuffer().dumpToBytes(false), true);
@@ -3232,11 +3068,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 				View tmp = rl.findViewWithTag(w.getName());
 				
 				if(tmp instanceof com.offsetnull.bt.window.Window) {
-					try {
-						service.unregisterWindowCallback(w.getDisplayHost(), ((com.offsetnull.bt.window.Window)tmp).getCallback());
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					service.unregisterWindowCallback(w.getDisplayHost(), ((com.offsetnull.bt.window.Window)tmp).getCallback());
 					Log.e("WINDOW","SHUTTING DOWN WINDOW " + w.getName());
 					((com.offsetnull.bt.window.Window)tmp).shutdown();
 					
@@ -3292,12 +3124,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 	
 	public void shutdownWindow(com.offsetnull.bt.window.Window window) {
-		try {
-			service.unregisterWindowCallback(window.getName(), window.getCallback());
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		service.unregisterWindowCallback(window.getName(), window.getCallback());
 	}
 	
 	private boolean isLandscape() {
@@ -3365,15 +3192,8 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 
 	public String getPathForPlugin(String mOwner) {
-		try {
-			String path = service.getPluginPath(mOwner);
-			return path;
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;
+		String path = service.getPluginPath(mOwner);
+		return path;
 	}
 
 	@Override
@@ -3433,7 +3253,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					}});
 
 		View snackbarView = bar.getView();
-		TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+		TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 		textView.setMaxLines(5);  // show multiple line
 		bar.show();
 	}
@@ -3450,7 +3270,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 					}});
 
 		View snackbarView = bar.getView();
-		TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+		TextView textView = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 		textView.setMaxLines(5);  // show multiple line
 		bar.show();
 	}

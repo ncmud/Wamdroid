@@ -3,7 +3,7 @@ package com.offsetnull.bt.button;
 import java.util.List;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.button.ButtonEditorDialog.COLOR_FIELDS;
 import com.offsetnull.bt.settings.ColorSetSettings;
 import com.offsetnull.bt.validator.Validator;
@@ -12,7 +12,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.RemoteException;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -42,9 +41,9 @@ public class ButtonSetEditor extends Dialog implements ColorPickerDialog.OnColor
 	
 	Handler notifychanged = null;
 	
-	IConnectionBinder service;
+	StellarService service;
 	String set;
-	public ButtonSetEditor(Context context,IConnectionBinder the_service,String selected_set,Handler use_this_handler) {
+	public ButtonSetEditor(Context context,StellarService the_service,String selected_set,Handler use_this_handler) {
 		super(context);
 		service = the_service;
 		set = selected_set;
@@ -62,11 +61,9 @@ public class ButtonSetEditor extends Dialog implements ColorPickerDialog.OnColor
 		sv.setScrollbarFadingEnabled(false);
 		//attempt to fetch the settings.
 		//ColorSetSettings the_settings =  null;
-		//try {
-			//newsettings = service.getColorSetDefaultsForSet(set);
-		//} catch (RemoteException e) {
-		//	throw new RuntimeException(e);
-		//}
+		//
+		//newsettings = service.getColorSetDefaultsForSet(set);
+	//
 		//
 		oldsettings = newsettings.copy();
 		
@@ -174,12 +171,9 @@ public class ButtonSetEditor extends Dialog implements ColorPickerDialog.OnColor
 				
 				//get set names
 				List<String> takenNames = null;
-				//try {
-					//takenNames = service.getButtonSetNames();
-				//} catch (RemoteException e1) {
-					// TODO Auto-generated catch block
-				//	e1.printStackTrace();
-				//}
+				//
+				//takenNames = service.getButtonSetNames();
+			//
 				
 				for(String str : takenNames) {
 					if(nameEditor.getText().toString().equals(str) && !nameEditor.getText().toString().equals(set)) {
@@ -198,12 +192,9 @@ public class ButtonSetEditor extends Dialog implements ColorPickerDialog.OnColor
 				newsettings.setLockEditButtons(lockEditButtons.isChecked());
 				
 				if(!(nameEditor.getText().toString().equals(set))) {
-					//try {
-						//service.updateAndRenameSet(set, nameEditor.getText().toString(), newsettings);
-					//} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-					//	e.printStackTrace();
-					//}
+					//
+					//service.updateAndRenameSet(set, nameEditor.getText().toString(), newsettings);
+				//
 					notifychanged.sendMessage(notifychanged.obtainMessage(101,nameEditor.getText().toString()));
 					ButtonSetEditor.this.dismiss();
 					return;
@@ -213,11 +204,9 @@ public class ButtonSetEditor extends Dialog implements ColorPickerDialog.OnColor
 
 				} else {
 					//changes made, notify the service that the change has been made, and notify the settings dialog that when it exits it needs to reload whatever button set changed.
-					//try {
-						//service.setColorSetDefaultsForSet(set, newsettings);
-					//} catch (RemoteException e) {
-					//	throw new RuntimeException(e);
-					//}
+					//
+					//service.setColorSetDefaultsForSet(set, newsettings);
+				//
 					notifychanged.sendEmptyMessage(100);
 				}
 				ButtonSetEditor.this.dismiss();

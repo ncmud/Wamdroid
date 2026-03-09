@@ -9,12 +9,10 @@ import com.offsetnull.bt.responder.ack.AckResponder;
 import com.offsetnull.bt.responder.notification.NotificationResponder;
 import com.offsetnull.bt.responder.toast.ToastResponder;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 //import android.util.Log;
 
-public class TimerData implements Parcelable {
-	
+public class TimerData {
+
 	private String name;
 	private Integer ordinal;
 	private Integer seconds;
@@ -22,14 +20,14 @@ public class TimerData implements Parcelable {
 	private boolean playing;
 	private long startTime;
 	private int remainingTime;
-	
-	
+
+
 	//data that is not serialized, but should still be parcelable.
 	//private long ttf;
 	//private Long pauseLocation;
-	
+
 	private List<TriggerResponder> responders;
-	
+
 	public TimerData() {
 		name="";
 		ordinal=0;
@@ -39,16 +37,16 @@ public class TimerData implements Parcelable {
 		//ttf = seconds*1000;
 		responders = new ArrayList<TriggerResponder>();
 		//pauseLocation = 0l;
-		
+
 	}
-	
+
 	public void reset() {
 		//ttf = seconds*1000;
 		//pauseLocation = 0l;
 	}
-	
+
 	public TimerData copy() {
-		
+
 		TimerData tmp = new TimerData();
 		tmp.name = this.name;
 		tmp.ordinal = this.ordinal;
@@ -59,11 +57,11 @@ public class TimerData implements Parcelable {
 		for(TriggerResponder responder : this.responders) {
 			tmp.responders.add(responder.copy());
 		}
-		
+
 		return tmp;
-		
+
 	}
-	
+
 	public boolean equals(Object o) {
 		if(o == this) return true;
 		if(!(o instanceof TimerData)) return false;
@@ -81,85 +79,8 @@ public class TimerData implements Parcelable {
 			TriggerResponder my_responder = my_responders.next();
 			if(!test_responder.equals(my_responder)) return false;
 		}
-		
+
 		return true;
-	}
-	
-	public static final Parcelable.Creator<TimerData> CREATOR = new Parcelable.Creator<TimerData>() {
-
-		public TimerData createFromParcel(Parcel arg0) {
-			return new TimerData(arg0);
-		}
-
-		public TimerData[] newArray(int arg0) {
-			return new TimerData[arg0];
-		}
-	};
-	
-	public TimerData(Parcel in) {
-		readFromParcel(in);
-	}
-
-	public void readFromParcel(Parcel in) {
-		setName(in.readString());
-		setOrdinal(in.readInt());
-		setSeconds(in.readInt());
-		setRepeat( (in.readInt() == 1) ? true : false);
-		setPlaying( (in.readInt() == 1) ? true : false);
-		setRemainingTime( in.readInt());
-		int numresponders = in.readInt();
-		responders = new ArrayList<TriggerResponder>();
-		//Log.e("PARCLE","IN: name=" + name);
-		//Log.e("PARCLE","IN: ordinal=" + ordinal);
-		//Log.e("PARCLE","IN: seconds=" + seconds);
-		//Log.e("PARCLE","IN: repeat" + repeat);
-		//Log.e("PARCLE","IN: playing=" + playing);
-		//Log.e("PARCLE","IN: #responders=" + numresponders);
-		
-		for(int i = 0;i<numresponders;i++) {
-			//Log.e("PARCLE","IN: ATTEMPTING TO LOAD RESPONDER");
-			int type = in.readInt();
-			//Log.e("PARCLE","IN: FOUND RESPONDER TYPE " + type);
-			switch(type) {
-			case TriggerResponder.RESPONDER_TYPE_NOTIFICATION:
-				
-				
-				NotificationResponder resp = in.readParcelable(com.offsetnull.bt.responder.notification.NotificationResponder.class.getClassLoader());
-				
-				responders.add(resp);
-				break;
-			case TriggerResponder.RESPONDER_TYPE_TOAST:
-				ToastResponder toasty = in.readParcelable(com.offsetnull.bt.responder.toast.ToastResponder.class.getClassLoader());
-
-				responders.add(toasty);
-				break;
-			case TriggerResponder.RESPONDER_TYPE_ACK:
-				AckResponder ack = in.readParcelable(com.offsetnull.bt.responder.ack.AckResponder.class.getClassLoader());
-
-				responders.add(ack);
-				break;
-			}
-		}
-		
-		//Log.e("PARCEL","PARCLE COMPLETE!");
-	}
-	public int describeContents() {
-		return 0;
-	}
-
-	public void writeToParcel(Parcel o, int flags) {
-		o.writeString(name);
-		o.writeInt(ordinal);
-		o.writeInt(seconds);
-		o.writeInt((repeat) ? 1 : 0);
-		o.writeInt((playing) ? 1 : 0);
-		o.writeInt(remainingTime);
-		o.writeInt(responders.size());
-		for(TriggerResponder responder : responders) {
-			o.writeInt(responder.getType().getIntVal());
-			o.writeParcelable(responder, 0);
-		}
-		
 	}
 
 	public void setName(String name) {
@@ -226,5 +147,5 @@ public class TimerData implements Parcelable {
 	public void setRemainingTime(int remainingTime) {
 		this.remainingTime = remainingTime;
 	}
-	
+
 }

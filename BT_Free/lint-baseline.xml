@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.7.3" type="baseline" client="gradle" dependencies="false" name="AGP (8.7.3)" variant="all" version="8.7.3">
+
+    <issue
+        id="ScopedStorage"
+        message="WRITE_EXTERNAL_STORAGE is deprecated (and is not granted) when targeting Android 13+. If you need to write to shared storage, use the `MediaStore.createWriteRequest` intent."
+        errorLine1="    &lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; />"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="AndroidManifest.xml"
+            line="7"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="OldTargetApi"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
+        errorLine1="  targetSdk 35"
+        errorLine2="  ~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="18"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ForegroundServicePermission"
+        message="foregroundServiceType:connectedDevice requires permission:[android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE] AND any permission in list:[android.permission.BLUETOOTH_ADVERTISE, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.CHANGE_NETWORK_STATE, android.permission.CHANGE_WIFI_STATE, android.permission.CHANGE_WIFI_MULTICAST_STATE, android.permission.NFC, android.permission.TRANSMIT_IR, android.permission.UWB_RANGING]"
+        errorLine1="        &lt;service tools:replace=&quot;android:process&quot;"
+        errorLine2="        ^">
+        <location
+            file="AndroidManifest.xml"
+            line="51"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="                  android:label=&quot;BlowTorch&quot;"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="AndroidManifest.xml"
+            line="26"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="                  android:label=&quot;BlowTorch&quot;"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="AndroidManifest.xml"
+            line="35"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="                  android:label=&quot;BlowTorch&quot;"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="AndroidManifest.xml"
+            line="41"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="SpUsage"
+        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes"
+        errorLine1="    android:textSize=&quot;24dip&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="26"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="SpUsage"
+        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes"
+        errorLine1="    android:textSize=&quot;13dip&quot;/>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="38"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="DataExtractionRules"
+        message="The attribute `android:allowBackup` is deprecated from Android 12 and the default allows backup"
+        errorLine1="        android:allowBackup=&quot;true&quot;"
+        errorLine2="                             ~~~~">
+        <location
+            file="AndroidManifest.xml"
+            line="18"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="ObsoleteLayoutParam"
+        message="Invalid layout param in a `LinearLayout`: `layout_centerVertical`"
+        errorLine1="    android:layout_centerVertical=&quot;true&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="25"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable"
+        errorLine1="   &lt;LinearLayout android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:layout_centerHorizontal=&quot;true&quot; android:gravity=&quot;center_vertical&quot;>"
+        errorLine2="    ~~~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="14"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.about_dialog` appears to be unused"
+        errorLine1="&lt;LinearLayout"
+        errorLine2="^">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.blowtorch_notification2` appears to be unused">
+        <location
+            file="res/drawable-hdpi/blowtorch_notification2.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.raw.default_settings` appears to be unused"
+        errorLine1="&lt;blowtorch xmlversion=&quot;2&quot;>"
+        errorLine2="^">
+        <location
+            file="res/raw/default_settings.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.icon` appears to be unused">
+        <location
+            file="res/drawable-hdpi/icon.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.main` appears to be unused"
+        errorLine1="&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="res/layout/main.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.testMode` appears to be unused"
+        errorLine1=" &lt;string name=&quot;testMode&quot;>false&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="3"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.windowAction` appears to be unused"
+        errorLine1=" &lt;string name=&quot;windowAction&quot;>com.offsetnull.bt.window.MainWindow.NORMAL_MODE&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="4"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.notificationIcon` appears to be unused"
+        errorLine1=" &lt;string name=&quot;notificationIcon&quot;>blowtorch_notification2&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="5"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.serviceProcessName` appears to be unused"
+        errorLine1=" &lt;string name=&quot;serviceProcessName&quot;>:stellar&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="6"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.serviceBindAction` appears to be unused"
+        errorLine1=" &lt;string name=&quot;serviceBindAction&quot;>com.offsetnull.bt.service.IStellarService.MODE_NORMAL&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="7"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.ongoingNotificationLabel` appears to be unused"
+        errorLine1=" &lt;string name=&quot;ongoingNotificationLabel&quot;>BlowTorch&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="8"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.packageName` appears to be unused"
+        errorLine1=" &lt;string name=&quot;packageName&quot;>com.happygoatstudios.bt&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="9"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.exportDirectory` appears to be unused"
+        errorLine1=" &lt;string name=&quot;exportDirectory&quot;>BlowTorch&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="10"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.terminalTypeString` appears to be unused"
+        errorLine1=" &lt;string name=&quot;terminalTypeString&quot;>BlowTorch&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="11"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.blowtorch_desc` appears to be unused"
+        errorLine1=" &lt;string name=&quot;blowtorch_desc&quot;>BlowTorch is a mobile terminal emulator with features that aide in playing text based adventure games (MUDs). For more information on the capabilities of this client, please visit the online documentation.&lt;/string>"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/values/strings.xml"
+            line="12"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UselessParent"
+        message="This `ScrollView` layout or its `LinearLayout` parent is unnecessary"
+        errorLine1="  &lt;ScrollView android:layout_width=&quot;300dip&quot; android:layout_height=&quot;200dip&quot;>"
+        errorLine2="   ~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="7"
+            column="4"/>
+    </issue>
+
+    <issue
+        id="UselessParent"
+        message="This `LinearLayout` layout or its `RelativeLayout` parent is unnecessary"
+        errorLine1="   &lt;LinearLayout android:layout_width=&quot;wrap_content&quot; android:layout_height=&quot;wrap_content&quot; android:layout_centerHorizontal=&quot;true&quot; android:gravity=&quot;center_vertical&quot;>"
+        errorLine2="    ~~~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="14"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="IconDensities"
+        message="Missing the following drawables in `drawable-mdpi`: blowtorch_logo3.png, blowtorch_notification2.png">
+        <location
+            file="res/drawable-mdpi"/>
+    </issue>
+
+    <issue
+        id="IconMissingDensityFolder"
+        message="Missing density variation folders in `res`: drawable-xhdpi, drawable-xxhdpi">
+        <location
+            file="res"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="   &lt;ImageView"
+        errorLine2="    ~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="15"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;BlowTorch&quot;, should use `@string` resource"
+        errorLine1="    android:text=&quot;BlowTorch&quot;/>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="28"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Visit the BlowTorch website&quot;, should use `@string` resource"
+        errorLine1="    android:text=&quot;Visit the BlowTorch website&quot;/> "
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="res/layout/about_dialog.xml"
+            line="46"
+            column="5"/>
+    </issue>
+
+</issues>

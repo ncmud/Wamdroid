@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.AnimatedRelativeLayout;
 
 import android.app.AlertDialog;
@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 //import android.util.Log;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
@@ -46,7 +45,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class TimerSelectionDialog extends Dialog {
 
 	private ListView list;
-	private IConnectionBinder service;
+	private StellarService service;
 	private List<TimerItem> entries;
 	private TimerListAdapter adapter;
 	
@@ -67,7 +66,7 @@ public class TimerSelectionDialog extends Dialog {
 	TranslateAnimation animateOut = null;
 	TranslateAnimation animateOutNoTransition = null;
 	
-	public TimerSelectionDialog(Context context,IConnectionBinder the_service) {
+	public TimerSelectionDialog(Context context,StellarService the_service) {
 		super(context);
 		service = the_service;
 		entries = new ArrayList<TimerItem>();
@@ -209,15 +208,13 @@ public class TimerSelectionDialog extends Dialog {
 		entries.clear();
 		
 		HashMap<String,TimerData> timer_list = null;
-		try{
-			if(currentPlugin.equals("main")) {
-				timer_list = (HashMap<String,TimerData>)service.getTimers();
-			} else {
-				timer_list = (HashMap<String,TimerData>)service.getPluginTimers(currentPlugin);
-			}
-		}catch (RemoteException e) {
-			e.printStackTrace();
+
+		if(currentPlugin.equals("main")) {
+			timer_list = (HashMap<String,TimerData>)service.getTimers();
+		} else {
+			timer_list = (HashMap<String,TimerData>)service.getPluginTimers(currentPlugin);
 		}
+		
 		//playpause_listeners.clear();
 		//reset_listeners.clear();
 		boolean anyplaying = false;
@@ -607,20 +604,18 @@ public class TimerSelectionDialog extends Dialog {
 			int index = lastSelectedIndex;
 			TimerItem entry = adapter.getItem(index);
 			//launch the trigger editor with this item.
-			try {
-				TimerData data = null;
-				if(currentPlugin.equals("main")) {
-					data = service.getTimer(entry.name);
-				} else {
-					data = service.getPluginTimer(currentPlugin,entry.name);
-				}
-				TimerEditorDialog editor = new TimerEditorDialog(TimerSelectionDialog.this.getContext(),currentPlugin,data,service,doneHandler);
-				editor.show();
-				
-				
-			} catch (RemoteException e) {
-				e.printStackTrace();
+
+			TimerData data = null;
+			if(currentPlugin.equals("main")) {
+				data = service.getTimer(entry.name);
+			} else {
+				data = service.getPluginTimer(currentPlugin,entry.name);
 			}
+			TimerEditorDialog editor = new TimerEditorDialog(TimerSelectionDialog.this.getContext(),currentPlugin,data,service,doneHandler);
+			editor.show();
+			
+			
+			
 		}
 	}
 	
@@ -657,21 +652,15 @@ public class TimerSelectionDialog extends Dialog {
 		public void onClick(View v) {
 			TimerItem entry = adapter.getItem(lastSelectedIndex);
 			if(currentPlugin.equals("main")) {
-				try {
-					service.stopTimer(entry.name);
-					entry.playing = false;
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.stopTimer(entry.name);
+				entry.playing = false;
+				
 			} else {
-				try {
-					service.stopPluginTimer(currentPlugin, entry.name);
-					entry.playing = false;
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.stopPluginTimer(currentPlugin, entry.name);
+				entry.playing = false;
+				
 			}
 			
 			playPauseButton.setImageResource(R.drawable.toolbar_play_button);
@@ -690,19 +679,13 @@ public class TimerSelectionDialog extends Dialog {
 			if(entry.playing) {
 				entry.playing = false;
 				if(currentPlugin.equals("main")) {
-					try {
-						service.pauseTimer(entry.name);
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
+					service.pauseTimer(entry.name);
+					
 				} else {
-					try {
-						service.pausePluginTimer(currentPlugin, entry.name);
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
+					service.pausePluginTimer(currentPlugin, entry.name);
+					
 				}
 				((ImageButton)v).setImageResource(R.drawable.toolbar_play_button);
 				RelativeLayout row = (RelativeLayout)v.getParent().getParent().getParent();
@@ -710,19 +693,13 @@ public class TimerSelectionDialog extends Dialog {
 			} else {
 				entry.playing = true;
 				if(currentPlugin.equals("main")) {
-					try {
-						service.startTimer(entry.name);
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
+					service.startTimer(entry.name);
+					
 				} else {
-					try {
-						service.startPluginTimer(currentPlugin, entry.name);
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
+					service.startPluginTimer(currentPlugin, entry.name);
+					
 				}
 				((ImageButton)v).setImageResource(R.drawable.toolbar_pause_button);
 				RelativeLayout row = (RelativeLayout)v.getParent().getParent().getParent();
@@ -760,16 +737,14 @@ public class TimerSelectionDialog extends Dialog {
 		public void onAnimationEnd(Animation animation) {
 			//list.setOnFocusChangeListener(null);
 			//list.setFocusable(false);
-			try {
-				if(currentPlugin.equals("main")) {
-					service.deleteTimer(entries.get(lastSelectedIndex).name);
-				} else {
-					service.deletePluginTimer(currentPlugin,entries.get(lastSelectedIndex).name);
-				}
-				
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
+
+			if(currentPlugin.equals("main")) {
+				service.deleteTimer(entries.get(lastSelectedIndex).name);
+			} else {
+				service.deletePluginTimer(currentPlugin,entries.get(lastSelectedIndex).name);
 			}
+			
+			
 			//triggerModifier.sendMessageDelayed(triggerModifier.obtainMessage(104), 10);
 			adapter.remove(adapter.getItem(lastSelectedIndex));
 			adapter.notifyDataSetInvalidated();

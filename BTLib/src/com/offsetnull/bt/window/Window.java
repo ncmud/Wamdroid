@@ -16,7 +16,7 @@ import org.keplerproject.luajava.LuaObject;
 import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
 
-import com.offsetnull.bt.service.IWindowCallback;
+import com.offsetnull.bt.service.WindowCallback;
 import com.offsetnull.bt.service.plugin.settings.BaseOption;
 import com.offsetnull.bt.service.plugin.settings.BooleanOption;
 import com.offsetnull.bt.service.plugin.settings.ColorOption;
@@ -2041,69 +2041,65 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 		return windowShowing;
 	}
 
-	private IWindowCallback.Stub mCallback = new IWindowCallback.Stub() {
+	private WindowCallback mCallback = new WindowCallback() {
 
-		public void rawDataIncoming(byte[] raw) throws RemoteException {
+		public void rawDataIncoming(byte[] raw) {
 			mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_ADDTEXT, raw));
 		}
 
-		public boolean isWindowShowing() throws RemoteException {
-			
+		public boolean isWindowShowing() {
 			return true;
 		}
 
-		public String getName() throws RemoteException {
+		public String getName() {
 			return Window.this.mName;
 		}
 
-		public void redraw() throws RemoteException {
+		public void redraw() {
 			mHandler.sendEmptyMessage(Window.MESSAGE_FLUSHBUFFER);
 		}
 
-		public void shutdown() throws RemoteException {
+		public void shutdown() {
 			mHandler.sendEmptyMessage(MESSAGE_SHUTDOWN);
 		}
 
-		public void xcallS(String function, String str) throws RemoteException {
+		public void xcallS(String function, String str) {
 			Message msg = mHandler.obtainMessage(MESSAGE_PROCESSXCALLS,str);
 			msg.getData().putString("FUNCTION", function);
 			mHandler.sendMessage(msg);
 		}
 
-		public void clearText() throws RemoteException {
+		public void clearText() {
 			mHandler.sendEmptyMessage(MESSAGE_CLEARTEXT);
 		}
 
 		@Override
-		public void updateSetting(String key, String value)
-				throws RemoteException {
-			//mHandler.sendMessage(mHandler.ob)
+		public void updateSetting(String key, String value) {
 			Message m = mHandler.obtainMessage(MESSAGE_SETTINGSCHANGED);
 			m.getData().putString("KEY", key);
 			m.getData().putString("VALUE", value);
 			mHandler.sendMessage(m);
 		}
-		
+
 		public void setEncoding(String value) {
 			mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_ENCODINGCHANGED,value));
 		}
 
 		@Override
-		public void xcallB(String function, byte[] raw) throws RemoteException {
+		public void xcallB(String function, byte[] raw) {
 			Message m = mHandler.obtainMessage(MESSAGE_XCALLB,raw);
 			m.getData().putString("FUNCTION", function);
 			mHandler.sendMessage(m);
 		}
 
 		@Override
-		public void resetWithRawDataIncoming(byte[] raw) throws RemoteException {
+		public void resetWithRawDataIncoming(byte[] raw) {
 			mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_RESETWITHDATA,raw));
-			
 		}
-		
+
 	};
-	
-	public IWindowCallback.Stub getCallback() {
+
+	public WindowCallback getCallback() {
 		return mCallback;
 	}
 
@@ -2243,12 +2239,13 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 			mL = null;
 		}
 		this.mL = LuaStateFactory.newLuaState();
+		if (mL == null) return;
 		initLua();
 		mL.pushJavaObject(this);
 		mL.setGlobal("view");
-		
-		
-		
+
+
+
 		mL.getGlobal("debug");
 		mL.getField(mL.getTop(), "traceback");
 		mL.remove(-2);

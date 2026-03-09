@@ -1,6 +1,6 @@
-NDK_TOOLCHAIN_VERSION := 4.9
-APP_ABI := armeabi armeabi-v7a mips x86
+APP_ABI := arm64-v8a x86_64
+APP_PLATFORM := android-31
 APP_OPTIM := release
-APP_CFLAGS := -O3 -fno-auto-inc-dec
+APP_CFLAGS := -O3
 APP_MODULES := lua lsqlite3 sqlite3 bit marshal luabins
 #above, lua really means luajava in the luajava subdirectory

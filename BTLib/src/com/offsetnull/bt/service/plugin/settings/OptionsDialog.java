@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import com.offsetnull.bt.R;
 import com.offsetnull.bt.button.ButtonEditorDialog.COLOR_FIELDS;
 import com.offsetnull.bt.button.ColorPickerDialog;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.RemoteException;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -52,7 +51,7 @@ public class OptionsDialog extends Dialog {
 	BackPressedListener backListener = null;
 	//ListView primeList;
 	//ListView altList;
-	IConnectionBinder service;
+	StellarService service;
 	//SettingsGroup mRoot;
 	//SettingsGroup mCurrent;
 	//OptionsAdapter primeAdapter;
@@ -67,7 +66,7 @@ public class OptionsDialog extends Dialog {
 	
 	Stack<SettingsGroup> backStack = new Stack<SettingsGroup>();
 	
-	public OptionsDialog(Context context,IConnectionBinder service,String plugin) {
+	public OptionsDialog(Context context,StellarService service,String plugin) {
 		super(context);
 		this.selectedPlugin = plugin;
 		this.service = service;
@@ -128,28 +127,23 @@ public class OptionsDialog extends Dialog {
 		//View empty = root.findViewById(R.id.empty);
 		//list.setEmptyView(empty);
 		
-		try {
-			mCurrent = service.getSettings();
-			//mCurrent = mRoot;
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		mCurrent = service.getSettings();
+		//mCurrent = mRoot;
 		
-		try {
-			HashMap<String,String> map = (HashMap<String, String>) service.getPluginList();
-			for(String plugin : map.keySet()) {
-				int pos = mCurrent.getOptions().size();
-				SettingsGroup settings = service.getPluginSettings(plugin);
-				if(settings.getOptions().size() > 0) {
-					pluginSettingsMap.put(pos, plugin);
-					mCurrent.addOption(settings);
-				}
+		
+
+		HashMap<String,String> map = (HashMap<String, String>) service.getPluginList();
+		for(String plugin : map.keySet()) {
+			int pos = mCurrent.getOptions().size();
+			SettingsGroup settings = service.getPluginSettings(plugin);
+			if(settings.getOptions().size() > 0) {
+				pluginSettingsMap.put(pos, plugin);
+				mCurrent.addOption(settings);
 			}
-			
-		} catch(RemoteException e) {
-		
 		}
+		
+		
 		
 		
 		title.setText(mCurrent.getTitle());
@@ -322,12 +316,9 @@ public class OptionsDialog extends Dialog {
 		@Override
 		public void onClick(View v) {
 			CallbackOption option = (CallbackOption)v.getTag();
-			try {
-				service.callPluginFunction(selectedPlugin, (String)option.getValue());
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			service.callPluginFunction(selectedPlugin, (String)option.getValue());
+			
 		}
 	
 	}
@@ -428,19 +419,13 @@ public class OptionsDialog extends Dialog {
 			String path = paths.get(which);
 			option.setValue(path);
 			if(selectedPlugin.equals("main")) {
-				try {
-					service.updateStringSetting(option.getKey(), path);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updateStringSetting(option.getKey(), path);
+				
 			} else {
-				try {
-					service.updatePluginStringSetting(selectedPlugin, option.getKey(), path);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updatePluginStringSetting(selectedPlugin, option.getKey(), path);
+				
 			}
 		}
 		
@@ -488,19 +473,13 @@ public class OptionsDialog extends Dialog {
 			widget.setBackgroundColor(color);
 			widget.invalidate();
 			if(selectedPlugin.equals("main")) {
-				try {
-					service.updateIntegerSetting(option.getKey(), color);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updateIntegerSetting(option.getKey(), color);
+				
 			} else {
-				try {
-					service.updatePluginIntegerSetting(selectedPlugin, option.getKey(), color);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updatePluginIntegerSetting(selectedPlugin, option.getKey(), color);
+				
 			}
 		}
 		
@@ -578,9 +557,6 @@ public class OptionsDialog extends Dialog {
 				}
 			
 			} catch(NumberFormatException e) {
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			
 			dialog.dismiss();
@@ -649,22 +625,19 @@ public class OptionsDialog extends Dialog {
 			
 			String text = input.getText().toString();
 			
-			try{
-				//Integer number = Integer.parseInt(text);
-				
-				option.setValue(text);
-				//widget.setText(text);
-				if(selectedPlugin.equals("main")) {
-					service.updateStringSetting(option.getKey(), text);
-				} else {
-					service.updatePluginStringSetting(selectedPlugin,option.getKey(), text);
-				}
+
+			//Integer number = Integer.parseInt(text);
 			
-			
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			option.setValue(text);
+			//widget.setText(text);
+			if(selectedPlugin.equals("main")) {
+				service.updateStringSetting(option.getKey(), text);
+			} else {
+				service.updatePluginStringSetting(selectedPlugin,option.getKey(), text);
 			}
+			
+			
+			
 			
 			dialog.dismiss();
 		}
@@ -718,19 +691,13 @@ public class OptionsDialog extends Dialog {
 			option.setValue(encoding);
 			
 			if(selectedPlugin.equals("main")) {
-				try {
-					service.updateStringSetting(key, encoding);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updateStringSetting(key, encoding);
+				
 			} else {
-				try {
-					service.updatePluginStringSetting(selectedPlugin, key, encoding);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updatePluginStringSetting(selectedPlugin, key, encoding);
+				
 			}
 			
 			dialog.dismiss();
@@ -833,20 +800,14 @@ public class OptionsDialog extends Dialog {
 			option.setValue(which);
 			
 			if(selectedPlugin.equals("main")) {
-				try {
-					service.updateIntegerSetting(option.getKey(),which);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updateIntegerSetting(option.getKey(),which);
+				
 			} else {
 				//service.updatePluginSetting(
-				try {
-					service.updatePluginIntegerSetting(selectedPlugin,option.getKey(),which);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updatePluginIntegerSetting(selectedPlugin,option.getKey(),which);
+				
 			}
 			//service.updateSetting
 			
@@ -864,19 +825,13 @@ public class OptionsDialog extends Dialog {
 			BooleanOption o = (BooleanOption) v.getTag();
 			
 			if(selectedPlugin.equals("main")) {
-				try {
-					service.updateBooleanSetting(o.getKey(),isChecked);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updateBooleanSetting(o.getKey(),isChecked);
+				
 			} else {
-				try {
-					service.updatePluginBooleanSetting(selectedPlugin,o.getKey(),isChecked);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				service.updatePluginBooleanSetting(selectedPlugin,o.getKey(),isChecked);
+				
 			}
 		}
 		
@@ -885,12 +840,9 @@ public class OptionsDialog extends Dialog {
 	@Override
 	public void onBackPressed() {
 		if(backStack.size() == 0) {
-			try {
-				service.saveSettings();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			service.saveSettings();
+			
 			this.dismiss();
 		} else {
 			SettingsGroup key = backStack.pop();

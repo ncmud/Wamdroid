@@ -8,13 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.validator.Validator;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -31,11 +30,11 @@ public class AliasEditorDialog extends Dialog {
 	AliasEditorDialogDoneListener reportto = null;
 	AliasData original_alias = null;
 	int old_pos = 0;
-	IConnectionBinder service;
+	StellarService service;
 	List<String> cant_name;
 	private boolean mEnabled = true;
 	
-	public AliasEditorDialog(Context context,AliasEditorDialogDoneListener useme,IConnectionBinder pService,List<String> invalid_names,String currentPlugin) {
+	public AliasEditorDialog(Context context,AliasEditorDialogDoneListener useme,StellarService pService,List<String> invalid_names,String currentPlugin) {
 		super(context);
 		reportto = useme;
 		service = pService;
@@ -329,18 +328,16 @@ public class AliasEditorDialog extends Dialog {
 			return false;
 		}
 		
-		try {
-			//Log.e("FLIIP","TRYING SYSTEM COMMANDS");
-			for(String name : (List<String>)service.getSystemCommands()) {
-				//Log.e("FLIIP","SYSTEM COMMAND: " + name);
-				if(pre.equals(name)) {
-					is_invalid = true;
-					invalid_name = name;
-				}
+
+		//Log.e("FLIIP","TRYING SYSTEM COMMANDS");
+		for(String name : (List<String>)service.getSystemCommands()) {
+			//Log.e("FLIIP","SYSTEM COMMAND: " + name);
+			if(pre.equals(name)) {
+				is_invalid = true;
+				invalid_name = name;
 			}
-		} catch (RemoteException e) {
-			throw new RuntimeException(e);
 		}
+		
 		
 		if(is_invalid) {
 			String system = "\""+invalid_name+"\" is reserved for a system command.";
@@ -348,28 +345,25 @@ public class AliasEditorDialog extends Dialog {
 			return false;
 		}
 		
-		try {
-			Object[] offenders = validateList();
-			if(offenders != null && offenders.length > 0) {
-				String offendersStr = "";
-				for(int i=0;i<offenders.length;i++) {
-					offendersStr += (String)offenders[i] + ", ";
-				}
-				offendersStr = offendersStr.substring(0,offendersStr.length()-2);
-				checker.showMessage(AliasEditorDialog.this.getContext(), "Circular reference with aliases: "+offendersStr);
-				return false;
+
+		Object[] offenders = validateList();
+		if(offenders != null && offenders.length > 0) {
+			String offendersStr = "";
+			for(int i=0;i<offenders.length;i++) {
+				offendersStr += (String)offenders[i] + ", ";
 			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			offendersStr = offendersStr.substring(0,offendersStr.length()-2);
+			checker.showMessage(AliasEditorDialog.this.getContext(), "Circular reference with aliases: "+offendersStr);
+			return false;
 		}
+		
 		
 		return true;
 	}
 	
 	boolean isEditor = false;
 	String currentPlugin = null;
-	public AliasEditorDialog(Context context,AliasEditorDialogDoneListener useme,String pre,String post,int position,AliasData old_alias,IConnectionBinder pService,List<String> invalid_names,String currentPlugin) {
+	public AliasEditorDialog(Context context,AliasEditorDialogDoneListener useme,String pre,String post,int position,AliasData old_alias,StellarService pService,List<String> invalid_names,String currentPlugin) {
 		super(context);
 		isEditor=true;
 		reportto = useme;
@@ -385,7 +379,7 @@ public class AliasEditorDialog extends Dialog {
 	
 	Vector<String> offenders = new Vector<String>();
 		//load in the array adapter to hook up the list view
-	public Object[] validateList() throws RemoteException {
+	public Object[] validateList() {
 		Boolean retval = true;
 		ArrayList<String> offenders = new ArrayList<String>();
 		//int count = apdapter.getCount();

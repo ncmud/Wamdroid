@@ -1,14 +1,23 @@
 apply plugin: 'com.android.library'
 
 android {
-	compileSdkVersion 27
-	buildToolsVersion '28.0.3'
+	namespace "com.offsetnull.bt"
+	compileSdk 35
+
 
 	defaultConfig {
-		minSdkVersion 14
-		targetSdkVersion 27
+		minSdk 31
+		targetSdk 35
 		versionCode 219
 		versionName "2.0"
+	}
+
+	lint {
+		warningsAsErrors false
+		abortOnError false
+		xmlReport true
+		htmlReport true
+		baseline file("lint-baseline.xml")
 	}
 
 	sourceSets {
@@ -16,18 +25,15 @@ android {
 			manifest.srcFile 'AndroidManifest.xml'
 			java.srcDirs = ['src']
 			resources.srcDirs = ['src']
-			aidl.srcDirs = ['src']
 			res.srcDirs = ['res']
 			assets.srcDirs = ['assets']
 			jniLibs.srcDirs = ['libs']
 		}
 	}
-
 }
 
 dependencies {
-	api "com.android.support:support-core-utils:27.1.1"
-	api "com.android.support:appcompat-v7:27.1.1"
-	api "com.android.support:support-compat:27.1.1"
-	api "com.android.support:design:27.1.1"
+	api "androidx.appcompat:appcompat:1.7.0"
+	api "com.google.android.material:material:1.12.0"
+	api "androidx.core:core:1.15.0"
 }

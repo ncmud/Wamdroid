@@ -3,7 +3,7 @@ package com.offsetnull.bt.button;
 import java.util.List;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.validator.Validator;
 import com.offsetnull.bt.window.MainWindow;
 
@@ -12,7 +12,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -21,9 +20,9 @@ import android.widget.EditText;
 public class NewButtonSetEntryDialog extends Dialog {
 
 	Handler dispatcher = null;
-	IConnectionBinder service = null;
+	StellarService service = null;
 	
-	public NewButtonSetEntryDialog(Context context,Handler reportto,IConnectionBinder theService) {
+	public NewButtonSetEntryDialog(Context context,Handler reportto,StellarService theService) {
 		super(context);
 		dispatcher = reportto;
 		service = theService;
@@ -58,12 +57,9 @@ public class NewButtonSetEntryDialog extends Dialog {
 				
 				//step 2 validation
 				List<String> list = null;
-				//try {
-					//list = service.getButtonSetNames();
-				//} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-				//	e.printStackTrace();
-				//}
+				//
+				//list = service.getButtonSetNames();
+			//
 				
 				for(String str : list) {
 					if(ed.getText().toString().equals(str)) {

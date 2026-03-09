@@ -13,7 +13,7 @@ import com.offsetnull.bt.responder.notification.NotificationResponder;
 import com.offsetnull.bt.responder.notification.NotificationResponderEditor;
 import com.offsetnull.bt.responder.toast.ToastResponder;
 import com.offsetnull.bt.responder.toast.ToastResponderEditor;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.validator.Validator;
 import com.offsetnull.bt.window.PluginFilterSelectionDialog;
 
@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.RemoteException;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -47,7 +46,7 @@ public class TimerEditorDialog extends Dialog implements DialogInterface.OnClick
 	private TimerData the_timer;
 	private TimerData orig_timer;
 	
-	private IConnectionBinder service;
+	private StellarService service;
 	
 	private Handler finish_with;
 	
@@ -62,7 +61,7 @@ public class TimerEditorDialog extends Dialog implements DialogInterface.OnClick
 	
 	String plugin = PluginFilterSelectionDialog.MAIN_SETTINGS;
 	
-	public TimerEditorDialog(Context c,String plugin,TimerData input,IConnectionBinder pService,Handler reportto) {
+	public TimerEditorDialog(Context c,String plugin,TimerData input,StellarService pService,Handler reportto) {
 		super(c);
 		service = pService;
 		finish_with = reportto;
@@ -156,32 +155,28 @@ public class TimerEditorDialog extends Dialog implements DialogInterface.OnClick
 				the_timer.setRepeat(theRepeat);
 				
 				//responders should be handled already.
-				try {
-					if(plugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
-						service.updateTimer(orig_timer, the_timer);
-					} else {
-						service.updatePluginTimer(plugin, orig_timer, the_timer);
-					}
-				} catch (RemoteException e) {
-					e.printStackTrace();
+
+				if(plugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
+					service.updateTimer(orig_timer, the_timer);
+				} else {
+					service.updatePluginTimer(plugin, orig_timer, the_timer);
 				}
+				
 				finish_with.sendMessageDelayed(finish_with.obtainMessage(100, the_timer),10);
 			} else {
 				the_timer.setName(theName);
 				the_timer.setSeconds(Integer.parseInt(theSeconds));
 				the_timer.setRepeat(theRepeat);
 				
-				try {
-					//the_timer.setOrdinal(service.getNextTimerOrdinal());
-					if(plugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
-						service.addTimer(the_timer);
-					} else {
-						service.addPluginTimer(plugin,the_timer);
-					}
-					
-				} catch (RemoteException e) {
-					e.printStackTrace();
+
+				//the_timer.setOrdinal(service.getNextTimerOrdinal());
+				if(plugin.equals(PluginFilterSelectionDialog.MAIN_SETTINGS)) {
+					service.addTimer(the_timer);
+				} else {
+					service.addPluginTimer(plugin,the_timer);
 				}
+				
+				
 				finish_with.sendMessageDelayed(finish_with.obtainMessage(100,the_timer),10);
 			}
 			

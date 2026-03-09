@@ -5,36 +5,10 @@ import java.math.BigInteger;
 
 import org.xmlpull.v1.XmlSerializer;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Log;
-
-public class ColorOption extends BaseOption implements Parcelable {
+public class ColorOption extends BaseOption {
 
 	public ColorOption() {
 		this.type = TYPE.COLOR;
-	}
-	
-	public ColorOption(Parcel p) {
-		this.type = TYPE.COLOR;
-		setTitle(p.readString());
-		setDescription(p.readString());
-		setKey(p.readString());
-		setValue(p.readInt());
-	}
-	
-	@Override
-	public int describeContents() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel p, int arg1) {
-		p.writeString(title);
-		p.writeString(description);
-		p.writeString(key);
-		p.writeInt((Integer)getValue());
 	}
 
 	@Override
@@ -53,7 +27,7 @@ public class ColorOption extends BaseOption implements Parcelable {
 					value = (Integer)num;
 				}
 			} catch(NumberFormatException e) {
-				
+
 			}
 		}
 	}
@@ -73,20 +47,9 @@ public class ColorOption extends BaseOption implements Parcelable {
 	@Override
 	public void setDefaultValue(Object o) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	public static final Parcelable.Creator<ColorOption> CREATOR = new Parcelable.Creator<ColorOption>() {
 
-		public ColorOption createFromParcel(Parcel arg0) {
-			return new ColorOption(arg0);
-		}
-
-		public ColorOption[] newArray(int arg0) {
-			return new ColorOption[arg0];
-		}
-	};
-	
 	public void saveToXML(XmlSerializer out) throws IllegalArgumentException, IllegalStateException, IOException {
 		out.startTag("", "color");
 		out.attribute("", "key", this.key);

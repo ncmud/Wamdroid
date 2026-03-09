@@ -6,13 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 
 //import android.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +22,10 @@ import android.widget.TextView;
 
 public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEditorDoneListener {
 
-	IConnectionBinder service;
+	StellarService service;
 	DirectionAdapter adapter = null;
 	
-	public SpeedWalkConfigurationDialog(Context context,IConnectionBinder service) {
+	public SpeedWalkConfigurationDialog(Context context,StellarService service) {
 		super(context);
 		this.service = service;
 		// TODO Auto-generated constructor stub
@@ -41,12 +40,9 @@ public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEdi
 		this.setContentView(R.layout.speedwalk_dialog);
 		
 		//build list
-		try {
-			buildList();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		buildList();
+		
 		
 		//set up adapter
 		ListView lv = (ListView)findViewById(R.id.sw_list);
@@ -70,7 +66,7 @@ public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEdi
 	
 	ArrayList<SWEntry> theList = new ArrayList<SWEntry>();
 	
-	private void buildList() throws RemoteException {
+	private void buildList() {
 		HashMap<String,DirectionData> map = (HashMap<String, DirectionData>) service.getDirectionData();
 		
 		theList.clear();
@@ -90,7 +86,7 @@ public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEdi
 		}
 	}
 	
-	private void saveList() throws RemoteException {
+	private void saveList() {
 		HashMap<String,DirectionData> tmp = new HashMap<String,DirectionData>();
 		
 		for(SWEntry entry : theList) {
@@ -209,26 +205,20 @@ public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEdi
 			}
 		}
 		
-		try {
-			saveList();
-			buildList();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		saveList();
+		buildList();
+		
 		
 	}
 
 	public void deleteEntry(int pos) {
 		theList.remove(pos);
 		
-		try {
-			saveList();
-			buildList();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		saveList();
+		buildList();
+		
 		
 	}
 
@@ -238,13 +228,10 @@ public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEdi
 		n.dir = d.getDirection();
 		theList.add(n);
 		
-		try {
-			saveList();
-			buildList();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		saveList();
+		buildList();
+		
 		
 	}
 	

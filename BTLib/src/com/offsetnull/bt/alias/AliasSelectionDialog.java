@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.validator.Validator;
 import com.offsetnull.bt.window.AnimatedRelativeLayout;
 
@@ -21,7 +21,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -72,11 +71,11 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 	//AliasDialogDoneListener reporto = null;
 	HashMap<String,AliasData> input;
 	
-	IConnectionBinder service;
+	StellarService service;
 	
 	LinearLayout theToolbar = null;
 
-	public AliasSelectionDialog(Context context,HashMap<String,AliasData> pinput,IConnectionBinder pService) {
+	public AliasSelectionDialog(Context context,HashMap<String,AliasData> pinput,StellarService pService) {
 		super(context);
 		//reporto = useme;
 		input = pinput;
@@ -174,12 +173,9 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 			list.setItemsCanFocus(true);
 			
 			
-			try {
-				input = (HashMap<String, AliasData>) service.getAliases();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			input = (HashMap<String, AliasData>) service.getAliases();
+			
 			if(input != null) {
 				for(AliasData a : input.values()) {
 					entries.add(new AliasEntry(a.getPre(),a.getPost(),a.isEnabled()));
@@ -494,16 +490,14 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 		public void onAnimationEnd(Animation animation) {
 			//list.setOnFocusChangeListener(null);
 			//list.setFocusable(false);
-			try {
-				if(currentPlugin.equals("main")) {
-					service.deleteAlias(entries.get(lastSelectedIndex).pre);
-				} else {
-					service.deletePluginAlias(currentPlugin,entries.get(lastSelectedIndex).pre);
-				}
-				
-			} catch (RemoteException e) {
-				throw new RuntimeException(e);
+
+			if(currentPlugin.equals("main")) {
+				service.deleteAlias(entries.get(lastSelectedIndex).pre);
+			} else {
+				service.deletePluginAlias(currentPlugin,entries.get(lastSelectedIndex).pre);
 			}
+			
+			
 			//triggerModifier.sendMessageDelayed(triggerModifier.obtainMessage(104), 10);
 			apdapter.remove(apdapter.getItem(lastSelectedIndex));
 			apdapter.notifyDataSetInvalidated();
@@ -531,20 +525,18 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 			int index = lastSelectedIndex;
 			AliasEntry entry = apdapter.getItem(index);
 			//launch the trigger editor with this item.
-			try {
-				AliasData data = null;
-				if(currentPlugin.equals("main")) {
-					data = service.getAlias(entry.pre);
-				} else {
-					data = service.getPluginAlias(currentPlugin,entry.pre);
-				}
-				AliasEditorDialog editor = new AliasEditorDialog(AliasSelectionDialog.this.getContext(),AliasSelectionDialog.this,data.getPre(),data.getPost(),index,data,service,computeNames(data.getPre()),currentPlugin);
-				editor.show();
-				
-				
-			} catch (RemoteException e) {
-				e.printStackTrace();
+
+			AliasData data = null;
+			if(currentPlugin.equals("main")) {
+				data = service.getAlias(entry.pre);
+			} else {
+				data = service.getPluginAlias(currentPlugin,entry.pre);
 			}
+			AliasEditorDialog editor = new AliasEditorDialog(AliasSelectionDialog.this.getContext(),AliasSelectionDialog.this,data.getPre(),data.getPost(),index,data,service,computeNames(data.getPre()),currentPlugin);
+			editor.show();
+			
+			
+			
 		}
 	}
 	
@@ -569,32 +561,26 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 			ImageButton b = (ImageButton)v;
 			if(entry.enabled) {
 				b.setImageResource(R.drawable.toolbar_toggleoff_button);
-				try {
-					if(currentPlugin.equals("main")) {
-						service.setAliasEnabled( false,key);
-					} else {
-						service.setPluginAliasEnabled( currentPlugin,false,key);
-					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				if(currentPlugin.equals("main")) {
+					service.setAliasEnabled( false,key);
+				} else {
+					service.setPluginAliasEnabled( currentPlugin,false,key);
 				}
+				
 				entry.enabled = false;
 				RelativeLayout root = (RelativeLayout) v.getParent().getParent().getParent();
 				((ImageView)root.findViewById(R.id.icon)).setImageResource(R.drawable.toolbar_mini_disabled);
 			} else {
 				b.setImageResource(R.drawable.toolbar_toggleon_button);
-				try {
-					if(currentPlugin.equals("main")) {
-						service.setAliasEnabled( true,key);
-					} else {
-						service.setPluginAliasEnabled( currentPlugin,true,key);
-					}
-					
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				if(currentPlugin.equals("main")) {
+					service.setAliasEnabled( true,key);
+				} else {
+					service.setPluginAliasEnabled( currentPlugin,true,key);
 				}
+				
+				
 				entry.enabled = true;
 				
 				RelativeLayout root = (RelativeLayout) v.getParent().getParent().getParent();
@@ -740,14 +726,11 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 				if(oldKey.startsWith("^")) oldKey = oldKey.substring(1,oldKey.length());
 				if(oldKey.endsWith("$")) oldKey = oldKey.substring(0,oldKey.length()-1);
 				
-				try {
-					HashMap<String,AliasData> existingAliases = (HashMap<String, AliasData>) service.getAliases();
-					existingAliases.remove(oldKey);
-					service.setAliases(existingAliases);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				HashMap<String,AliasData> existingAliases = (HashMap<String, AliasData>) service.getAliases();
+				existingAliases.remove(oldKey);
+				service.setAliases(existingAliases);
+				
 				//Log.e("ALIASED","DELETING ALIAS");
 				break;
 			case MSG_MODIFYALIAS:
@@ -772,21 +755,18 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 		if(name.startsWith("^")) name = name.substring(1,name.length());
 		if(name.endsWith("$")) name = name.substring(0,name.length()-1);
 		
-		try {
-			HashMap<String,AliasData> existingAliases = (HashMap<String, AliasData>) service.getAliases();
-			
-			if(existingAliases != null) {
-				for(String key : existingAliases.keySet()) {
-					if(!key.equals(name)) {
-						names.add(key);
-					}
+
+		HashMap<String,AliasData> existingAliases = (HashMap<String, AliasData>) service.getAliases();
+		
+		if(existingAliases != null) {
+			for(String key : existingAliases.keySet()) {
+				if(!key.equals(name)) {
+					names.add(key);
 				}
 			}
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		
+		
 		
 		
 		/*for(int i=0;i<apdapter.getCount();i++) {
@@ -817,33 +797,30 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 		apdapter.notifyDataSetChanged();
 		apdapter.sort(new AliasComparator());
 		
-		try {
-			HashMap<String,AliasData> existingAliases = null;
-			if(currentPlugin.equals("main")) {
-				existingAliases =(HashMap<String, AliasData>) service.getAliases();
-			} else {
-				existingAliases =(HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
-			}
-			
-			AliasData newAlias = new AliasData();
-			newAlias.setPost(post);
-			newAlias.setPre(pre);
-			newAlias.setEnabled(enabled);
-			String newKey = newAlias.getPre();
-			if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
-			if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
-			
-			existingAliases.put(newKey, newAlias);
-			if(currentPlugin.equals("main")) {
-				service.setAliases(existingAliases);
-			} else {
-				service.setPluginAliases(currentPlugin,existingAliases);
-			}
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		HashMap<String,AliasData> existingAliases = null;
+		if(currentPlugin.equals("main")) {
+			existingAliases =(HashMap<String, AliasData>) service.getAliases();
+		} else {
+			existingAliases =(HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
 		}
+		
+		AliasData newAlias = new AliasData();
+		newAlias.setPost(post);
+		newAlias.setPre(pre);
+		newAlias.setEnabled(enabled);
+		String newKey = newAlias.getPre();
+		if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
+		if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
+		
+		existingAliases.put(newKey, newAlias);
+		if(currentPlugin.equals("main")) {
+			service.setAliases(existingAliases);
+		} else {
+			service.setPluginAliases(currentPlugin,existingAliases);
+		}
+		
+		
 		
 		//int pos = apdapter.getPosition(tmp);
 		/*boolean validated = validateList();
@@ -877,36 +854,33 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 		pos = apdapter.getPosition(tmp);
 		
 		//remove from the list and add the new one.
-		try {
-			HashMap<String,AliasData> existingAliases = null;
-			if(currentPlugin.equals("main")) {
-				existingAliases =(HashMap<String, AliasData>) service.getAliases();
-			} else {
-				existingAliases =(HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
-			}
-			String oldKey = orig.getPre();
-			if(oldKey.startsWith("^")) oldKey = oldKey.substring(1,oldKey.length());
-			if(oldKey.endsWith("$")) oldKey = oldKey.substring(0,oldKey.length()-1);
-			existingAliases.remove(oldKey);
-			
-			String newKey = pre;
-			if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
-			if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
-			AliasData newAlias = new AliasData();
-			newAlias.setPre(pre);
-			newAlias.setPost(post);
-			newAlias.setEnabled(enabled);
-			existingAliases.put(newKey, newAlias);
-			if(currentPlugin.equals("main")) {
-				service.setAliases(existingAliases);
-			} else {
-				service.setPluginAliases(currentPlugin,existingAliases);
-			}
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		HashMap<String,AliasData> existingAliases = null;
+		if(currentPlugin.equals("main")) {
+			existingAliases =(HashMap<String, AliasData>) service.getAliases();
+		} else {
+			existingAliases =(HashMap<String, AliasData>) service.getPluginAliases(currentPlugin);
 		}
+		String oldKey = orig.getPre();
+		if(oldKey.startsWith("^")) oldKey = oldKey.substring(1,oldKey.length());
+		if(oldKey.endsWith("$")) oldKey = oldKey.substring(0,oldKey.length()-1);
+		existingAliases.remove(oldKey);
+		
+		String newKey = pre;
+		if(newKey.startsWith("^")) newKey = newKey.substring(1,newKey.length());
+		if(newKey.endsWith("$")) newKey = newKey.substring(0,newKey.length()-1);
+		AliasData newAlias = new AliasData();
+		newAlias.setPre(pre);
+		newAlias.setPost(post);
+		newAlias.setEnabled(enabled);
+		existingAliases.put(newKey, newAlias);
+		if(currentPlugin.equals("main")) {
+			service.setAliases(existingAliases);
+		} else {
+			service.setPluginAliases(currentPlugin,existingAliases);
+		}
+		
+		
 		
 		/*boolean validated = validateList();
 		if(!validated) {

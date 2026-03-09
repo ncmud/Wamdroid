@@ -1,27 +1,24 @@
 package com.offsetnull.bt.alias;
 
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class AliasData {
 
-public class AliasData implements Parcelable {
-	
 	private String pre;
 	private String post;
 	private boolean enabled;
-	
+
 	public AliasData() {
 		pre = "";
 		post = "";
 		enabled = true;
 	}
-	
+
 	public AliasData(String pPre, String pPost,boolean enabled) {
 		pre = pPre;
 		post = pPost;
 		this.enabled = enabled;
 	}
-	
+
 	public AliasData copy() {
 		AliasData tmp = new AliasData();
 		tmp.pre = this.pre;
@@ -29,7 +26,7 @@ public class AliasData implements Parcelable {
 		tmp.enabled = this.enabled;
 		return tmp;
 	}
-	
+
 	public boolean equals(Object o) {
 		if(o == this) return true;
 		if( !(o instanceof AliasData)) return false;
@@ -38,43 +35,6 @@ public class AliasData implements Parcelable {
 		if(!t.post.equals(this.post)) return false;
 		if(t.enabled != this.enabled) return false;
 		return true;
-	}
-	
-	public static final Parcelable.Creator<AliasData> CREATOR = new Parcelable.Creator<AliasData>() {
-
-		public AliasData createFromParcel(Parcel arg0) {
-			return new AliasData(arg0);
-		}
-
-		public AliasData[] newArray(int arg0) {
-			return new AliasData[arg0];
-		}
-	};
-	
-	public AliasData(Parcel p) {
-		readFromParcel(p);
-	}
-
-	private void readFromParcel(Parcel p) {
-		this.pre = p.readString();
-		this.post = p.readString();
-		this.setEnabled((p.readInt() == 0) ? false : true);
-	}
-
-
-
-	public int describeContents() {
-		return 0;
-	}
-
-	public void writeToParcel(Parcel o, int flags) {
-		o.writeString(this.pre);
-		o.writeString(this.post);
-		if(this.enabled) {
-			o.writeInt(1);
-		} else {
-			o.writeInt(0);
-		}
 	}
 
 	public String getPre() {
@@ -100,9 +60,9 @@ public class AliasData implements Parcelable {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 }

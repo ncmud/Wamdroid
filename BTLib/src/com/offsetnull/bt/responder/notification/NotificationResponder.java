@@ -17,9 +17,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.offsetnull.bt.responder.TriggerResponder;
 import com.offsetnull.bt.settings.ConfigurationLoader;
@@ -28,23 +26,23 @@ import com.offsetnull.bt.window.TextTree;
 import dalvik.system.PathClassLoader;
 
 
-public class NotificationResponder extends TriggerResponder implements Parcelable {
+public class NotificationResponder extends TriggerResponder {
 
 	private String message;
 	private String title;
-	
+
 	private boolean useDefaultSound;
 	private String soundPath;
 	private boolean useDefaultLight;
 	private int colorToUse;
 	private boolean useDefaultVibrate;
 	private int vibrateLength;
-	
+
 	private Integer myTriggerId = null;
-	
+
 	private boolean spawnNewNotification;
 	private boolean useOnGoingNotification;
-	
+
 	public NotificationResponder() {
 		super(RESPONDER_TYPE.NOTIFICATION);
 		message = "Custom Message!";
@@ -58,7 +56,7 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 		useOnGoingNotification = false;
 		spawnNewNotification = true;
 	}
-	
+
 	public NotificationResponder copy() {
 		NotificationResponder tmp = new NotificationResponder();
 		tmp.message = this.message;
@@ -74,14 +72,14 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 		tmp.setFireType(this.getFireType());
 		return tmp;
 	}
-	
+
 	public boolean equals(Object o) {
 		if(o == this) return true;
-		
+
 		if(!(o instanceof NotificationResponder)) return false;
-		
+
 		NotificationResponder test = (NotificationResponder)o;
-		
+
 		if(test.getFireType() != this.getFireType()) return false;
 		if(!test.getMessage().equals(this.getMessage())) return false;
 		if(!test.getTitle().equals(this.getTitle())) return false;
@@ -93,72 +91,12 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 		if(!test.getSoundPath().equals(this.getSoundPath())) return false;
 		if(test.getColorToUse() != this.getColorToUse()) return false;
 		if(test.getVibrateLength() != this.getVibrateLength()) return false;
-		
+
 		return true;
-	}
-	
-	public static final Parcelable.Creator<NotificationResponder> CREATOR = new Parcelable.Creator<NotificationResponder>() {
-
-		public NotificationResponder createFromParcel(Parcel arg0) {
-			return new NotificationResponder(arg0);
-		}
-
-		public NotificationResponder[] newArray(int arg0) {
-			return new NotificationResponder[arg0];
-		}
-		
-	};
-	
-	public NotificationResponder(Parcel p) {
-		
-		super(RESPONDER_TYPE.NOTIFICATION);
-		readFromParcel(p);
-	}
-	
-	public void readFromParcel(Parcel in) {
-		setMessage(in.readString());
-		setTitle(in.readString());
-		String fireType = in.readString();
-		if(fireType.equals(FIRE_WINDOW_OPEN)) {
-			setFireType(FIRE_WHEN.WINDOW_OPEN);
-		} else if (fireType.equals(FIRE_WINDOW_CLOSED)) {
-			setFireType(FIRE_WHEN.WINDOW_CLOSED);
-		} else if (fireType.equals(FIRE_ALWAYS)) {
-			setFireType(FIRE_WHEN.WINDOW_BOTH);
-		} else if (fireType.equals(FIRE_NEVER)) {
-			setFireType(FIRE_WHEN.WINDOW_NEVER);
-		} else {
-			setFireType(FIRE_WHEN.WINDOW_BOTH);
-		}
-		setUseDefaultSound( (in.readInt() < 1) ? false : true);
-		setSoundPath(in.readString());
-		setUseDefaultLight((in.readInt() < 1) ? false : true);
-		setColorToUse(in.readInt());
-		setUseDefaultVibrate( (in.readInt() < 1) ? false : true);
-		setVibrateLength(in.readInt());
-		//Log.e("RESPONDER","BEING PARCEL CREATED:" + getMessage() + " || " + getTitle());
 	}
 
 	public NotificationResponder(RESPONDER_TYPE pType) {
 		super(pType);
-	}
-
-	public int describeContents() {
-		return 0;
-	}
-
-	public void writeToParcel(Parcel out, int arg1) {
-		out.writeString(message);
-		out.writeString(title);
-		out.writeString(this.getFireType().getString());
-		out.writeInt( (useDefaultSound) ? 1 : 0);
-		out.writeString(soundPath);
-		out.writeInt((useDefaultLight) ? 1 : 0);
-		out.writeInt(colorToUse);
-		out.writeInt((useDefaultVibrate) ? 1 : 0);
-		out.writeInt(vibrateLength);
-		//Log.e("RESPONDER","BEING PARCELE OUTPUTED");
-		
 	}
 
 	public void setMessage(String message) {
@@ -188,11 +126,11 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 	//vp[1] = 200;
 	//vp[2] = 50;
 	//vp[3] = 200;
-	
+
 	@Override
 	public boolean doResponse(Context c,TextTree tree,int lineNumber,ListIterator<TextTree.Line> iterator,TextTree.Line line,int start,int end,String matched,Object source,String displayname,String host,int port,int triggernumber,boolean windowIsOpen,Handler dispatcher,HashMap<String,String> captureMap,LuaState L,String name,String encoding) {
 		//we are going to do the window response now.
-		
+
 		if(windowIsOpen) {
 			if(this.getFireType() == FIRE_WHEN.WINDOW_CLOSED || this.getFireType() == FIRE_WHEN.WINDOW_NEVER) {
 				return false;
@@ -202,7 +140,7 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 				return false;
 			}
 		}
-		
+
 		if(myTriggerId == null) {
 			//has not been set yet.
 			myTriggerId = triggernumber;
@@ -211,12 +149,12 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 				myTriggerId = triggernumber;
 			}
 		}
-		
+
 		String xformedtitle = this.translate(title, captureMap);
 		String xformedmessage = this.translate(message, captureMap);
-		
+
 		int resId = c.getResources().getIdentifier(ConfigurationLoader.getConfigurationValue("notificationIcon", c), "drawable", c.getPackageName());
-		
+
 
 		NotificationManager NM = (NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
 		//Notification note = new Notification(resId,xformedtitle,System.currentTimeMillis());
@@ -227,7 +165,7 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 		//if(mode == LAUNCH_MODE.FREE || mode == LAUNCH_MODE.PAID) {
 			String windowAction = ConfigurationLoader.getConfigurationValue("windowAction", c);
 			notificationIntent = new Intent(windowAction);
-			
+
 			String apkName = null;
 			try {
 				apkName = c.getPackageManager().getApplicationInfo(c.getPackageName(), 0).sourceDir;
@@ -243,15 +181,15 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		
-			
+
+
 			try {
 				notificationIntent.setClass(c.createPackageContext(c.getPackageName(), Context.CONTEXT_INCLUDE_CODE), w);
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		/*} else {
 			notificationIntent = new Intent("com.happygoatstudios.bt.window.MainWindow"+".TEST_MODE");
 			String apkName = null;
@@ -269,24 +207,24 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			
+
+
 			try {
 				notificationIntent.setClass(c.createPackageContext("com.happygoatstudios.bttest", Context.CONTEXT_INCLUDE_CODE), w);
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}*/
-		
+
 		notificationIntent.putExtra("DISPLAY", displayname);
 		notificationIntent.putExtra("HOST", host);
 		notificationIntent.putExtra("PORT", Integer.toString(port));
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		
+
 		PendingIntent contentIntent = PendingIntent.getActivity(c, myTriggerId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		
+
 		//note.setLatestEventInfo(c, title, message, contentIntent);
 		String channelId = ConfigurationLoader.getConfigurationValue("ongoingNotificationLabel",c) + "_service" + "_" + displayname;
 
@@ -295,7 +233,7 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 				.setContentTitle(xformedtitle)
 				.setContentText(xformedmessage);
 		//note.setLatestEventInfo(c, xformedtitle, xformedmessage, contentIntent);
-		
+
 		int defaults = 0;
 		if(useDefaultSound && soundPath.equals("")) {
 			defaults |= Notification.DEFAULT_SOUND;
@@ -303,7 +241,7 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 			//note.sound = Uri.fromFile(new File(soundPath));
 			builder.setSound(Uri.fromFile(new File(soundPath)));
 		}
-		
+
 		if(useDefaultVibrate && vibrateLength == 0) {
 			defaults |= Notification.DEFAULT_VIBRATE;
 		} else if(useDefaultVibrate) {
@@ -322,7 +260,7 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 				break;
 			}
 		}
-		
+
 		if(useDefaultLight && colorToUse == 0) {
 			defaults |= Notification.DEFAULT_LIGHTS;
 		} else if(useDefaultLight) {
@@ -340,18 +278,18 @@ public class NotificationResponder extends TriggerResponder implements Parcelabl
 		//note.flags = Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
 		//note.defaults = defaults;
 		//note.icon = resId;
-		
+
 		//long[] vp = new long[4];
 		//vp[0] = 0;
 		//vp[1] = 200;
 		//vp[2] = 50;
 		//vp[3] = 200;
-		
+
 		//note.vibrate = vp;
 		NM.cancel(myTriggerId); //cancel my id if i am a not spawn new kind of guy, if that is true this shouldn't be a problem here, as the id doens't exist in the notification system yet.
-		
+
 		NM.notify(myTriggerId,builder.build());
-		
+
 		return false;
 	}
 

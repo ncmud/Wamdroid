@@ -4,13 +4,12 @@ package com.offsetnull.bt.speedwalk;
 import java.util.HashMap;
 
 import com.offsetnull.bt.R;
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.validator.Validator;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -24,19 +23,19 @@ public class SpeedWalkDirectionEditorDialog extends Dialog {
 	DirectionEditorDoneListener doneListener = null;
 	DirectionData oldData = null;
 	
-	IConnectionBinder service = null;
+	StellarService service = null;
 	
 	EditText direction = null;
 	EditText command = null;
 	
-	public SpeedWalkDirectionEditorDialog(Context context,DirectionEditorDoneListener doneListener,IConnectionBinder service) {
+	public SpeedWalkDirectionEditorDialog(Context context,DirectionEditorDoneListener doneListener,StellarService service) {
 		super(context);
 		// TODO Auto-generated constructor stub
 		this.doneListener = doneListener;
 		this.service = service;
 	}
 	
-	public SpeedWalkDirectionEditorDialog(Context context,DirectionEditorDoneListener doneListener,DirectionData old,IConnectionBinder service) {
+	public SpeedWalkDirectionEditorDialog(Context context,DirectionEditorDoneListener doneListener,DirectionData old,StellarService service) {
 		super(context);
 		// TODO Auto-generated constructor stub
 		this.doneListener = doneListener;
@@ -125,25 +124,22 @@ public class SpeedWalkDirectionEditorDialog extends Dialog {
 		}
 		
 		//must not be an existing direction
-		try {
-			HashMap<String,DirectionData> tmp = (HashMap<String, DirectionData>) service.getDirectionData();
-			for(DirectionData d : tmp.values()) {
-				if(isEditor) {
-					if(d.getDirection().equals(direction.getText().toString()) && !d.getDirection().equals(oldData.getDirection())) {
-						checker.showMessage(SpeedWalkDirectionEditorDialog.this.getContext(), d.getDirection() +" is already used as a direction.");
-						return false;
-					}
-				} else {
-					if(d.getDirection().equals(direction.getText().toString())) {
-						checker.showMessage(SpeedWalkDirectionEditorDialog.this.getContext(), d.getDirection() +" is already used as a direction.");
-						return false;
-					}
+
+		HashMap<String,DirectionData> tmp = (HashMap<String, DirectionData>) service.getDirectionData();
+		for(DirectionData d : tmp.values()) {
+			if(isEditor) {
+				if(d.getDirection().equals(direction.getText().toString()) && !d.getDirection().equals(oldData.getDirection())) {
+					checker.showMessage(SpeedWalkDirectionEditorDialog.this.getContext(), d.getDirection() +" is already used as a direction.");
+					return false;
+				}
+			} else {
+				if(d.getDirection().equals(direction.getText().toString())) {
+					checker.showMessage(SpeedWalkDirectionEditorDialog.this.getContext(), d.getDirection() +" is already used as a direction.");
+					return false;
 				}
 			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		
 		
 		if(direction.getText().toString().equals(";") || direction.getText().toString().equals(",")) {
 			checker.showMessage(SpeedWalkDirectionEditorDialog.this.getContext(), "\""+direction.getText().toString() +"\" can not be used as a direction.");

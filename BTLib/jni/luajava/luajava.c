@@ -3498,7 +3498,7 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1LgetN
 {
    lua_State * L = getStateFromCPtr( env , cptr );
 
-   return ( jint ) luaL_getn( L , ( int ) t );
+   return ( jint ) lua_objlen( L , ( int ) t );
 }
 
 
@@ -3512,7 +3512,8 @@ JNIEXPORT void JNICALL Java_org_keplerproject_luajava_LuaState__1LsetN
 {
    lua_State * L = getStateFromCPtr( env , cptr );
 
-   luaL_setn( L , ( int ) t , ( int ) n );
+   /* luaL_setn is a no-op in Lua 5.1+, table length is automatic */
+   (void)L; (void)t; (void)n;
 }
 
 

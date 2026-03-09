@@ -12,31 +12,25 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import com.offsetnull.bt.service.IConnectionBinder;
+import com.offsetnull.bt.service.StellarService;
 
 public class BetterPluginSelectionDialog extends StandardSelectionDialog implements BaseSelectionDialog.UtilityToolbarListener,BaseSelectionDialog.OptionItemClickListener, PluginSelectorDialog.OnPluginLoadListener {
 
 	ArrayList<String> items = new ArrayList<String>();
 	
 	public BetterPluginSelectionDialog(Context context,
-			IConnectionBinder service) {
+			StellarService service) {
 		super(context, service);
 		
 		this.setToolbarListener(this);
 		//on creation, get the list of stuff and prepare the dialog.
 		HashMap<String,String> plist = null;
-		try {
-			plist = (HashMap<String,String>)service.getPluginList();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		plist = (HashMap<String,String>)service.getPluginList();
 		
 		mListItems.clear();
 		//plist.key
@@ -89,13 +83,8 @@ public class BetterPluginSelectionDialog extends StandardSelectionDialog impleme
 	public void onItemDeleted(int row) {
 		String plugin = items.remove(row);
 		
-		try {
-			service.deletePlugin(plugin);
-			//service.saveSettings();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		service.deletePlugin(plugin);
+		//service.saveSettings();
 	}
 
 	@Override
