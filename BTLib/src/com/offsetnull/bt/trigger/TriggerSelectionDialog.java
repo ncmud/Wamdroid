@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.offsetnull.bt.R;
 import com.offsetnull.bt.service.StellarService;
-import com.offsetnull.bt.ui.RealTranslateAnimation;
 import com.offsetnull.bt.window.AnimatedRelativeLayout;
 
 import android.app.AlertDialog;
