@@ -1823,28 +1823,28 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				mService.doExecuteUseSuggestions((Boolean) o.getValue());
 				break;
 			case keep_last:
-				this.doSetKeepLast((Boolean) o.getValue());
+				mService.dispatchKeepLast((Boolean) o.getValue());
 				break;
 			case compatibility_mode:
 				mService.doExecuteCompatibilityMode((Boolean) o.getValue());
 				break;
 			case local_echo:
-				this.doSetLocalEcho((Boolean) o.getValue());
+				mSettings.setLocalEcho((Boolean) o.getValue());
 				break;
 			case process_system_commands:
-				this.doSetProcessSystemCommands((Boolean) o.getValue());
+				mSettings.setProcessPeriod((Boolean) o.getValue());
 				break;
 			case echo_alias_updates:
-				this.doSetAliasUpdates((Boolean) o.getValue());
+				mSettings.setEchoAliasUpdates((Boolean) o.getValue());
 				break;
 			case keep_wifi_alive:
 				this.doSetKeepWifiAlive((Boolean) o.getValue());
 				break;
 			case auto_reconnect:
-				this.setAutoReconnect((Boolean) o.getValue());
+				mAutoReconnect = (Boolean) o.getValue();
 				break;
 			case auto_reconnect_limit:
-				this.setAutoReconnectLimit((Integer) o.getValue());
+				mAutoReconnectLimit = (Integer) o.getValue();
 				break;
 			case cull_extraneous_color:
 				this.doSetCullExtraneousColor((Boolean) o.getValue());
@@ -1853,22 +1853,22 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				this.doSetDebugTelnet((Boolean) o.getValue());
 				break;
 			case bell_vibrate:
-				this.doSetBellVibrate((Boolean) o.getValue());
+				mSettings.setVibrateOnBell((Boolean) o.getValue());
 				break;
 			case bell_notification:
-				this.doSetBellNotify((Boolean) o.getValue());
+				mSettings.setNotifyOnBell((Boolean) o.getValue());
 				break;
 			case bell_display:
-				this.doSeBellDisplay((Boolean) o.getValue());
+				mSettings.setDisplayOnBell((Boolean) o.getValue());
 				break;
 			case show_regex_warning:
-				doSetRegexWarning((Boolean) o.getValue());
+				mService.dispatchShowRegexWarning((Boolean) o.getValue());
 				break;
 			case use_gmcp:
-				this.doSetUseGMCP((Boolean) o.getValue());
+				mProcessor.setUseGMCP((Boolean) o.getValue());
 				break;
 			case gmcp_supports:
-				this.doSetGMCPSupports((String) o.getValue());
+				mProcessor.setGMCPSupports((String) o.getValue());
 				break;
 			default:
 				break;
@@ -1878,62 +1878,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		}
 	}
 	
-	/** Implementation of the gmcp supports string setting handler.
-	 * 
-	 * @param value New value for setting.
-	 */
-	private void doSetGMCPSupports(final String value) {
-		mProcessor.setGMCPSupports(value);
-	}
-
-	/** Implementation of the use gmcp settings handler.
-	 * 
-	 * @param value New value for setting.
-	 */
-	private void doSetUseGMCP(final Boolean value) {
-		mProcessor.setUseGMCP(value);
-	}
-
-	/** Implementation of the auto reconnect attempt limit settings handler.
-	 * 
-	 * @param value New value for setting.
-	 */
-	private void setAutoReconnectLimit(final Integer value) {
-		mAutoReconnectLimit = value;
-	}
-
-	/** Impelementation of the use auto reconnect settings handler.
-	 * 
-	 * @param value New value for setting.
-	 */
-	private void setAutoReconnect(final Boolean value) {
-		mAutoReconnect = value;
-	}
-
-	/** Impelemntation of the bell vibrate settings handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSetBellVibrate(final Boolean value) {
-		mSettings.setVibrateOnBell(value);		
-	}
-	
-	/** Impelemntation of the bell notify settings handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSetBellNotify(final Boolean value) {
-		mSettings.setNotifyOnBell(value);
-	}
-	
-	/** Impelemntation of the bell toast settings handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSeBellDisplay(final Boolean value) {
-		mSettings.setDisplayOnBell(value);
-	}
-
 	/** Impelemntation of the set debug telnet settings handler.
 	 * 
 	 * @param value New value to use.
@@ -1967,46 +1911,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		}
 	}
 
-	/** Impelemntation of the echo alias update settings handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSetAliasUpdates(final Boolean value) {
-		mSettings.setEchoAliasUpdates(value);
-	}
-
-	/** Impelemntation of the process system commands settings handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSetProcessSystemCommands(final Boolean value) {
-		mSettings.setProcessPeriod(value);
-	}
-
-	/** Impelemntation of the local echo settings handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSetLocalEcho(final Boolean value) {
-		mSettings.setLocalEcho(value);
-	}
-
-	/** Impelemntation of the keep last settings handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSetKeepLast(final Boolean value) {
-		mService.dispatchKeepLast(value);
-	}
-	
-	/** Impelemntation of the show regex warning handler.
-	 * 
-	 * @param value New value to use.
-	 */
-	private void doSetRegexWarning(final Boolean value) {
-		mService.dispatchShowRegexWarning(value);
-	}
-	
 
 	/** Impelemntation of the system encoding settings handler.
 	 * 
