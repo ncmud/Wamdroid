@@ -16,15 +16,12 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,9 +30,6 @@ import org.keplerproject.luajava.LuaState;
 import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlSerializer;
 
-import com.offsetnull.bt.responder.IteratorModifiedException;
-import com.offsetnull.bt.responder.TriggerResponder;
-import com.offsetnull.bt.responder.gag.GagAction;
 import com.offsetnull.bt.responder.script.ScriptResponder;
 import com.offsetnull.bt.script.ScriptData;
 import com.offsetnull.bt.service.function.BellCommand;
@@ -69,7 +63,6 @@ import com.offsetnull.bt.speedwalk.DirectionData;
 import com.offsetnull.bt.timer.TimerData;
 import com.offsetnull.bt.trigger.TriggerData;
 import com.offsetnull.bt.window.TextTree;
-import com.offsetnull.bt.window.TextTree.Line;
 import com.offsetnull.bt.alias.AliasData;
 import com.offsetnull.bt.button.SlickButtonData;
 
@@ -90,13 +83,12 @@ import android.os.Message;
 
 import androidx.core.content.ContextCompat;
 import android.util.Log;
-import android.util.SparseArray;
 //import android.util.Log;
 import android.util.Xml;
 import android.widget.RelativeLayout;
 
 /** Connection class implementation. */
-public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext, GMCPContext {
+public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext, GMCPContext, TriggerContext {
 	
 	/** Initiates the connection with the server. */
 	public static final int MESSAGE_STARTUP = 1;
@@ -267,17 +259,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Value of -2. */
 	private static final int NEGATIVE_TWO = -2;
 	
-	/** ANSI Color code pattern. */
-	private static final Pattern COLOR_PATTERN = Pattern.compile("\\x1B\\x5B.+?m");
-	
-	/** ANSI Color code matcher. */
-	private static final Matcher COLOR_MATCHER = COLOR_PATTERN.matcher("");
-	
-	/** Generic "match a line" pattern. */
-	private static final Pattern LINE_PATTERN = Pattern.compile("^.*$", Pattern.MULTILINE);
-	
-	/** Line matching matcher. */
-	private static final Matcher LINE_MATCHER = LINE_PATTERN.matcher("");
+	private TriggerManager mTriggerManager;
 	
 
 
@@ -288,10 +270,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** String name of the default output window. */
 	private static final String MAIN_WINDOW = "mainDisplay";
 	
-	/** Constant indicating that one or more triggers is invalid and the trigger system should be rebuilt
-	 * on the next pass of dispatch().
-	 */
-	private static boolean triggersDirty = false;
 	/** Manages window tokens, callbacks, and window-related operations. */
 	private ConnectionWindowManager mWindowManager;
 	/** String builder used by the alias parsing routine. */
@@ -304,27 +282,12 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	private final Matcher mSemiMatcher = mSemicolon.matcher("");
 	/** String builder used by the alias parsing routine. */
 	private final StringBuffer mCommandBuilder = new StringBuffer();
-	/** Used by the trigger processor to map line start/end to line number. */
-	private final TreeSet<Range> mLineMap = new TreeSet<Range>(new RangeComparator());
-	/** Used by the trigger building routine to build the new string with great speed. */
-	private final StringBuilder mTriggerBuilder = new StringBuilder();
-
-	/** A utiltiy object to keep track of the order of triggers. */
-	private final SparseArray<TriggerData> mSortedTriggerMap = new SparseArray<TriggerData>(0);
-	/** A utiltity object to keep track of the sorted order of plugins. */
-	private final SparseArray<Plugin> mTriggerPluginMap = new SparseArray<Plugin>(0);
 	/** The auto reconnect limit helper varialbe. */
 	private Integer mAutoReconnectLimit;
 	/** The current auto reconnect attempt. */
 	private Integer mAutoReconnectAttempt = 0;
 	/** Weather or not we should auto reconnect on connection failure. */
 	private Boolean mAutoReconnect;
-	/** The amalgamated trigger string. Very long in most cases. */
-	private String mMassiveTriggerString = null;
-	/** The amalgamated trigger string pattern object. */
-	private Pattern mMassivePattern = null;
-	/** The amalgamated trigger string matcher object. */
-	private Matcher mMassiveMatcher = null;
 	/** The main looper handler for this "foreground" thread, although I'm not sure
 	 *  if service processes get "foreground threads". */
 	private Handler mHandler = null;
@@ -349,11 +312,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	private Processor mProcessor = null;
 	//TextTree buffer = null;
 	
-	/** TextTree instance used for trigger parsing input text. */
-	private TextTree mWorking = null;
-	
-	/** TextTree instance used for trigger parsing input text. */
-	private TextTree mFinished = null;
 	
 	/** Mapping of link paths to plugin names. */
 	private HashMap<String, ArrayList<String>> mLinkMap = new HashMap<String, ArrayList<String>>();
@@ -451,16 +409,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		
 		mPlugins = new ArrayList<Plugin>();
 		mHandler = new Handler(new ConnectionHandler());
-
-		mWorking = new TextTree();
-		mWorking.setLinkify(false);
-		mWorking.setLineBreakAt(TEN_MILLION);
-		mWorking.setMaxLines(TEN_THOUSAND);
-		
-		mFinished = new TextTree();
-		mFinished.setLinkify(false);
-		mFinished.setLineBreakAt(TEN_MILLION);
-		mFinished.setMaxLines(TEN_THOUSAND);
+		mTriggerManager = new TriggerManager(this);
 
 		mWindowManager = new ConnectionWindowManager();
 		
@@ -508,7 +457,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				doCallPlugin(ptmp, ftmp, dtmp);
 				break;
 			case MESSAGE_SETTRIGGERSDIRTY:
-				setTriggersDirty();
+				mTriggerManager.setDirty();
 				break;
 			case MESSAGE_RELOADSETTINGS:
 				reloadSettings();
@@ -676,7 +625,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				break;
 			case MESSAGE_PROCESS:
 				try {
-					dispatch((byte[]) msg.obj);
+					mTriggerManager.dispatch((byte[]) msg.obj);
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				}
@@ -935,106 +884,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		
 	}
 	
-	/** Work horse function to rebuild the trigger system.
-	 * 
-	 * I think this is called from a number of placed, but it should really be called from dispatch()
-	 * when triggers are dirty.
-	 */
+	/** Delegates to TriggerManager. */
 	public final void buildTriggerSystem() {
-		if (mSettings == null) { 
-			return; 
-		}
-		mSortedTriggerMap.clear();
-		mTriggerPluginMap.clear();
-		int currentgroup = 1;
-		mTriggerBuilder.setLength(0);
-		boolean addseparator = false;
-		ArrayList<TriggerData> tmp = mSettings.getSortedTriggers();
-		if (tmp == null) {
-			mSettings.sortTriggers();
-			tmp = mSettings.getSortedTriggers();
-		}
-		if (tmp != null && tmp.size() > 0) {
-			for (int i = 0; i < tmp.size(); i++) {
-				TriggerData t = tmp.get(i);
-				if (!(!t.isInterpretAsRegex() && t.getPattern().startsWith("%"))) {
-					if (t.isEnabled()) {
-						if (!addseparator) {
-							mTriggerBuilder.append("(");
-							if (!t.isInterpretAsRegex()) {
-								mTriggerBuilder.append("\\Q");
-							}
-							mTriggerBuilder.append(t.getPattern());
-							if (!t.isInterpretAsRegex()) {
-								mTriggerBuilder.append("\\E");
-							}
-							mTriggerBuilder.append(")");
-							addseparator = true;
-						} else {
-							mTriggerBuilder.append("|(");
-							if (!t.isInterpretAsRegex()) {
-								mTriggerBuilder.append("\\Q");
-							}
-							mTriggerBuilder.append(t.getPattern());
-							if (!t.isInterpretAsRegex()) {
-								mTriggerBuilder.append("\\E");
-							}
-							mTriggerBuilder.append(")");
-						}
-						mSortedTriggerMap.put(currentgroup, t);
-						mTriggerPluginMap.put(currentgroup, mSettings);
-						currentgroup += t.getMatcher().groupCount() + 1;
-					}
-				}
-			}
-		}
-		
-		for (Plugin p : mPlugins) {
-			tmp = p.getSortedTriggers();
-			if (tmp == null) {
-				p.sortTriggers();
-				tmp = p.getSortedTriggers();
-			}
-			if (tmp != null && tmp.size() > 0) {
-				for (int i = 0; i < tmp.size(); i++) {
-					TriggerData t = tmp.get(i);
-					if (!(!t.isInterpretAsRegex() && t.getPattern().startsWith("%"))) {
-						if (t.isEnabled()) {
-							if (i == 0 && !addseparator) {
-								mTriggerBuilder.append("(");
-								if (!t.isInterpretAsRegex()) {
-									mTriggerBuilder.append("\\Q");
-								}
-								mTriggerBuilder.append(t.getPattern());
-								if (!t.isInterpretAsRegex()) {
-									mTriggerBuilder.append("\\E");
-								}
-								mTriggerBuilder.append(")");
-								addseparator = true;
-							} else {
-								mTriggerBuilder.append("|(");
-								if (!t.isInterpretAsRegex()) {
-									mTriggerBuilder.append("\\Q");
-								}
-								mTriggerBuilder.append(t.getPattern());
-								if (!t.isInterpretAsRegex()) {
-									mTriggerBuilder.append("\\E");
-								}
-								mTriggerBuilder.append(")");
-							}
-							mSortedTriggerMap.put(currentgroup, t);
-							mTriggerPluginMap.put(currentgroup, p);
-							currentgroup += t.getMatcher().groupCount() + 1;
-						}
-					}
-				}
-			}
-		
-		}
-		mMassiveTriggerString = mTriggerBuilder.toString();
-		mMassivePattern = Pattern.compile(mMassiveTriggerString, Pattern.MULTILINE);
-		mMassiveMatcher = mMassivePattern.matcher("");
-		triggersDirty = false;
+		mTriggerManager.buildTriggerSystem();
 	}
 	
 	/** end of the line of the DrawWindow function. I don't think this is used.
@@ -1141,294 +993,14 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		sendBytesToWindow(data);
 	}
 	
-	/** Utility class used for trigger processing. Maps a start and end value to a line number.	 */
-	private class Range {
-		/** Start of the line. */
-		private int mStart;
-		/** End of the line. */
-		private int mEnd;
-		/** Line number. */
-		private int mLine;
-		/** Generic assignment constructor.
-		 * 
-		 * @param start Start of line.
-		 * @param end End of line.
-		 * @param line Line number.
-		 */
-		public Range(final int start, final int end, final int line) { 
-			this.mStart = start; 
-			this.mEnd = end; 
-			this.mLine = line;
-		}
-		/** Line number getter.
-		 * 
-		 * @return The line number.
-		 */
-		public int getLine() { return mLine; }
-		/** Range start getter.
-		 * 
-		 * @return index position of the start of the line.
-		 */
-		public int getStart() { return mStart; }
-		/** Range end getter.
-		 * 
-		 * @return index position of the end of the line.
-		 */
-		public int getEnd() { return mEnd; }
-		
-	}
-	
-	/** Range class comparator.	 */
-	private class RangeComparator implements Comparator<Range> {
-
-		@Override
-		public int compare(final Range a, final Range b) {
-			if (b.mStart > a.mEnd && b.mEnd > a.mEnd) {
-				return -1;
-			}
-
-			if (b.mStart < a.mStart && b.mEnd < a.mEnd) {
-				return 1;
-			}
-
-			return 0;
-		}
-
-	}
 	
 
 	
 	/** Setter for triggersDirty. */
 	public final void setTriggersDirty() {
-		triggersDirty = true;
+		mTriggerManager.setDirty();
 	}
 
-	/** THE INCOMING DATA DISPATCH ROUTINE! Unicorns and puppies and all kinds of good things live here.
-	 * 
-	 * @param data The data to process.
-	 * @throws UnsupportedEncodingException Thrown when a string<==>byte[] conversion has a bad encoding provided.
-	 */
-	private void dispatch(final byte[] data) throws UnsupportedEncodingException {
-
-		byte[] raw = mProcessor.rawProcess(data);
-		if (raw == null) { 
-			return; 
-		}
-		
-		TextTree buffer = null;
-		for (WindowToken w : mWindowManager.getWindows()) {
-			if (w.getName().equals(MAIN_WINDOW)) {
-				buffer = w.getBuffer();
-			}
-		}
-
-		TextTree.Color tmpcolor = buffer.getBleedColor();
-		mWorking.setBleedColor(tmpcolor);
-		mFinished.setBleedColor(tmpcolor);
-
-		mWorking.addBytesImpl(raw);
-	
-		mWorking.setModCount(0);
-		
-		//strip the color out.
-		COLOR_MATCHER.reset(new String(raw, mSettings.getEncoding()));
-		String stripped = COLOR_MATCHER.replaceAll("");
-		
-		if (triggersDirty) {
-			buildTriggerSystem();
-		}
-
-		ListIterator<TextTree.Line> it = mWorking.getLines().listIterator(mWorking.getLines().size());
-		mLineMap.clear();
-		LINE_MATCHER.reset(stripped);
-		boolean found = false;
-		int lineNumber = mWorking.getLines().size() - 1;
-		while (LINE_MATCHER.find()) {
-			found = true;
-			mLineMap.add(new Range(LINE_MATCHER.start(), LINE_MATCHER.end(), lineNumber));
-			lineNumber = lineNumber - 1;
-		}
-		boolean keepEvaluating = true;
-		lineNumber = mWorking.getLines().size() - 1;
-		Line l = null;
-		if (it.hasPrevious()) {
-			l = it.previous();
-		} else {
-			return;
-		}
-		if (found) {
-			boolean done = false;
-			while (!done) {
-				done = true;
-				boolean rebuildTriggers = false;
-				boolean replaceGagged = false;
-				int gagloc = -1;
-				mMassiveMatcher.reset(stripped);
-				while (keepEvaluating && mMassiveMatcher.find()) {
-					int s = mMassiveMatcher.start();
-					int e = mMassiveMatcher.end() - 1;
-					String matched = mMassiveMatcher.group();
-					Range r = new Range(s, e, 0);
-					SortedSet<Range> tmp = mLineMap.tailSet(r);
-	
-					int tmpline = tmp.first().getLine();
-					int tmpstart = s - tmp.first().getStart();
-					int tmpend = (e - 1) - tmp.first().getStart();
-					gagloc = tmp.first().getEnd();
-					
-					int index = -1;
-					for (int i = 1; i <= mMassiveMatcher.groupCount(); i++) {
-						if (mMassiveMatcher.group(i) != null) {
-							index = i;
-							i = mMassiveMatcher.groupCount();
-						}
-					}
-					
-					if (index > 0) {
-						//we have found a trigger. advance the line number to
-						
-						TriggerData t = mSortedTriggerMap.get(index);
-						Plugin p = mTriggerPluginMap.get(index);
-
-						boolean gagged = false;
-						if (lineNumber > tmpline) {
-							int amount = lineNumber - tmpline;
-							
-							for (int i = 0; i < amount; i++) {
-								if (it.hasPrevious()) {
-								l = it.previous();
-								}
-							}
-							mWorking.setModCount(0);
-							lineNumber = tmpline;
-							if (it.hasNext()) {
-								lineNumber = tmpline;	
-							}
-						} else if (tmpline > lineNumber) {
-							gagged = true;
-						}
-						if (t != null && t.isEnabled() && !gagged) {
-							mCaptureMap.clear();
-							for (int i = index; i <= (t.getMatcher().groupCount() + index); i++) {
-								
-								mCaptureMap.put(Integer.toString(i - index), mMassiveMatcher.group(i));
-							}
-							for (TriggerResponder responder : t.getResponders()) {
-								if (responder instanceof GagAction) {
-									replaceGagged = true;
-								}
-								try {
-									responder.doResponse(mService.getApplicationContext(), 
-																	   mWorking, 
-																	   lineNumber, 
-																	   it, 
-																	   l, 
-																	   tmpstart,
-																	   tmpend,
-																	   matched, 
-																	   t, 
-																	   mDisplay,
-																	   mHost,
-																	   mPort, 
-																	   StellarService.getNotificationId(), 
-																	   mService.isWindowConnected(), 
-																	   mHandler, 
-																	   mCaptureMap, 
-																	   p.getLuaState(), 
-																	   t.getName(), 
-																	   mSettings.getEncoding());
-									
-									if (triggersDirty) {
-										keepEvaluating = false;
-										rebuildTriggers = true;
-									}
-								} catch (IteratorModifiedException e1) {
-									it = e1.getIterator();
-									mWorking.setModCount(0);
-									lineNumber = it.previousIndex();
-									if (it.hasPrevious()) {
-										l = it.previous();
-									} else {
-										keepEvaluating = false;
-									}
-									
-								}
-								if (mWorking.getLines().size() == 0) {
-									keepEvaluating = false;
-								}
-							}
-						}
-					}
-					if (rebuildTriggers) {
-						break;
-					}
-				}
-				if (rebuildTriggers) {
-					mWorking.setModCount(0);
-					done = false;
-					keepEvaluating = true;
-					int e = mMassiveMatcher.end();
-
-					if (e != stripped.length()) {
-						if (replaceGagged) {
-							stripped = stripped.substring(gagloc + 1, stripped.length());
-						} else {
-							stripped = stripped.substring(e + 1, stripped.length());
-						}	
-					}
-					
-					if (lineNumber <= mWorking.getLines().size() - 1) {
-						while (mWorking.getLines().size() - 1 > lineNumber) {
-
-							Line tmp = mWorking.getLines().get(mWorking.getLines().size() - 1);
-							mWorking.getLines().remove(mWorking.getLines().size() - 1);
-							mFinished.appendLine(tmp);
-						}
-						
-					}
-					
-					buildTriggerSystem();
-					
-					mLineMap.clear();
-					LINE_MATCHER.reset(stripped);
-					found = false;
-
-					lineNumber = mWorking.getLines().size() - 1;
-					while (LINE_MATCHER.find()) {
-						found = true;
-						mLineMap.add(new Range(LINE_MATCHER.start(), LINE_MATCHER.end(), lineNumber));
-						lineNumber = lineNumber - 1;
-					}
-					
-					lineNumber = mWorking.getLines().size() - 1;
-					if (lineNumber == -1) {
-						keepEvaluating = false;
-						done = true;
-					} else {
-						it = mWorking.getLines().listIterator(lineNumber + 1);
-						l = it.previous();
-					}
-					
-				}
-				
-				
-			}
-		}
-
-		ListIterator<TextTree.Line> finisher = mWorking.getLines().listIterator(mWorking.getLines().size());
-		while (finisher.hasPrevious()) {
-			mFinished.appendLine(finisher.previous());
-		}
-		
-		mWorking.empty();
-		mFinished.updateMetrics();
-		
-		byte[] proc = mFinished.dumpToBytes(false);
-		
-		buffer.addBytesImplSimple(proc);
-		sendBytesToWindow(proc);
-		
-	}
 	
 	/** Called from a few places I think. Triggers the network disconnected dialog in the foreground window.
 	 * Unless the auto reconnect is set.
@@ -2875,8 +2447,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		mProcessor.setEncoding(value);
 		//this.encoding = value;
 		mSettings.setEncoding(value);
-		this.mWorking.setEncoding(value);
-		this.mFinished.setEncoding(value);
+		mTriggerManager.setEncoding(value);
 		if (mProcessor != null) {
 			this.mProcessor.setEncoding(value);
 		}
@@ -4055,5 +3626,20 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		if(p == null) return "Plugin " + plugin + " does not exist.";
 		return p.getOptionValue(key);
 	}
-	
+
+	@Override
+	public HashMap<String, String> getCaptureMap() {
+		return mCaptureMap;
+	}
+
+	@Override
+	public String getEncoding() {
+		return mSettings.getEncoding();
+	}
+
+	@Override
+	public ConnectionWindowManager getWindowManager() {
+		return mWindowManager;
+	}
+
 }
