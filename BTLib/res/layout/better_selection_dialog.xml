@@ -4,11 +4,11 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/buttonsetselectionlayout"
 	android:layout_width="280dip"
-	android:layout_height="fill_parent">
+	android:layout_height="match_parent">
 	
 	<TextView
 		android:id="@+id/titlebar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:text="SELECT TRIGGER"
@@ -38,24 +38,24 @@
 		android:id="@+id/buttonset_scroller"
 		android:layout_alignParentTop="true"
 		android:layout_width="420px"
-		android:layout_height="fill_parent"
+		android:layout_height="match_parent"
 		android:layout_above="@id/new_buttonset_button"> -->
 		<FrameLayout
 			android:id="@+id/timer_frame"
-			android:layout_width = "fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_width = "match_parent"
+			android:layout_height="match_parent"
 			android:layout_margin="0dip"
 			android:padding="0dip"
 			android:layout_above="@id/trigger_new_button"
 			android:layout_below="@id/titlebar">
 		<ListView
 			android:id="@+id/trigger_list"
-			android:layout_height="fill_parent"
+			android:layout_height="match_parent"
 			android:layout_width="280dip"/>
 		<TextView
 			android:id="@+id/trigger_empty"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
 			android:text="No triggers to display.\nNew triggers can be made with the button below."
 			android:textColor="#FFFFFFFF"
 			android:background="#FF000000"

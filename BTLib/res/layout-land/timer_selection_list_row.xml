@@ -2,7 +2,7 @@
 
 <RelativeLayout
   	xmlns:android="http://schemas.android.com/apk/res/android"
-  	android:layout_width="fill_parent"
+  	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
   	android:background="#FF333333">
   	
@@ -49,7 +49,7 @@
   		/>-->
   	
   	<TableLayout
-  		android:layout_width ="fill_parent"
+  		android:layout_width ="match_parent"
   		android:layout_height="wrap_content"
   		android:id="@+id/display_meat"
   		android:layout_alignParentRight="true"
@@ -61,7 +61,7 @@
   		
   		
   	<TableRow
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content">
   	
   	<TextView
@@ -79,7 +79,7 @@
   		
  	 <TextView
   		android:id="@+id/timer_total"
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
   		android:gravity = "right"
   		android:textSize = "24sp"
@@ -90,12 +90,12 @@
   		android:background="#FF333333"/>	
   	</TableRow>	
 	<TableRow
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content">
   	
   	  <TextView
   		android:id="@+id/timer_display"
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
 
   		android:gravity = "center"
@@ -109,7 +109,7 @@
   		
   		<TextView
   		android:id="@+id/timer_status"
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
 		
   		android:gravity = "right"
@@ -127,8 +127,8 @@
   		
   	  <com.happygoatstudios.bt.timer.ProgressMeter
   		android:id="@+id/timer_progress"
-  		android:layout_width="fill_parent"
-  		android:layout_height="fill_parent"
+  		android:layout_width="match_parent"
+  		android:layout_height="match_parent"
   		android:layout_below="@id/display_meat"
   		android:layout_alignParentRight="true"
   		android:layout_alignBottom="@id/timer_ordinal"

@@ -8,7 +8,7 @@
   
   <TextView
 		android:id="@+id/titlebar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:text="EDIT ALIASES"
@@ -59,7 +59,7 @@
   	android:text="Save List" /> -->
   
   <Button
-  	android:layout_width="fill_parent"
+  	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
   	android:text="New Alias"
   	android:id="@+id/new_alias_button"
@@ -69,22 +69,22 @@
 
   <FrameLayout
 		android:id="@+id/alias_frame"
-		android:layout_width = "fill_parent"
-		android:layout_height="fill_parent"
+		android:layout_width = "match_parent"
+		android:layout_height="match_parent"
 		android:layout_margin="0dip"
 		android:padding="0dip"
 		android:layout_above="@id/new_alias_button"
   		android:layout_below="@id/titlebar">
   <ListView
   	android:layout_width="275dip"
-  	android:layout_height="fill_parent"
+  	android:layout_height="match_parent"
   	android:id="@+id/alias_list"
   	/>
   	
   	<TextView
 			android:id="@+id/alias_empty"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
 			android:text="No aliases to display.\nNew aliases can be made with the button below."
 			android:textColor="#FFFFFFFF"
 			android:background="#FF000000"

@@ -22,7 +22,7 @@
   	 <TextView
   		style="@style/ListFont"
   		android:id="@+id/infoTitle"
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
   		android:layout_alignParentTop="true"
   		
@@ -46,7 +46,7 @@
 
   	 <TextView
   		style="@style/ListFont"
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
   		android:layout_toLeftOf="@id/icon"
   		android:layout_alignBottom="@id/spacer"
@@ -63,7 +63,7 @@
   	 <com.offsetnull.bt.window.AnimatedRelativeLayout
   	     android:id="@+id/toolbarholder"
   	     android:layout_width="wrap_content"
-  	     android:layout_height="fill_parent"
+  	     android:layout_height="match_parent"
   	     android:layout_alignParentTop="true"
   	     android:layout_alignParentRight="true"
   	     />
@@ -80,7 +80,7 @@
   		android:focusableInTouchMode="false"
   		android:id="@+id/spacer"/> 
   	<RelativeLayout
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="78dip"
   		android:layout_toLeftOf="@id/spacer"
   		  		android:focusable="false"
@@ -88,7 +88,7 @@
   		android:layout_alignBottom="@id/spacer"
   		android:layout_alignTop="@id/spacer">
   		<RelativeLayout
-  			android:layout_width="fill_parent"
+  			android:layout_width="match_parent"
   			android:layout_height="wrap_content"
   			android:layout_alignParentBottom="true"
   			android:layout_alignParentLeft="true"
@@ -107,8 +107,8 @@
   				android:id="@+id/icon"/>
   			<TextView
   				style="@style/ListFont"
-  				android:layout_width="fill_parent"
-  				android:layout_height="fill_parent"
+  				android:layout_width="match_parent"
+  				android:layout_height="match_parent"
   				android:layout_toLeftOf="@id/icon"
   				android:layout_alignBottom="@id/icon"
   				android:focusable="false"
@@ -123,7 +123,7 @@
   		<TextView
   			style="@style/ListFont"
   			android:id="@+id/infoTitle"
-  			android:layout_width="fill_parent"
+  			android:layout_width="match_parent"
   			android:layout_height="wrap_content"
   			android:layout_alignTop="@id/spacer"
   			android:layout_above="@id/extendedPanel"
@@ -135,11 +135,11 @@
   			android:textStyle="bold"/>
   	</RelativeLayout>
   	<ViewFlipper
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
   		android:id="@+id/flipper">
 	  	<LinearLayout
-	  		android:layout_width="fill_parent"
+	  		android:layout_width="match_parent"
 		  	android:layout_height="wrap_content"
 		  	android:orientation="horizontal"
 		  	android:background="#00000000"
@@ -155,7 +155,7 @@
 		  		android:id="@+id/toolbar_tab"/>
 	  	</LinearLayout>
 	  	<LinearLayout
-	  		android:layout_width="fill_parent"
+	  		android:layout_width="match_parent"
 		  	android:layout_height="wrap_content"
 		  	android:orientation="horizontal"
 		  	android:gravity="right"

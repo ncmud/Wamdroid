@@ -3,8 +3,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/window_container"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <com.offsetnull.bt.window.NoTouchActionBar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
     <LinearLayout
         android:id="@+id/inputbar"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         >
@@ -44,7 +44,7 @@
     	android:text="|DOWN|"/>
     
     <com.offsetnull.bt.window.BetterEditText
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight = "20dip"
     android:textSize="16sp"
@@ -72,7 +72,7 @@
     
        <View
         android:layout_height="3dip"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_above="@id/inputbar"
         android:id="@+id/divider"
         android:background="#FF444488"/>
@@ -109,7 +109,7 @@
     	android:text="|DOWN|"/>
 
     <com.happygoatstudios.bt.window.BetterEditText
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="20dip"
     android:height = "20dip"
     android:textSize="16sp"
@@ -135,7 +135,7 @@
  </RelativeLayout>
     
     <TextView 
-    android:layout_width = "fill_parent" 
+    android:layout_width = "match_parent" 
     android:layout_height = "1px"
     android:text = "" 
     android:id = "@+id/filler"
@@ -147,7 +147,7 @@
     />
     
     <TextView 
-    android:layout_width = "fill_parent" 
+    android:layout_width = "match_parent" 
     android:layout_height = "1px"
     android:text = "" 
     android:id = "@+id/filler2"
@@ -160,14 +160,14 @@
 
      <com.happygoatstudios.bt.legacy.FixedViewFlipper 
     	android:id="@+id/flippdipper"
-    	android:layout_height="fill_parent"
-    	android:layout_width="fill_parent"
+    	android:layout_height="match_parent"
+    	android:layout_width="match_parent"
     	android:layout_above="@id/filler">
     	
     				<RelativeLayout 
     					android:id="@+id/slickholder"
-    					android:layout_width="fill_parent"
-    					android:layout_height="fill_parent"
+    					android:layout_width="match_parent"
+    					android:layout_height="match_parent"
     					android:layout_x="0px"
     					android:layout_y="0px">
     				</RelativeLayout>

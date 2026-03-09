@@ -4,7 +4,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:id="@+id/newtriggerlayout"
   android:layout_width="400dip"
-  android:layout_height="fill_parent"
+  android:layout_height="match_parent"
   android:layout_marginLeft="10dip"
   android:layout_marginRight="10dip">
   
@@ -29,17 +29,17 @@
   	android:text="Cancel" />
   
   <Button
-  	android:layout_width="fill_parent"
+  	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
   	android:text="Done"
   	android:id="@+id/timer_editor_done_button"
   	android:layout_toLeftOf="@id/timer_editor_cancel"
   	android:layout_alignParentBottom="true"/>
   
-  <ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_above="@id/timer_editor_done_button" android:layout_below="@id/titlebar"
+  <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_above="@id/timer_editor_done_button" android:layout_below="@id/titlebar"
   android:id="@+id/timer_editor_scroll_container">
-  	<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical">
-  		<TableLayout android:layout_width="fill_parent" android:layout_height="wrap_content"  android:stretchColumns="*">
+  	<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+  		<TableLayout android:layout_width="match_parent" android:layout_height="wrap_content"  android:stretchColumns="*">
   			<TableRow>
   				<TextView
   					android:text="Name:"
@@ -57,7 +57,7 @@
   					android:inputType="text"/>
   			</TableRow>
   		</TableLayout>
-  		<TableLayout android:layout_width="fill_parent" android:layout_height="wrap_content"  android:shrinkColumns="1,2" android:stretchColumns="0,3">
+  		<TableLayout android:layout_width="match_parent" android:layout_height="wrap_content"  android:shrinkColumns="1,2" android:stretchColumns="0,3">
   			<TableRow>
   				<TextView
   					android:text="Seconds:"
@@ -89,7 +89,7 @@
   		
   					
   				
-  		<TextView android:layout_width="fill_parent"
+  		<TextView android:layout_width="match_parent"
   					android:layout_height="wrap_content"
   					android:text="EXECUTE ACTIONS"
   					android:layout_marginLeft="10dip"
@@ -98,8 +98,8 @@
   					android:gravity="center"
   					android:textStyle="bold"
   					android:textColor="#FF111111"/>
-  		<!-- <TableLayout android:id="@+id/trigger_notification_table" android:layout_width="fill_parent" android:layout_height="wrap_content" android:stretchColumns="0" android:shrinkColumns="1,2,3" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:background="@drawable/movemethod_frame"> -->
-  		<TableLayout android:id="@+id/timer_notification_table" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:background="@drawable/movemethod_frame">
+  		<!-- <TableLayout android:id="@+id/trigger_notification_table" android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="0" android:shrinkColumns="1,2,3" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:background="@drawable/movemethod_frame"> -->
+  		<TableLayout android:id="@+id/timer_notification_table" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:background="@drawable/movemethod_frame">
   			<TableRow android:id="@+id/timer_notification_legend">
   				<TextView
   					android:text="TYPE"

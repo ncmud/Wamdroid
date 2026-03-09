@@ -3,7 +3,7 @@
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width = "420px"
-	android:layout_height = "fill_parent">
+	android:layout_height = "match_parent">
 	
 	<Button
 		android:id="@+id/settings_editor_done"
@@ -16,6 +16,6 @@
 		android:id="@+id/settings_list"
 		android:layout_above="@id/settings_editor_done"
 		android:layout_width="420px"
-		android:layout_height="fill_parent"/>
+		android:layout_height="match_parent"/>
 		
 </RelativeLayout>

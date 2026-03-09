@@ -8,7 +8,7 @@
   
   <TextView
 		android:id="@+id/titlebar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:text="SCRIPT RESPONDER"
@@ -27,15 +27,15 @@
   		android:text="Cancel" />
   
   <Button
-  	android:layout_width="fill_parent"
+  	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
   	android:text="Done"
   	android:id="@+id/done"
   	android:layout_toLeftOf="@id/cancel"
   	android:layout_alignParentBottom="true"/>
   
-  <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_above="@id/done" android:layout_below="@id/titlebar">
-  <TableLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:stretchColumns="*">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_above="@id/done" android:layout_below="@id/titlebar">
+  <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="*">
   	<TableRow>
 
   		<TextView

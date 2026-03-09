@@ -5,10 +5,10 @@
   android:layout_height="200dip"
   android:orientation="vertical">
   <ScrollView android:layout_width="300dip" android:layout_height="200dip">
-  <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
   
   	<RelativeLayout
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
   	>
   	<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerHorizontal="true" android:gravity="center_vertical">
@@ -31,14 +31,14 @@
 
   	<TextView
   		android:layout_height="wrap_content"
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_marginLeft="10dip"
   		android:layout_marginRight="10dip"
   		android:text="@string/blowtorch_desc"
   		android:textSize="13dip"/>
   	 <Button
   	 	android:id="@+id/blowtorch_button"
-  		android:layout_width="fill_parent"
+  		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
   		android:layout_marginTop="5dip"
   		android:layout_marginLeft="30dip"
