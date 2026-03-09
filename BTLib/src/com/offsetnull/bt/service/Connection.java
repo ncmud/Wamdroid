@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -95,7 +96,7 @@ import android.util.Xml;
 import android.widget.RelativeLayout;
 
 /** Connection class implementation. */
-public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext {
+public class Connection implements SettingsChangedListener, ConnectionPluginCallback, TimerContext, GMCPContext {
 	
 	/** Initiates the connection with the server. */
 	public static final int MESSAGE_STARTUP = 1;
@@ -232,8 +233,6 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	/** Sent from the timer command. */
 	static final int MESSAGE_TIMERSTOP = 40;
 	
-	/** GMCP payload minimum size. */
-	private static final int GMCP_PAYLOAD_SIZE = 5;
 	
 	/** The value of 4. */
 	private static final int FOUR = 4;
@@ -386,6 +385,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	private ConnectionSettingsPlugin mSettings = null;
 
 	private TimerManager mTimerManager;
+	private GMCPHandler mGMCPHandler;
 
 	/** The keyboard command instance, not sure why this is here. */
 	private KeyboardCommand mKeyboardCommand;
@@ -419,6 +419,7 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 		ColorDebugCommand colordebug = new ColorDebugCommand();
 		DirtyExitCommand dirtyexit = new DirtyExitCommand();
 		mTimerManager = new TimerManager(this);
+		mGMCPHandler = new GMCPHandler(this);
 		TimerManager.TimerCommand timercmd = new TimerManager.TimerCommand();
 		BellCommand bellcmd = new BellCommand();
 		FullScreenCommand fscmd = new FullScreenCommand();
@@ -547,9 +548,9 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 			case MESSAGE_GMCPTRIGGERED:
 				String plugin = msg.getData().getString("TARGET");
 				String gcallback = msg.getData().getString("CALLBACK");
+				@SuppressWarnings("unchecked")
 				HashMap<String, Object> gdata = (HashMap<String, Object>) msg.obj;
-				Plugin gp = mPluginMap.get(plugin);
-				gp.handleGMCPCallback(gcallback, gdata);
+				mGMCPHandler.handleCallback(plugin, gcallback, gdata);
 				break;
 			case MESSAGE_INVALIDATEWINDOWTEXT:
 				String wname = (String) msg.obj;
@@ -632,24 +633,8 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 				sendToServer((byte[]) msg.obj);
 				break;
 			case MESSAGE_SENDGMCPDATA:
-				byte bIAC = TC.IAC;
-				byte bSB = TC.SB;
-				byte bSE = TC.SE;
-				byte bGMCP = TC.GMCP;
-				int size = ((String) msg.obj).length() + GMCP_PAYLOAD_SIZE;
-				ByteBuffer fub = ByteBuffer.allocate(size);
-				fub.put(bIAC).put(bSB).put(bGMCP);
-				try {
-					fub.put(((String) msg.obj).getBytes("ISO-8859-1"));
-				} catch (UnsupportedEncodingException e2) {
-					e2.printStackTrace();
-				}
-				fub.put(bIAC).put(bSE);
-				byte[] fubtmp = new byte[size];
-				fub.rewind();
-				fub.get(fubtmp);
 				if (mPump != null && mPump.isConnected()) {
-					mPump.sendData(fubtmp);
+					mGMCPHandler.sendData((String) msg.obj);
 				} else {
 					mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_SENDGMCPDATA, msg.obj), FIVE_HUNDRED_MILLIS);
 				}
@@ -1498,39 +1483,12 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 
 		initSettings();
 		mPump.start();
-		loadGMCPTriggers();
+		mGMCPHandler.loadTriggers();
 		mIsConnected = true;
 		
 		mService.showConnectionNotification(mDisplay, mHost, mPort);
 	}
 	
-	/** The gmcp trigger loading routine. This is pretty self explanatory, but it seeks out
-	 * non-regex triggers that start witht he gmcp trigger char (default %) and tracks them 
-	 * accordingly.
-	 */
-	private void loadGMCPTriggers() {
-		String gmcpChar = mSettings.getGMCPTriggerChar();
-		for (int i = 0; i < mPlugins.size(); i++) {
-			Plugin p = mPlugins.get(i);
-			HashMap<String, TriggerData> triggers = p.getSettings().getTriggers();
-			for (TriggerData t : triggers.values()) {
-				if (!t.isInterpretAsRegex()) { //this actually means literal
-					if (t.getPattern().startsWith(gmcpChar)) {
-						//add it to the watch list, if it has a script responder
-						for (TriggerResponder r : t.getResponders()) {
-							if (r instanceof ScriptResponder) {
-								ScriptResponder s = (ScriptResponder) r;
-								String callback = s.getFunction();
-								String module = t.getPattern().substring(1, t.getPattern().length());
-								String name = p.getName();
-								mProcessor.addWatcher(module, name, callback);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
 
 
 	
@@ -4037,6 +3995,11 @@ public class Connection implements SettingsChangedListener, ConnectionPluginCall
 	@Override
 	public ConnectionSettingsPlugin getConnectionSettings() {
 		return mSettings;
+	}
+
+	@Override
+	public Map<String, Plugin> getPluginMap() {
+		return mPluginMap;
 	}
 
 	/** Getter for mPump.
