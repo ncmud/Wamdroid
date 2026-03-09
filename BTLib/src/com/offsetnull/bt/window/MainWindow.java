@@ -2360,12 +2360,6 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//Log.e("window","end onResume");
 	}
 	
-	public void onDestroy(Bundle saveInstance) {
-		//Log.e("WINDOW","onDestroy()");
-		super.onDestroy();
-	}
-	
-	
 	/*private void initLayers() {
 		RelativeLayout holder = (RelativeLayout)MainWindow.this.findViewById(R.id.slickholder);
 		initializeWindows();
