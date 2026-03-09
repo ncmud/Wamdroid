@@ -43,7 +43,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
-import android.text.ClipboardManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -3572,7 +3573,7 @@ end
 							case NEXT:
 								String copy = mBuffer.getTextSection(theSelection);
 								ClipboardManager cpMan = (ClipboardManager) v.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-								cpMan.setText(copy);
+								cpMan.setPrimaryClip(ClipData.newPlainText("MUD text", copy));
 								v.setOnTouchListener(null);
 								theSelection.start = null;
 								theSelection.end = null;
