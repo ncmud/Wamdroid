@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
@@ -811,6 +812,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 
 		public void onServiceDisconnected(ComponentName name) {
 			Launcher.this.serviceConnected = false;
+			Launcher.this.service = null;
 			Log.e("LAUNCHER","SERVICE DISCONNECTED");
 		}
 		
@@ -824,29 +826,9 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 	List<String> connectedList = null;
 	
 	
-	public final int MSG_DELETECONNECTION = 101;
-	public final int MSG_MODIFYCONNECTION = 102;
-	public Handler connectionModifier = new Handler() {
-		public void handleMessage(Message msg) {
-			switch(msg.what) {
-			case MSG_DELETECONNECTION:
-				MudConnection todelete = (MudConnection)msg.obj;
-				launcher_settings.getList().remove(todelete.getDisplayName());
-				buildList();
-				//MudConnection todelete = (MudConnection)msg.obj;
-				//apdapter.remove(todelete);
-				//apdapter.notifyDataSetChanged();
-				break;
-			case MSG_MODIFYCONNECTION:
-				MudConnection tomodify = (MudConnection)msg.obj;
-				NewConnectionDialog diag = new NewConnectionDialog(Launcher.this,Launcher.this,tomodify);
-				diag.show();
-				break;
-			default:
-				break;
-			}
-		}
-	};
+	public static final int MSG_DELETECONNECTION = 101;
+	public static final int MSG_MODIFYCONNECTION = 102;
+	public Handler connectionModifier = new ConnectionModifierHandler(this);
 	
 	public void ready(MudConnection newData) {
 		//promote this one to the head of the class.
@@ -2056,4 +2038,33 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		}
 	}
 
+	private static class ConnectionModifierHandler extends Handler {
+		private final WeakReference<Launcher> mActivity;
+
+		ConnectionModifierHandler(Launcher activity) {
+			mActivity = new WeakReference<>(activity);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			Launcher self = mActivity.get();
+			if (self == null) {
+				return;
+			}
+			switch (msg.what) {
+			case MSG_DELETECONNECTION:
+				MudConnection todelete = (MudConnection) msg.obj;
+				self.launcher_settings.getList().remove(todelete.getDisplayName());
+				self.buildList();
+				break;
+			case MSG_MODIFYCONNECTION:
+				MudConnection tomodify = (MudConnection) msg.obj;
+				NewConnectionDialog diag = new NewConnectionDialog(self, self, tomodify);
+				diag.show();
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
