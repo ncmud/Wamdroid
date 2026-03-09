@@ -867,7 +867,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//EditText input_box = (EditText)findViewById(R.id.textinput);
 		switch(msg.what) {
 		case MESSAGE_SHOWREGEXWARNING:
-			mShowRegexWarning = (msg.arg1 == 1) ? true : false;
+			mShowRegexWarning = msg.arg1 == 1;
 			break;
 		case MESSAGE_CLOSEOPTIONSDIALOG:
 			closeOptionsDialog();
@@ -879,16 +879,16 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			doResetSettings();
 			break;
 		case MESSAGE_USECOMPATIBILITYMODE:
-			setUseCompatibilityMode((msg.arg1 == 1) ? true : false);
+			setUseCompatibilityMode(msg.arg1 == 1);
 			break;
 		case MESSAGE_USESUGGESTIONS:
-			setUseSuggestions( (msg.arg1 == 1) ? true : false);
+			setUseSuggestions( msg.arg1 == 1);
 			break;
 		case MESSAGE_USEFULLSCREENEDITOR:
-			setUseFullscreenEditor((msg.arg1 == 1) ? true : false);
+			setUseFullscreenEditor(msg.arg1 == 1);
 			break;
 		case MESSAGE_SETKEEPSCREENON:
-			setKeepScreenOn((msg.arg1 == 1) ? true : false);
+			setKeepScreenOn(msg.arg1 == 1);
 			break;
 		case MESSAGE_SETORIENTATION:
 			setOrientation(msg.arg1);
@@ -903,7 +903,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			pushMenuStack((String)msg.obj,msg.getData().getString("CALLBACK"));
 			break;
 		case MESSAGE_SETKEEPLAST:
-			setKeepLast((msg.arg1 == 1) ? true : false);
+			setKeepLast(msg.arg1 == 1);
 			break;
 		case MESSAGE_MARKSETTINGSDIRTY:
 			markSettingsDirty();
@@ -1029,8 +1029,8 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			DoDisconnectMessage((String)msg.obj);
 			break;
 		case MESSAGE_KEYBOARD:
-			boolean add = (msg.arg2 > 0) ? true : false;
-			boolean popup = (msg.arg1 > 0) ? true : false;
+			boolean add = msg.arg2 > 0;
+			boolean popup = msg.arg1 > 0;
 			String text = (String)msg.obj;
 
 			if(!add) {
