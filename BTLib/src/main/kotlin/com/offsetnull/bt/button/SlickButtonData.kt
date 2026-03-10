@@ -39,7 +39,7 @@ class SlickButtonData(
 
     @Ignore
     @JvmField
-    var MOVE_STATE: Int = MOVE_FREE
+    var moveState: Int = MOVE_FREE
 
     companion object {
         const val MOVE_FREE = 0
@@ -79,21 +79,28 @@ class SlickButtonData(
         tmp.selectedColor = selectedColor; tmp.flipColor = flipColor
         tmp.labelColor = labelColor; tmp.labelSize = labelSize
         tmp.flipLabel = flipLabel; tmp.flipLabelColor = flipLabelColor
-        tmp.MOVE_STATE = MOVE_STATE
+        tmp.moveState = moveState
         return tmp
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SlickButtonData) return false
-        return x == other.x && y == other.y && height == other.height && width == other.width
-            && label == other.label && text == other.text && flipCommand == other.flipCommand
-            && MOVE_STATE == other.MOVE_STATE && targetSet == other.targetSet
-            && primaryColor == other.primaryColor && selectedColor == other.selectedColor
-            && flipColor == other.flipColor && labelColor == other.labelColor
-            && labelSize == other.labelSize && flipLabel == other.flipLabel
-            && flipLabelColor == other.flipLabelColor
+        return layoutEquals(other) && contentEquals(other) && styleEquals(other)
     }
+
+    private fun layoutEquals(other: SlickButtonData): Boolean =
+        x == other.x && y == other.y && height == other.height && width == other.width
+            && moveState == other.moveState
+
+    private fun contentEquals(other: SlickButtonData): Boolean =
+        text == other.text && label == other.label && flipCommand == other.flipCommand
+            && targetSet == other.targetSet && flipLabel == other.flipLabel
+
+    private fun styleEquals(other: SlickButtonData): Boolean =
+        primaryColor == other.primaryColor && selectedColor == other.selectedColor
+            && flipColor == other.flipColor && labelColor == other.labelColor
+            && labelSize == other.labelSize && flipLabelColor == other.flipLabelColor
 
     override fun hashCode(): Int {
         var result = x
@@ -107,6 +114,6 @@ class SlickButtonData(
 
     override fun toString(): String {
         return "$x||$y||${text.ifEmpty { "[NONE]" }}||${label.ifEmpty { "[NONE]" }}" +
-            "||${flipCommand.ifEmpty { "[NONE]" }}||$MOVE_STATE||$targetSet||$width||$height"
+            "||${flipCommand.ifEmpty { "[NONE]" }}||$moveState||$targetSet||$width||$height"
     }
 }

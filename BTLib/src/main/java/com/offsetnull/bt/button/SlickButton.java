@@ -179,11 +179,11 @@ public class SlickButton extends View {
 
     public void setMoveMethod(int i) {
         // Log.e("SB","MOVE STATE CHANGED TO:"+i);
-        data.MOVE_STATE = i;
+        data.moveState = i;
     }
 
     public int getMoveMethod() {
-        return data.MOVE_STATE;
+        return data.moveState;
     }
 
     public void setLabel(String t) {
@@ -322,7 +322,7 @@ public class SlickButton extends View {
         }
         if (e.getAction() == MotionEvent.ACTION_MOVE) {
             if (moving) {
-                if (data.MOVE_STATE == SlickButtonData.MOVE_FREE) {
+                if (data.moveState == SlickButtonData.MOVE_FREE) {
                     if (!lockMove) {
                         data.setX(touchx);
                         data.setY(touchy);
@@ -330,7 +330,7 @@ public class SlickButton extends View {
                     updateRect();
                     // this.invalidate();
                     newstate = DISPLAY_STATE.MOVING;
-                } else if (data.MOVE_STATE == SlickButtonData.MOVE_NUDGE) {
+                } else if (data.moveState == SlickButtonData.MOVE_NUDGE) {
                     // compute nudge
                     int tmpx = touchx - start_x;
                     int tmpy = touchy - start_y;
