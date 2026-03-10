@@ -266,11 +266,11 @@ public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnCo
 		eWidth = (EditText)findViewById(R.id.btn_editor_width_et);
 		eHeight = (EditText)findViewById(R.id.btn_editor_height_et);
 		
-		labelSize.setText(new Integer(this.the_button.getData().getLabelSize()).toString());
-		xPos.setText(new Integer(the_button.getData().getX()).toString());
-		yPos.setText(new Integer(the_button.getData().getY()).toString());
-		eWidth.setText(new Integer(the_button.getData().getWidth()).toString());
-		eHeight.setText(new Integer(the_button.getData().getHeight()).toString());
+		labelSize.setText(Integer.valueOf(this.the_button.getData().getLabelSize()).toString());
+		xPos.setText(Integer.valueOf(the_button.getData().getX()).toString());
+		yPos.setText(Integer.valueOf(the_button.getData().getY()).toString());
+		eWidth.setText(Integer.valueOf(the_button.getData().getWidth()).toString());
+		eHeight.setText(Integer.valueOf(the_button.getData().getHeight()).toString());
 		
 		targetSet = (EditText)findViewById(R.id.btn_editor_targetset_et);
 		targetSet.setText(the_button.getData().getTargetSet());
@@ -326,11 +326,11 @@ public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnCo
 				the_button.setText(command.getText().toString());
 				the_button.setFlipCommand(flip.getText().toString());
 				the_button.getData().setFlipLabel(fliplbl.getText().toString());
-				the_button.getData().setLabelSize(new Integer(labelSize.getText().toString()));
-				the_button.getData().setX(new Integer(xPos.getText().toString()));
-				the_button.getData().setY(new Integer(yPos.getText().toString()));
-				the_button.getData().setWidth(new Integer(eWidth.getText().toString()));
-				the_button.getData().setHeight(new Integer(eHeight.getText().toString()));
+				the_button.getData().setLabelSize(Integer.valueOf(labelSize.getText().toString()));
+				the_button.getData().setX(Integer.valueOf(xPos.getText().toString()));
+				the_button.getData().setY(Integer.valueOf(yPos.getText().toString()));
+				the_button.getData().setWidth(Integer.valueOf(eWidth.getText().toString()));
+				the_button.getData().setHeight(Integer.valueOf(eHeight.getText().toString()));
 				the_button.getData().setTargetSet(targetSet.getText().toString());
 				CheckBox tfree = (CheckBox)findViewById(R.id.move_free);
 				CheckBox tnudge = (CheckBox)findViewById(R.id.move_nudge);
@@ -438,11 +438,11 @@ public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnCo
 		the_button.setText(command.getText().toString());
 		the_button.setFlipCommand(flip.getText().toString());
 		the_button.getData().setFlipLabel(fliplbl.getText().toString());
-		the_button.getData().setLabelSize(new Integer(labelSize.getText().toString()));
-		the_button.getData().setX(new Integer(xPos.getText().toString()));
-		the_button.getData().setY(new Integer(yPos.getText().toString()));
-		the_button.getData().setWidth(new Integer(eWidth.getText().toString()));
-		the_button.getData().setHeight(new Integer(eHeight.getText().toString()));
+		the_button.getData().setLabelSize(Integer.valueOf(labelSize.getText().toString()));
+		the_button.getData().setX(Integer.valueOf(xPos.getText().toString()));
+		the_button.getData().setY(Integer.valueOf(yPos.getText().toString()));
+		the_button.getData().setWidth(Integer.valueOf(eWidth.getText().toString()));
+		the_button.getData().setHeight(Integer.valueOf(eHeight.getText().toString()));
 		the_button.getData().setTargetSet(targetSet.getText().toString());
 		CheckBox tfree = (CheckBox)findViewById(R.id.move_free);
 		CheckBox tnudge = (CheckBox)findViewById(R.id.move_nudge);

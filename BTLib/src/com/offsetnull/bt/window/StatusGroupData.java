@@ -11,7 +11,7 @@ public class StatusGroupData {
 	}
 
 	public void addInt(int value) {
-		data.add(new Integer(value));
+		data.add(Integer.valueOf(value));
 	}
 
 }

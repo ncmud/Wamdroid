@@ -9,7 +9,7 @@ public class IntegerOption extends BaseOption {
 
 	public IntegerOption() {
 		this.type = TYPE.INTEGER;
-		this.setValue(new Integer(0));
+		this.setValue(Integer.valueOf(0));
 	}
 
 	@Override

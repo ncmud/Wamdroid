@@ -1261,8 +1261,8 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 
 			String pdata = mInputBox.getText().toString();
 			history.addCommand(pdata);
-			Character cr = new Character((char)13);
-			Character lf = new Character((char)10);
+			Character cr = Character.valueOf((char)13);
+			Character lf = Character.valueOf((char)10);
 			String crlf = cr.toString() + lf.toString();
 			pdata = pdata.concat(crlf);
 			//ByteBuffer buf = ByteBuffer.allocate(pdata.length());
@@ -2736,7 +2736,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		}
 
 		public void doLineBreak(int i) {
-			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_LINEBREAK,new Integer(i)));
+			myhandler.sendMessage(myhandler.obtainMessage(MESSAGE_LINEBREAK,Integer.valueOf(i)));
 		}
 
 		public void reloadButtons(String setName) {
@@ -2796,7 +2796,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		public int getPort() {
 			Intent i= MainWindow.this.getIntent();
 			
-			return (new Integer(i.getStringExtra("HOST")).intValue());
+			return (Integer.valueOf(i.getStringExtra("HOST")).intValue());
 		}
 
 		public String getHost() {

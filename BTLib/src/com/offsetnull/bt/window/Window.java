@@ -778,7 +778,7 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 			if (t.getAction() == (MotionEvent.ACTION_UP)) {
 				
 				mTouchPreEvent = null;
-				//prev_y = new Float(0);
+				//prev_y = Float.valueOf(0);
 		        
 		        //reset the priority
 		        pointer = -1;
@@ -3921,7 +3921,7 @@ end
 		
 		mHomeWidgetRect.set(mWidth-mHomeWidgetDrawable.getWidth(),mHeight-mHomeWidgetDrawable.getHeight(),mWidth,mHeight);
 		
-		Float foo = new Float(0);
+		Float foo = Float.valueOf(0);
 		//foo.
 		
 /*! \page entry_points

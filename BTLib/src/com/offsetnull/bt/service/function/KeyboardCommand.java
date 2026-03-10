@@ -111,7 +111,7 @@ public class KeyboardCommand extends SpecialCommand {
 			}
 		}
 		
-		Boolean foo = new Boolean(true);
+		Boolean foo = Boolean.valueOf(true);
 		try {
 			text = new String(c.doKeyboardAliasReplace(text.getBytes(encoding),foo),encoding);
 		} catch (UnsupportedEncodingException e) {

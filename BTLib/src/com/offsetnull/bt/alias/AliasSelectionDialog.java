@@ -931,7 +931,7 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 						//circular reference. flag accordingly.
 						//Toast.makeText(this.getContext(), "CIRCULAR REFERENCES DETECTED", 2000);
 						//Log.e("ALIASEDITOR","CIRCULAR ALIAS DETECTED!");
-						offenders.add(new Integer(i));
+						offenders.add(Integer.valueOf(i));
 						retval = false;
 						
 						if(!offenders.contains(offendingpos)) {

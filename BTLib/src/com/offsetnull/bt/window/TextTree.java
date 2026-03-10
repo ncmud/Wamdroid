@@ -169,7 +169,7 @@ public class TextTree {
 					finalVal += placeMap.get(j) * Math.pow(10, placeMap.size()-1-j);
 				}
 				placeMap.clear();
-				tmp.addLast(new Integer(finalVal));
+				tmp.addLast(Integer.valueOf(finalVal));
 				working = 0;
 				place = 1;
 				break;
@@ -180,8 +180,8 @@ public class TextTree {
 				}
 				placeMap.clear();
 				
-				tmp.addLast(new Integer(finalVal));
-				//tmp.addLast(new Integer(working));
+				tmp.addLast(Integer.valueOf(finalVal));
+				//tmp.addLast(Integer.valueOf(working));
 				bleedColor = tmp;
 				return tmp;
 				//end
@@ -195,7 +195,7 @@ public class TextTree {
 			case b7:
 			case b8:
 			case b9:
-				placeMap.add(new Integer(getAsciiNumber(in[i])));
+				placeMap.add(Integer.valueOf(getAsciiNumber(in[i])));
 				
 				working = working*place;
 				place = place*10;
@@ -1202,7 +1202,7 @@ public class TextTree {
 			//data = "[0m";
 			//this.charcount = data.length();
 			operations = new ArrayList<Integer>();
-			//operations.add(new Integer(0));
+			//operations.add(Integer.valueOf(0));
 			this.type = UNIT_TYPE.COLOR;
 		}
 		

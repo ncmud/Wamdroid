@@ -23,7 +23,7 @@ public class ToastResponderParser {
 	public static void saveToastResponderToXML(XmlSerializer out,ToastResponder r) throws IllegalArgumentException, IllegalStateException, IOException {
 		out.startTag("", BasePluginParser.TAG_TOASTRESPONDER);
 		out.attribute("", BasePluginParser.ATTR_TOASTMESSAGE, r.getMessage());
-		out.attribute("", BasePluginParser.ATTR_TOASTDELAY, new Integer(r.getDelay()).toString());
+		out.attribute("", BasePluginParser.ATTR_TOASTDELAY, Integer.valueOf(r.getDelay()).toString());
 		out.attribute("", BasePluginParser.ATTR_FIRETYPE, r.getFireType().getString());
 		out.endTag("", BasePluginParser.TAG_TOASTRESPONDER);
 	}
