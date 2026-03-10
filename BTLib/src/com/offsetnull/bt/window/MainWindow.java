@@ -404,7 +404,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
         	ed.putBoolean("HASRUN", true);
         	vitals.autoPosition();
         	vitals.savePosition(ed);
-        	ed.commit();
+        	ed.apply();
         	
         } else {
         	int left = vc.getInt("LEFT", 0);
@@ -836,6 +836,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//b.setFocusable(false);
 		b.setOnTouchListener(new View.OnTouchListener() {
 
+			@SuppressLint("ClickableViewAccessibility")
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				//if(v.isEnabled()) {
@@ -866,6 +867,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//Log.e("Window","End on create");
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void handleMainMessage(Message msg) {
 		//EditText input_box = (EditText)findViewById(R.id.textinput);
 		switch(msg.what) {
@@ -967,7 +969,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			String serviceBindAction = ConfigurationLoader.getConfigurationValue("serviceBindAction", MainWindow.this);
 			SharedPreferences.Editor edit = getSharedPreferences("CONNECT_TO", Context.MODE_PRIVATE).edit();
 			edit.putString("CONNECT_TO", getIntent().getStringExtra("DISPLAY"));
-			edit.commit();
+			edit.apply();
 			bindService(new Intent(serviceBindAction, null, getApplicationContext(), StellarService.class),mConnection, 0);
 			//MainWindow.this.bindService(n, conn, flags)
 
@@ -1337,6 +1339,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		}
 	}
 
+	@SuppressLint("ClickableViewAccessibility")
 	View.OnTouchListener mEditBoxTouchListener = new View.OnTouchListener() {
 		
 		@Override
@@ -1758,7 +1761,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 //				throw new RuntimeException(e);
 //			}
 //			
-//			edit.commit();
+//			edit.apply();
 //			
 //			Intent settingintent = new Intent(this,HyperSettingsActivity.class);
 //			this.startActivityForResult(settingintent, 0);
@@ -1934,15 +1937,8 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		}
 		actionBarTested = true;
 		//try {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-		//	this.getClass().getMethod("getActionBar", null);
-			supportsActionBar = true;
-			return true;
-		}
-		//} catch(NoSuchMethodException e) {
-			supportsActionBar = false;
-			return false;
-		//}
+		supportsActionBar = true;
+		return true;
 		//if(this.getClass().getM)
 		//return false;
 	}
@@ -2063,10 +2059,9 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			}
 			
 			break;
+		default:
+			break;
 		}
-		
-		
-		
 	}
 	
 	private void ClearKeyboard() {
@@ -2317,7 +2312,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			}*/
 			SharedPreferences.Editor edit = MainWindow.this.getSharedPreferences("CONNECT_TO", Context.MODE_PRIVATE).edit();
 			edit.putString("CONNECT_TO", MainWindow.this.getIntent().getStringExtra("DISPLAY"));
-			edit.commit();
+			edit.apply();
 			String serviceBindAction = ConfigurationLoader.getConfigurationValue("serviceBindAction", this);
 			this.bindService(new Intent(serviceBindAction,null,this,StellarService.class),mConnection, 0);
 			

@@ -54,9 +54,9 @@ public class ColorSwatchPreference extends Preference implements ColorPickerDial
 
 		Button b = (Button) v.findViewById(R.id.colorswatch);
 		TextView summary = (TextView) v.findViewById(android.R.id.summary);
-		summary.setText("Text for your viewing pleasuer.");
+		summary.setText(R.string.label_color_swatch_summary);
 		TextView title = (TextView)v.findViewById(android.R.id.title);
-		title.setText("Hyperlink Color");
+		title.setText(R.string.label_hyperlink_color);
 		b.setBackgroundColor(colorValue);
 		
 		b.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +83,7 @@ public class ColorSwatchPreference extends Preference implements ColorPickerDial
 		
 		edit.putInt(this.getKey(), color);
 		
-		edit.commit();
+		edit.apply();
 		
 	}
 	

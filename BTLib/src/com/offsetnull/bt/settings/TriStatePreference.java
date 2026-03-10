@@ -63,15 +63,15 @@ public class TriStatePreference extends Preference  {
 		switch(mode) {
 		case 0:
 			box1.setEnabled(false);
-			t.setText("Using automatic");
+			t.setText(R.string.label_using_automatic);
 			break;
 		case 1:
 			box2.setEnabled(false);
-			t.setText("Using landscape");
+			t.setText(R.string.label_using_landscape);
 			break;
 		case 2:
 			box3.setEnabled(false);
-			t.setText("Using portrait");
+			t.setText(R.string.label_using_portrait);
 			break;
 		default:
 			break;
@@ -131,22 +131,22 @@ public class TriStatePreference extends Preference  {
 			
 			switch(myState) {
 			case AUTO:
-				display.setText("Using automatic");
+				display.setText(R.string.label_using_automatic);
 				editor.putInt(getKey(), STATE.AUTO.intVal());
 				break;
 			case LANDSCAPE:
-				display.setText("Using landscape");
+				display.setText(R.string.label_using_landscape);
 				editor.putInt(getKey(), STATE.LANDSCAPE.intVal());
 				break;
 			case PORTRAIT:
-				display.setText("Using portrait");
+				display.setText(R.string.label_using_portrait);
 				editor.putInt(getKey(), STATE.PORTRAIT.intVal());
 				break;
 			default:
 				break;
 			}
 			
-			editor.commit();
+			editor.apply();
 			
 			toggle1.setEnabled(true);
 			toggle2.setEnabled(true);

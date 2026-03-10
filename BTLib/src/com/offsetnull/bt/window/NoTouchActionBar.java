@@ -1,5 +1,6 @@
 package com.offsetnull.bt.window;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import androidx.appcompat.widget.Toolbar;
 import android.util.AttributeSet;
@@ -21,6 +22,7 @@ public class NoTouchActionBar extends Toolbar {
         super(c,s,d);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         return false;

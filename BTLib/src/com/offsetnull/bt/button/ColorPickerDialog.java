@@ -1,5 +1,7 @@
 package com.offsetnull.bt.button;
 
+import com.offsetnull.bt.R;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.app.Dialog;
@@ -179,6 +181,7 @@ public class ColorPickerDialog extends Dialog {
 
         private static final float PI = 3.1415926f;
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouchEvent(MotionEvent event) {
             float x = event.getX() - CENTER_X;
@@ -327,7 +330,7 @@ public class ColorPickerDialog extends Dialog {
 		RelativeLayout.LayoutParams titlep = new RelativeLayout.LayoutParams((int) (166.66*scale),LayoutParams.WRAP_CONTENT);
 		titlep.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
 		TextView title = new TextView(this.getContext());
-		title.setText("COLOR PICKER");
+		title.setText(R.string.title_color_picker);
 		title.setBackgroundColor(0xFF999999);
 		title.setTextColor(0xFF333333);
 		title.setLayoutParams(titlep);
