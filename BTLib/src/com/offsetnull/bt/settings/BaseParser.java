@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
 
@@ -167,10 +168,12 @@ public class BaseParser {
 	}
 	
 	
+	// Resource is in the app module, not this library, so getIdentifier is required.
+	@SuppressLint("DiscouragedApi")
 	protected InputStream getInputStream() throws FileNotFoundException {
-		
+
 			FileInputStream input = null;
-			
+
 			if(path == null) {
 				return mContext.getResources().openRawResource(mContext.getResources().getIdentifier("default_settings", "raw", mContext.getPackageName()));
 			}
