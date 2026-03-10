@@ -13,7 +13,7 @@
 		android:layout_width="300dip"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="TRIGGER EDITOR"
+		android:text="@string/title_trigger_editor"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -28,12 +28,12 @@
   	android:layout_alignParentEnd="true"
   	android:paddingStart="30dip"
   	android:paddingEnd="30dip"
-  	android:text="Cancel" />
+  	android:text="@string/btn_cancel" />
   
   <Button
   	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
-  	android:text="Done"
+  	android:text="@string/btn_done"
   	android:id="@+id/trigger_editor_done_button"
   	android:layout_toStartOf="@id/new_trigger_cancel"
   	android:layout_alignParentBottom="true"/>
@@ -44,7 +44,7 @@
   		<TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1" android:shrinkColumns="0">
   			<TableRow>
   				<TextView
-  					android:text="Name:"
+  					android:text="@string/label_name"
   					android:paddingStart="10dip"/>
   				<EditText
   					android:id="@+id/trigger_editor_name"
@@ -56,7 +56,7 @@
   			</TableRow>
   			<TableRow>
   				<TextView
-  					android:text="Pattern:"
+  					android:text="@string/label_pattern"
   					android:paddingStart="10dip"/>
   				<EditText
   					android:id="@+id/trigger_editor_pattern"
@@ -73,14 +73,14 @@
   				<LinearLayout android:gravity="center" android:background="@drawable/movemethod_frame" android:layout_width="wrap_content">
   					<CheckBox
   						android:id="@+id/trigger_literal_checkbox"
-  						android:text="Literal?"
+  						android:text="@string/option_literal"
   						android:textSize="13sp"
   						android:layout_width="wrap_content" android:layout_height="wrap_content"/>
   				</LinearLayout>
   				<LinearLayout android:gravity="center" android:background="@drawable/movemethod_frame" android:layout_width="wrap_content">
   				  	<CheckBox
   						android:id="@+id/trigger_once_checkbox"
-  						android:text="Fire Once?"
+  						android:text="@string/option_fire_once_short"
   						android:textSize="13sp"
   						android:layout_width="wrap_content" android:layout_height="wrap_content"/>
   				</LinearLayout>
@@ -88,7 +88,7 @@
   		</TableLayout>
   		<TextView android:layout_width="match_parent"
   					android:layout_height="wrap_content"
-  					android:text="EXECUTE ACTIONS"
+  					android:text="@string/btn_execute_actions"
   					android:layout_marginStart="10dip"
   					android:layout_marginEnd="10dip"
   					android:background="#FF999999"
@@ -99,25 +99,25 @@
   		<TableLayout android:id="@+id/trigger_notification_table" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="10dip" android:layout_marginEnd="10dip" android:background="@drawable/movemethod_frame">
   			<TableRow android:id="@+id/trigger_notification_legend">
   				<TextView
-  					android:text="TYPE"
+  					android:text="@string/label_type"
   					android:gravity="center"
   					/>
   				<TextView
-  					android:text="Window\nOpen"
+  					android:text="@string/label_window_open"
   					android:gravity="center"
   					android:layout_marginEnd="3dip" android:layout_marginStart="3dip"/>
   				<TextView
-  					android:text="Window\nClosed"
+  					android:text="@string/label_window_closed"
   					android:gravity="center"
   					android:layout_marginEnd="3dip" android:layout_marginStart="3dip"/>
   				<TextView
-  					android:text="Del"
+  					android:text="@string/btn_del"
   					android:id="@+id/trigger_nabmylayoutparams"
   					android:gravity="center"
   					android:layout_marginEnd="1dip" android:layout_marginStart="1dip"/>
   			</TableRow>
   			<TableRow android:id="@+id/trigger_new_responder_row">
-  				<Button android:id="@+id/trigger_new_notification" android:text="New Action" android:paddingStart="10dip" android:paddingEnd="10dip"/>
+  				<Button android:id="@+id/trigger_new_notification" android:text="@string/btn_new_action" android:paddingStart="10dip" android:paddingEnd="10dip"/>
   				<TextView android:text=""/>
   				<TextView android:text=""/>
   			</TableRow>

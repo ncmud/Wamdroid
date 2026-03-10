@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="SCRIPT RESPONDER"
+		android:text="@string/title_script_responder"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -24,12 +24,12 @@
   		android:id="@+id/cancel"
   		android:layout_alignParentBottom="true"
   		android:layout_alignParentEnd="true"
-  		android:text="Cancel" />
+  		android:text="@string/btn_cancel" />
   
   <Button
   	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
-  	android:text="Done"
+  	android:text="@string/btn_done"
   	android:id="@+id/done"
   	android:layout_toStartOf="@id/cancel"
   	android:layout_alignParentBottom="true"/>
@@ -40,7 +40,7 @@
 
   		<TextView
   		    android:id="@+id/action_label"
-  		    android:text="Execute Script Function:" />
+  		    android:text="@string/label_execute_script_function" />
 
   	</TableRow>
   		<EditText android:id="@+id/function" android:singleLine="true"/>

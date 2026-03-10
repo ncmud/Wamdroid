@@ -3,26 +3,51 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
-
+
+
+
+
+
+
+
+
+
     <TextView
         android:id="@+id/titlebar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FF999999"
         android:gravity="center_horizontal"
-        android:text="RECOLOR TEXT"
+        android:text="@string/title_recolor_text"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#FF333333"
         android:textSize="15sp"
         android:textStyle="bold" />
-
+
+
+
+
+
+
     <RadioGroup
         android:id="@+id/swatch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minWidth="240dip"
         android:orientation="horizontal" >
-
+
+
+
+
+
+
+
+
+
+
+
+
+
         <RadioButton
             android:id="@+id/foreground"
             android:layout_width="wrap_content"
@@ -30,9 +55,15 @@
             android:layout_weight="1"
             android:checked="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Foreground"
+            android:text="@string/label_foreground"
             android:textSize="30sp" />
-
+
+
+
+
+
+
+
         <RadioButton
             android:id="@+id/background"
             android:layout_width="wrap_content"
@@ -82,28 +113,31 @@
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="▲" />
+                                android:text="@string/btn_arrow_up" />
 
                             <Button
                                 android:id="@+id/green_up"
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="▲" />
+                                android:text="@string/btn_arrow_up" />
 
                             <Button
                                 android:id="@+id/blue_up"
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="▲" />
+                                android:text="@string/btn_arrow_up" />
                         </TableRow>
 
                         <TableRow
                             android:id="@+id/tableRow2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" >
-
+
+
+
+
                             <TextView
                                 android:id="@+id/red_val"
                                 android:layout_width="wrap_content"
@@ -111,9 +145,10 @@
                                 android:background="#FF990000"
                                 android:gravity="center_horizontal"
                                 android:minWidth="40dip"
-                                android:text="0"
+                                android:text="@string/hint_zero"
                                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
+
                             <TextView
                                 android:id="@+id/green_val"
                                 android:layout_width="wrap_content"
@@ -121,9 +156,10 @@
                                 android:background="#FF009900"
                                 android:gravity="center_horizontal"
                                 android:minWidth="40dip"
-                                android:text="0"
+                                android:text="@string/hint_zero"
                                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
+
                             <TextView
                                 android:id="@+id/blue_val"
                                 android:layout_width="wrap_content"
@@ -131,7 +167,7 @@
                                 android:background="#FF000099"
                                 android:gravity="center_horizontal"
                                 android:minWidth="40dip"
-                                android:text="0"
+                                android:text="@string/hint_zero"
                                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
                         </TableRow>
@@ -146,107 +182,136 @@
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="▼" />
+                                android:text="@string/btn_arrow_down" />
 
                             <Button
                                 android:id="@+id/green_down"
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="▼" />
+                                android:text="@string/btn_arrow_down" />
 
                             <Button
                                 android:id="@+id/blue_down"
                                 style="?android:attr/buttonStyleSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="▼" />
+                                android:text="@string/btn_arrow_down" />
                         </TableRow>
                     </TableLayout>
                 </LinearLayout>
-
+
+
                 <LinearLayout
                     android:id="@+id/tab2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal" >
-
+
+
+
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:orientation="vertical" >
-
+
+
+
+
                         <Button
                             android:id="@+id/grey_up"
                             style="?android:attr/buttonStyleSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="▲" />
-
+                            android:text="@string/btn_arrow_up" />
+
+
                         <TextView
                             android:id="@+id/grey_value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:minWidth="40dip"
-                            android:text="0"
+                            android:text="@string/hint_zero"
                             android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
+
+
+
+
                         <Button
                             android:id="@+id/grey_down"
                             style="?android:attr/buttonStyleSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="▼" />
+                            android:text="@string/btn_arrow_down" />
 
                     </LinearLayout>
                 </LinearLayout>
-
+
+
                 <LinearLayout
                     android:id="@+id/tab3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_horizontal" >
-
+
+
+
+
+
+
                     <CheckBox
                         android:id="@+id/bright"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="20dip"
-                        android:text="Bright?" />
-
+                        android:text="@string/option_bright" />
+
+
+
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:orientation="vertical" >
-
+
+
+
                         <Button
                             android:id="@+id/sys_up"
                             style="?android:attr/buttonStyleSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="▲" />
-
+                            android:text="@string/btn_arrow_up" />
+
+
+
+
+
                         <TextView
                             android:id="@+id/sys_val"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:minWidth="40dip"
-                            android:text="0"
+                            android:text="@string/hint_zero"
                             android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
+
+
                         <Button
                             android:id="@+id/sys_down"
                             style="?android:attr/buttonStyleSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="▼" />
+                            android:text="@string/btn_arrow_down" />
 
                     </LinearLayout>
 
@@ -254,26 +319,34 @@
             </FrameLayout>
         </LinearLayout>
     </TabHost>
-
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
         android:layout_weight="1" >
-
+
+
+
+
         <Button
             android:id="@+id/done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Done" />
-
+            android:text="@string/btn_done" />
+
+
+
+
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancel" />
+            android:text="@string/btn_cancel" />
 
     </LinearLayout>
 

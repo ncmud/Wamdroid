@@ -20,5 +20,5 @@
 		android:id="@+id/extra"
 		android:textStyle="bold"
 		android:textSize="8sp"
-		android:text="2.5 seconds"/>
+		android:text="@string/label_two_point_five_seconds"/>
  </LinearLayout>

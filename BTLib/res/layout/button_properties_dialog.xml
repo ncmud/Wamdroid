@@ -121,15 +121,15 @@
 					<TextView
 					android:layout_width="89dp"
 					android:layout_height="wrap_content"
-					android:text="Free"/>
+					android:text="@string/btn_mode_free"/>
 					<TextView
 					android:layout_width="89dp"
 					android:layout_height="wrap_content"
-					android:text="Nudge"/>
+					android:text="@string/btn_mode_nudge"/>
 					<TextView
 					android:layout_width="89dp"
 					android:layout_height="wrap_content"
-					android:text="Freeze"/>
+					android:text="@string/btn_mode_freeze"/>
 				</TableRow>
 				<TableRow android:layout_span = "3" android:layout_marginTop="13sp">
 					<Button android:layout_width="30dp" android:width="30dp" android:layout_height="60dp" android:id="@+id/btn_defaultcolor" android:background="#FF000000"/>
@@ -137,17 +137,17 @@
 					<Button android:layout_width="30dp" android:width="30dp" android:layout_height="60dp" android:id="@+id/btn_flippedcolor" android:background="#FF000000"/>
 				</TableRow>
 				<TableRow android:layout_span = "3">
-					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Normal"/>
-					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Focused"/>
-					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Flipped"/>
+					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_normal"/>
+					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_focused"/>
+					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_flipped"/>
 				</TableRow>
 				<TableRow android:layout_span ="2" android:layout_marginTop="5sp">
 					<Button android:layout_width="30dp" android:width="30dp" android:layout_height="60dp" android:id="@+id/btn_labelcolor" android:background="#FF000000"/>
 					<Button android:layout_width="30dp" android:width="30dp" android:layout_height="60dp" android:id="@+id/btn_fliplabelcolor" android:background="#FF000000"/>
 				</TableRow>
 				<TableRow android:layout_span = "2">
-					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Label"/>
-					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FlipLabel"/>
+					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_label_text"/>
+					<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_flip_label"/>
 				</TableRow>
 			</TableLayout>
 		</RelativeLayout>

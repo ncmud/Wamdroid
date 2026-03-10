@@ -10,7 +10,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="MODIFY BUTTON"
+		android:text="@string/title_modify_button"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -129,7 +129,7 @@
 			<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/btn_editor_tab3">
 			<ScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/btn_editor_advanced_scroll_containter">
 			<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginEnd="10sp">
-			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Movement method:" android:gravity="start" android:background="@drawable/movemethod_frame" android:layout_marginBottom="-3sp"/>
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_movement_method" android:gravity="start" android:background="@drawable/movemethod_frame" android:layout_marginBottom="-3sp"/>
 				
 			<TableLayout
 				android:layout_width="match_parent"
@@ -161,32 +161,32 @@
 					android:layout_width="89dp"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:text="Free"/>
+					android:text="@string/btn_mode_free"/>
 					<TextView
 					android:layout_width="89dp"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:text="Nudge"/>
+					android:text="@string/btn_mode_nudge"/>
 					<TextView
 					android:layout_width="89dp"
 					android:layout_height="wrap_content"
-					android:text="Freeze"
+					android:text="@string/btn_mode_freeze"
 					android:gravity="center"/>
 				</TableRow>
 				</TableLayout>
 				
-				<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Switch to named button set:"  android:layout_marginTop="10sp" android:background="@drawable/movemethod_frame" android:layout_marginBottom="-3sp"/>
+				<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_switch_to_button_set"  android:layout_marginTop="10sp" android:background="@drawable/movemethod_frame" android:layout_marginBottom="-3sp"/>
 				<TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/movemethod_frame">
 					<TableRow android:layout_marginTop="5dip">
 						<EditText
 							android:id="@+id/btn_editor_targetset_et"
 							android:inputType="text"
-							android:hint="Button set to switch to."
+							android:hint="@string/label_button_set_to_switch"
 							/>
 					</TableRow>
 				</TableLayout>
 				
-				<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Button Colors:"  android:layout_marginTop="10sp" android:background="@drawable/movemethod_frame" android:layout_marginBottom="-3sp"/>
+				<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_button_colors"  android:layout_marginTop="10sp" android:background="@drawable/movemethod_frame" android:layout_marginBottom="-3sp"/>
 				
 				<TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/movemethod_frame" android:stretchColumns="*">
 				
@@ -197,9 +197,9 @@
 					<Button android:layout_marginStart="2sp" android:layout_marginEnd="2sp" android:id="@+id/btn_flippedcolor" android:background="#FF000000" android:layout_height="40sp"/>
 				</TableRow>
 				<TableRow >
-					<TextView  android:text="Normal" android:gravity="center"/>
-					<TextView  android:text="Focused" android:gravity="center"/>
-					<TextView  android:text="Flipped" android:gravity="center"/>
+					<TextView  android:text="@string/label_normal" android:gravity="center"/>
+					<TextView  android:text="@string/label_focused" android:gravity="center"/>
+					<TextView  android:text="@string/label_flipped" android:gravity="center"/>
 				</TableRow>
 				
 				<TableRow  android:layout_marginTop="10sp" >
@@ -207,8 +207,8 @@
 					<Button android:layout_marginStart="2sp" android:layout_marginEnd="2sp" android:id="@+id/btn_fliplabelcolor" android:background="#FF000000" android:layout_height="40sp"/>
 				</TableRow>
 				<TableRow android:layout_span="3" >
-					<TextView android:text="Label" android:gravity="center"/>
-					<TextView android:text="FlipLabel" android:gravity="center"/>
+					<TextView android:text="@string/label_label_text" android:gravity="center"/>
+					<TextView android:text="@string/label_flip_label" android:gravity="center"/>
 				</TableRow>
 			</TableLayout>
 			
@@ -218,7 +218,7 @@
 				<TableRow>
 				<TableLayout android:layout_marginStart="5sp" android:layout_marginEnd="5sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/blue_frame_nomargin">
 					<TableRow>
-					<TextView android:text="Label Size:" />
+					<TextView android:text="@string/label_label_size" />
 					</TableRow>
 					<TableRow>
 					<EditText android:id="@+id/btn_editor_lblsize_et" android:width="30sp" android:inputType="number" android:singleLine="true"/>
@@ -226,7 +226,7 @@
 				</TableLayout>
 				<TableLayout android:layout_marginStart="5sp" android:layout_marginEnd="5sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/blue_frame_nomargin">
 					<TableRow>
-					<TextView android:text="  X coord: " />
+					<TextView android:text="@string/label_x_coord" />
 					</TableRow>
 					<TableRow>
 					<EditText android:id="@+id/btn_editor_xcoord_et" android:width="30sp" android:inputType="number" android:singleLine="true"/>
@@ -234,7 +234,7 @@
 				</TableLayout>
 				<TableLayout android:layout_marginStart="5sp" android:layout_marginEnd="5sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/blue_frame_nomargin">
 					<TableRow>
-					<TextView android:text="  Y coord: " />
+					<TextView android:text="@string/label_y_coord" />
 					</TableRow>
 					<TableRow>
 					<EditText android:id="@+id/btn_editor_ycoord_et" android:width="30sp" android:inputType="number" android:singleLine="true"/>
@@ -244,7 +244,7 @@
 				<TableRow>
 				<TableLayout android:layout_marginTop="15sp" android:layout_marginStart="5sp" android:layout_marginEnd="5sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/blue_frame_nomargin">
 					<TableRow>
-					<TextView android:text="    Width:   " android:layout_gravity="center" />
+					<TextView android:text="@string/label_width" android:layout_gravity="center" />
 					</TableRow>
 					<TableRow>
 					<EditText android:id="@+id/btn_editor_width_et" android:width="30sp" android:inputType="number" android:singleLine="true"/>
@@ -252,7 +252,7 @@
 				</TableLayout>
 				<TableLayout android:layout_marginTop="15sp" android:layout_marginStart="5sp" android:layout_marginEnd="5sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/blue_frame_nomargin">
 					<TableRow>
-					<TextView android:text="  Height:  " android:layout_gravity="center" />
+					<TextView android:text="@string/label_height" android:layout_gravity="center" />
 					</TableRow>
 					<TableRow>
 					<EditText android:id="@+id/btn_editor_height_et" android:width="30sp" android:inputType="number" android:singleLine="true"/>
@@ -262,10 +262,10 @@
 			</TableLayout>
 			<!-- <TableLayout android:stretchColumns="*" android:layout_marginTop="15sp" android:layout_marginStart="5sp" android:layout_marginEnd="5sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/blue_frame_nomargin" android:gravity="center_horizontal">
 				<TableRow>
-					<Button android:id="@+id/fit" android:text="Fit Button to Label" android:layout_marginTop="10dip" android:paddingStart="20dip" android:paddingEnd="20dip"/>
+					<Button android:id="@+id/fit" android:text="@string/btn_fit_button_to_label" android:layout_marginTop="10dip" android:paddingStart="20dip" android:paddingEnd="20dip"/>
 				</TableRow>
 				<TableRow>
-					<Button android:id="@+id/reset" android:text="Reset to Set Defaults" android:layout_marginTop="10dip" android:paddingStart="20dip" android:paddingEnd="20dip"/>
+					<Button android:id="@+id/reset" android:text="@string/btn_reset_to_set_defaults" android:layout_marginTop="10dip" android:paddingStart="20dip" android:paddingEnd="20dip"/>
 				</TableRow>
 			</TableLayout> -->
 			</LinearLayout>

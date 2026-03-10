@@ -12,7 +12,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="SELECT BUTTON SET"
+		android:text="@string/title_select_button_set"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -25,7 +25,7 @@
 		android:layout_alignParentStart="true"
 		android:layout_height="wrap_content"
 		android:layout_width="146dip"
-		android:text="New Button Set"/>
+		android:text="@string/btn_new_button_set"/>
 		
 	<Button
 		android:id="@+id/cancel_buttonset_button"
@@ -33,7 +33,7 @@
 		android:layout_alignParentEnd="true"
 		android:layout_height="wrap_content"
 		android:layout_width="133dip"
-		android:text="Done"/>
+		android:text="@string/btn_done"/>
 		
 	<!-- <ScrollView
 		android:id="@+id/buttonset_scroller"

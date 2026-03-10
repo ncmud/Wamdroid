@@ -16,7 +16,7 @@
     	android:textSize="16sp"
     	android:typeface="monospace"
     	android:textColor="#9999FF"
-    	android:text="|DOWN|"/>
+    	android:text="@string/btn_down"/>
 
     <ImageButton
     	android:id="@+id/up_btn_c"
@@ -27,7 +27,7 @@
     	android:textSize="16sp"
     	android:typeface="monospace"
     	android:textColor="#9999FF"
-    	android:text="| UP |"/>
+    	android:text="@string/btn_up"/>
     <ImageButton
     	android:id="@+id/enter_btn_c"
     	android:layout_width="60dip"
@@ -37,5 +37,5 @@
     	android:textSize="16sp"
     	android:typeface="monospace"
     	android:textColor="#9999FF"
-    	android:text="ENTER"/>
+    	android:text="@string/btn_enter"/>
 </LinearLayout>

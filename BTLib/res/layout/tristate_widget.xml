@@ -10,14 +10,14 @@
   	<Button android:layout_width="wrap_content" 
   			android:layout_height="wrap_content"
   			android:id="@+id/auto"
-  			android:text="Auto"/>
+  			android:text="@string/label_auto"/>
   	<Button android:layout_width="wrap_content" 
   			android:layout_height="wrap_content"
-  			android:text="Land"
+  			android:text="@string/label_land"
   			android:id="@+id/landscape"/>
   	<Button android:layout_width="wrap_content" 
   			android:layout_height="wrap_content" 
-  			android:text="Port"
+  			android:text="@string/label_port"
   			android:id="@+id/portriat"/>
   	
  </LinearLayout>

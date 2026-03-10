@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="EDIT ALIASES"
+		android:text="@string/title_edit_aliases"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -48,7 +48,7 @@
   	android:id="@+id/alias_cancel_done"
   	android:layout_alignParentBottom="true"
   	android:layout_alignParentEnd="true"
-  	android:text="Done" />
+  	android:text="@string/btn_done" />
   
   <!--  <Button
   	android:layout_width="wrap_content"
@@ -56,12 +56,12 @@
   	android:id="@+id/alias_dialog_done"
 	android:layout_toStartOf="@id/alias_cancel_done"
 	android:layout_alignParentBottom="true"
-  	android:text="Save List" /> -->
+  	android:text="@string/btn_save_list" /> -->
   
   <Button
   	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
-  	android:text="New Alias"
+  	android:text="@string/btn_new_alias"
   	android:id="@+id/new_alias_button"
   	android:layout_toStartOf="@id/alias_cancel_done"
   	android:layout_alignParentBottom="true"/>
@@ -85,7 +85,7 @@
 			android:id="@+id/alias_empty"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:text="No aliases to display.\nNew aliases can be made with the button below."
+			android:text="@string/msg_no_aliases"
 			android:textColor="#FFFFFFFF"
 			android:background="#FF000000"
 			android:layout_margin="0dip"

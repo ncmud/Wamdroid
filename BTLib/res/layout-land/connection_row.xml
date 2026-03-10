@@ -10,7 +10,7 @@
   	android:layout_height="wrap_content"
   	android:textSize="25sp"
   	android:textStyle="bold"
-  	android:text="serif"
+  	android:text="@string/label_serif"
   	android:background = "#AAAAAAAA"
   	android:textColor = "#AA222222"
   	

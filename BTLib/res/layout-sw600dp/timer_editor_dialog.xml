@@ -13,7 +13,7 @@
 		android:layout_width="400dip"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="TIMER EDITOR"
+		android:text="@string/title_timer_editor"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -26,12 +26,12 @@
   	android:id="@+id/timer_editor_cancel"
   	android:layout_alignParentBottom="true"
   	android:layout_alignParentEnd="true"
-  	android:text="Cancel" />
+  	android:text="@string/btn_cancel" />
   
   <Button
   	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
-  	android:text="Done"
+  	android:text="@string/btn_done"
   	android:id="@+id/timer_editor_done_button"
   	android:layout_toStartOf="@id/timer_editor_cancel"
   	android:layout_alignParentBottom="true"/>
@@ -42,7 +42,7 @@
   		<TableLayout android:layout_width="match_parent" android:layout_height="wrap_content"  android:stretchColumns="*">
   			<TableRow>
   				<TextView
-  					android:text="Name:"
+  					android:text="@string/label_name"
   					android:layout_marginStart="10dip"
   					android:layout_marginEnd="5dip"
   					android:layout_width="40dip"
@@ -53,14 +53,14 @@
   					android:layout_marginEnd="10dip"
   					android:width="300dip"
   					android:singleLine="true"
-  					android:hint="Timer Function"
+  					android:hint="@string/hint_timer_function"
   					android:inputType="text"/>
   			</TableRow>
   		</TableLayout>
   		<TableLayout android:layout_width="match_parent" android:layout_height="wrap_content"  android:shrinkColumns="1,2" android:stretchColumns="0,3">
   			<TableRow>
   				<TextView
-  					android:text="Seconds:"
+  					android:text="@string/label_seconds"
   					android:layout_marginStart="10dip"
   					android:layout_marginEnd="5dip"
   					android:layout_width="40dip"
@@ -73,12 +73,12 @@
   					android:layout_marginEnd="10dip"
   					android:layout_width="60dip"
   					android:singleLine="true"
-  					android:hint="30"
+  					android:hint="@string/hint_thirty"
   					
   					android:inputType="number"/>
   				<CheckBox
   						android:id="@+id/timer_repeat_checkbox"
-  						android:text="Repeat?"
+  						android:text="@string/option_repeat"
   						android:textSize="13sp"
   						android:layout_marginEnd="10dip"
   						android:layout_marginStart="30dip"
@@ -91,7 +91,7 @@
   				
   		<TextView android:layout_width="match_parent"
   					android:layout_height="wrap_content"
-  					android:text="EXECUTE ACTIONS"
+  					android:text="@string/btn_execute_actions"
   					android:layout_marginStart="10dip"
   					android:layout_marginEnd="10dip"
   					android:background="#FF999999"
@@ -102,25 +102,25 @@
   		<TableLayout android:id="@+id/timer_notification_table" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="10dip" android:layout_marginEnd="10dip" android:background="@drawable/movemethod_frame">
   			<TableRow android:id="@+id/timer_notification_legend">
   				<TextView
-  					android:text="TYPE"
+  					android:text="@string/label_type"
   					android:gravity="center"
   					/>
   				<TextView
-  					android:text="Window\nOpen"
+  					android:text="@string/label_window_open"
   					android:gravity="center"
   					android:layout_marginEnd="10dip" android:layout_marginStart="10dip"/>
   				<TextView
-  					android:text="Window\nClosed"
+  					android:text="@string/label_window_closed"
   					android:gravity="center"
   					android:layout_marginEnd="10dip" android:layout_marginStart="10dip"/>
   				<TextView
-  					android:text="Delete"
+  					android:text="@string/btn_delete"
   					android:id="@+id/timer_delete_responder"
   					android:gravity="center"
   					android:layout_marginEnd="5dip" android:layout_marginStart="5dip"/>
   			</TableRow>
   			<TableRow android:id="@+id/timer_new_responder_row">
-  				<Button android:id="@+id/timer_new_notification" android:text="New Action" android:paddingStart="30dip" android:paddingEnd="30dip"/>
+  				<Button android:id="@+id/timer_new_notification" android:text="@string/btn_new_action" android:paddingStart="30dip" android:paddingEnd="30dip"/>
   				<TextView android:text=""/>
   				<TextView android:text=""/>
   			</TableRow>

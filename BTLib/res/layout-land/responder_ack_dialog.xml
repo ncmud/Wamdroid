@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="ACK WITH RESPONDER"
+		android:text="@string/title_ack_with_responder"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -24,12 +24,12 @@
   		android:id="@+id/responder_ack_cancel"
   		android:layout_alignParentBottom="true"
   		android:layout_alignParentEnd="true"
-  		android:text="Cancel" />
+  		android:text="@string/btn_cancel" />
   
   <Button
   	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
-  	android:text="Done"
+  	android:text="@string/btn_done"
   	android:id="@+id/responder_ack_done_button"
   	android:layout_toStartOf="@id/responder_ack_cancel"
   	android:layout_alignParentBottom="true"/>
@@ -37,7 +37,7 @@
   <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_above="@id/responder_ack_done_button" android:layout_below="@id/titlebar">
   <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="*">
   	<TableRow>
-  		<TextView android:text="Send this command:"/>
+  		<TextView android:text="@string/label_send_this_command"/>
   	</TableRow>
   		<EditText android:id="@+id/responder_ack_ackwith" android:singleLine="true"/>
   </TableLayout>

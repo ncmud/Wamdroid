@@ -11,21 +11,21 @@
   	android:layout_height="wrap_content"
   	android:layout_alignParentBottom="true"
   	android:layout_alignParentStart="true"
-  	android:text="START"/>
+  	android:text="@string/btn_start"/>
   <Button
   	android:id="@+id/delbutton"
   	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
   	android:layout_alignTop="@id/startbutton"
   	android:layout_toEndOf="@id/startbutton"
-  	android:text="DELETE"/>
+  	android:text="@string/btn_delete_caps"/>
   <Button
   	android:id="@+id/newbutton"
   	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
   	android:layout_alignTop="@id/delbutton"
   	android:layout_toEndOf="@id/delbutton"
-  	android:text="NEW"/>
+  	android:text="@string/btn_new_caps"/>
   <ListView
   	android:id="@+id/connectionlist"
   	android:layout_width="275dp"

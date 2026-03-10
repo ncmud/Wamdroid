@@ -13,7 +13,7 @@
 		android:layout_alignParentTop="true" 
 		android:layout_alignParentEnd="true"
 		android:background="@drawable/optionsbutton_selector"
-		android:text="="
+		android:text="@string/label_equals"
 		android:textSize="26sp"
 	/>
 	
@@ -24,7 +24,7 @@
 		android:layout_alignParentTop="true"
 		android:layout_alignBottom="@id/optionsbutton"
 		android:layout_toStartOf="@id/optionsbutton"
-		android:text="SELECT TRIGGER"
+		android:text="@string/title_select_trigger"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -47,7 +47,7 @@
 		android:layout_alignParentStart="true"
 		android:layout_height="wrap_content"
 		android:layout_width="146dip"
-		android:text="New"/>
+		android:text="@string/btn_new"/>
 		
 	<Button
 		android:id="@+id/done"
@@ -55,7 +55,7 @@
 		android:layout_alignParentEnd="true"
 		android:layout_height="wrap_content"
 		android:layout_width="133dip"
-		android:text="Done"/>
+		android:text="@string/btn_done"/>
 		
 	<FrameLayout
 		android:id="@+id/frame"
@@ -73,7 +73,7 @@
 			android:id="@+id/empty"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:text="No items to display."
+			android:text="@string/msg_no_items"
 			android:textColor="#FFFFFFFF"
 			android:background="#FF000000"
 			android:layout_margin="0dip"

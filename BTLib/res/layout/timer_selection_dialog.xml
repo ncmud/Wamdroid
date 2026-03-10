@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="MODIFY TIMERS"
+		android:text="@string/title_modify_timers"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -24,7 +24,7 @@
 		android:layout_alignParentStart="true"
 		android:layout_height="wrap_content"
 		android:layout_width="146dip"
-		android:text="New Timer"/>
+		android:text="@string/btn_new_timer"/>
 		
 	<Button
 		android:id="@+id/timer_cancel_button"
@@ -32,7 +32,7 @@
 		android:layout_alignParentEnd="true"
 		android:layout_height="wrap_content"
 		android:layout_width="133dip"
-		android:text="Done"/>
+		android:text="@string/btn_done"/>
 		
 	<TableLayout
 		android:id="@+id/button_table"
@@ -98,7 +98,7 @@
 			android:id="@+id/timer_empty"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:text="No timers to display.\nNew timers can be made with the button below."
+			android:text="@string/msg_no_timers"
 			android:textColor="#FFFFFFFF"
 			android:background="#FF000000"
 			android:layout_margin="0dip"

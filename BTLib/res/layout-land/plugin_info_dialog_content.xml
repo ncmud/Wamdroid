@@ -51,7 +51,7 @@
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_alignParentBottom="true"
-		    android:text="INSTALL PLUGIN" />
+		    android:text="@string/title_install_plugin" />
     </LinearLayout>
 	<ListView
 		android:id="@+id/list"

@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="NEW DIRECTION"
+		android:text="@string/title_new_direction"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -22,14 +22,14 @@
    <Button
   	android:layout_width="100dip"
   	android:layout_height="wrap_content"
-  	android:text="Cancel"
+  	android:text="@string/btn_cancel"
   	android:id="@+id/new_sw_cancel_button"
   	android:layout_alignParentBottom="true"
   	android:layout_alignParentEnd="true"/>
   <Button
   	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
-  	android:text="Add Direction"
+  	android:text="@string/btn_add_direction"
   	android:id="@+id/new_sw_done_button"
   	android:layout_alignParentBottom="true"
   	android:layout_toStartOf="@+id/new_sw_cancel_button"
@@ -59,7 +59,7 @@
   			android:layout_toEndOf="@id/dirlabel"
   			android:layout_alignParentTop="true"
   			android:layout_height="wrap_content"
-  			android:hint="Dir" />
+  			android:hint="@string/label_dir" />
   		 <TextView 
   		 	android:layout_marginTop="10dip"
   			android:layout_below="@id/sw_dir"
@@ -76,7 +76,7 @@
   			android:singleLine="true"
   			android:layout_toEndOf="@id/cmdlabel"
   			android:layout_below="@id/sw_dir"
-  			android:hint="Command" /> 
+  			android:hint="@string/label_command_text" /> 
   	</RelativeLayout>
   
 </RelativeLayout>
