@@ -533,7 +533,7 @@ public class HyperSAXParser extends BaseParser {
                                         ? ""
                                         : attributes.getValue(
                                                 "", ATTR_LABEL))); // no primary label crash
-                        tmp.MOVE_STATE = Integer.valueOf(attributes.getValue("", ATTR_MOVEMETHOD));
+                        tmp.moveState = Integer.valueOf(attributes.getValue("", ATTR_MOVEMETHOD));
                         tmp.setTargetSet(attributes.getValue("", ATTR_TARGETSET));
                         tmp.setWidth(
                                 (attributes.getValue("", ATTR_WIDTH) == null)

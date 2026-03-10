@@ -426,7 +426,7 @@ public class HyperSettings {
                     out.attribute(
                             "",
                             BaseParser.ATTR_MOVEMETHOD,
-                            Integer.valueOf(button.MOVE_STATE).toString());
+                            Integer.valueOf(button.moveState).toString());
                     if (!button.getTargetSet().equals(""))
                         out.attribute("", BaseParser.ATTR_TARGETSET, button.getTargetSet());
                     if (button.getWidth() != setdefaults.getButtonWidth())
