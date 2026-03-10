@@ -25,7 +25,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TabHost.TabSpec;
 
-public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnColorChangedListener {
+public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnColorChangedListener, DialogInterface.OnCancelListener {
 	
 	final int EXIT_CANCEL = 0;
 	final int EXIT_DONE = 1;
@@ -60,24 +60,16 @@ public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnCo
 	
 	public ButtonEditorDialog(Context context,SlickButton useme,Handler callback) {
 		super(context);
-		
-		//mod_cmd = cmd;
-		//mod_lbl = lbl;
-		
 		the_button = useme;
 		deleter = callback;
-		//orig_data = useme.getData().copy();
+		setOnCancelListener(this);
 	}
-	
+
 	public ButtonEditorDialog(Context context,int themeid,SlickButton useme,Handler callback) {
 		super(context,themeid);
-		
-		//mod_cmd = cmd;
-		//mod_lbl = lbl;
-		
 		the_button = useme;
 		deleter = callback;
-		//orig_data = useme.getData().copy();
+		setOnCancelListener(this);
 	}
 	
 	public void onCreate(Bundle b) {
@@ -463,16 +455,14 @@ public class ButtonEditorDialog extends Dialog implements ColorPickerDialog.OnCo
 		}
 	}
 	
-	public void onBackPressed() {
-		//the_button.iHaveChanged(the_button.orig_data);
+	@Override
+	public void onCancel(DialogInterface dialog) {
 		the_button.moving = false;
 		the_button.button_down = false;
 		the_button.doing_flip = false;
 		the_button.hasfocus = false;
 		the_button.dialog_launched = false;
-		//the_button.
 		the_button.invalidate();
-		this.dismiss();
 	}
 	
 	private class FitClickListener implements View.OnClickListener {

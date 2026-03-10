@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
@@ -80,7 +81,7 @@ public class SlickButton extends View {
 		data.setLabel("NULL!");
 		updateRect();
 		
-		myhandler = new Handler() {
+		myhandler = new Handler(Looper.getMainLooper()) {
 			public void handleMessage(Message msg) {
 				switch(msg.what) {
 				case MSG_BEGINMOVE:
