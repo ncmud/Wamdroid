@@ -1,5 +1,6 @@
 package com.offsetnull.bt.trigger;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import com.offsetnull.bt.R;
 import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.AnimatedRelativeLayout;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.AlertDialog.Builder;
@@ -16,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
@@ -672,61 +675,50 @@ public class TriggerSelectionDialog extends Dialog {
 		adapter.notifyDataSetInvalidated();
 	}
 	
-	private Handler triggerEditorDoneHandler = new Handler() {
-		
+	private static class TriggerEditorDoneHandler extends Handler {
+		private final WeakReference<TriggerSelectionDialog> ref;
+		TriggerEditorDoneHandler(TriggerSelectionDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
 		public void handleMessage(Message msg) {
+			TriggerSelectionDialog outer = ref.get();
+			if (outer == null) return;
 			switch(msg.what) {
 			case 102:
-				scrollToSelection(msg.arg1);
+				outer.scrollToSelection(msg.arg1);
 				break;
 			case 100:
 				//refresh the list because it's done.
-				//TriggerItem e = adapter.getItem(lastSelectedIndex);
 				TriggerData d = (TriggerData)msg.obj;
 				TriggerItem tmp = new TriggerItem();
 				tmp.name = d.getName();
 				tmp.extra = d.getPattern();
 				tmp.enabled = true; //TODO: set this to the actual setting when implemented.
-				
-				list.setFocusable(false);
-				list.setOnFocusChangeListener(null);
-				buildList();
-				list.setOnFocusChangeListener(new ListFocusFixerListener());
-				list.setFocusable(true);
+
+				outer.list.setFocusable(false);
+				outer.list.setOnFocusChangeListener(null);
+				outer.buildList();
+				outer.list.setOnFocusChangeListener(outer.new ListFocusFixerListener());
+				outer.list.setFocusable(true);
 				//re-select the index.
-				
-				int index = adapter.getPosition(tmp);
+
+				int index = outer.adapter.getPosition(tmp);
 				this.sendMessageDelayed(this.obtainMessage(102, index, 0),1);
-				//scrollToSelection(index);
-				//find the index of the new child.
-				//View v = list.getChildAt(lastSelectedIndex);
-				/*list.invalidate();
-				
-				int childcount = list.getChildCount();
-				View tmpView = list.getChildAt(index);
-				list.setSelection(index);
-				ViewFlipper f = (ViewFlipper)tmpView.findViewById(R.id.flipper);
-				
-				f.setInAnimation(new TranslateAnimation(0,0,0,0));
-				
-				f.showNext();
-				list.getChildAt(index).findViewById(R.id.toolbar_tab_close).requestFocus();*/
 				break;
 			case 101:
 				//refresh the list because it's done.
-				//TriggerItem e = adapter.getItem(lastSelectedIndex);
-				list.setFocusable(false);
-				list.setOnFocusChangeListener(null);
-				buildList();
-				list.setOnFocusChangeListener(new ListFocusFixerListener());
-				list.setFocusable(true);
-				
-				
+				outer.list.setFocusable(false);
+				outer.list.setOnFocusChangeListener(null);
+				outer.buildList();
+				outer.list.setOnFocusChangeListener(outer.new ListFocusFixerListener());
+				outer.list.setFocusable(true);
 				break;
 			}
-			
 		}
-	};
+	}
+	private Handler triggerEditorDoneHandler = new TriggerEditorDoneHandler(this);
 
 	private class LineClickedListener implements View.OnClickListener {
 
@@ -808,16 +800,17 @@ public class TriggerSelectionDialog extends Dialog {
 			entries = objects;
 		}
 		
+		@SuppressLint("ResourceType")
 		public View getView(int pos, View convertView,ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {
 				LayoutInflater li = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = li.inflate(R.layout.editor_selection_list_row,null);
-				
+
 				RelativeLayout root = (RelativeLayout) v.findViewById(R.id.root);
 				root.setOnClickListener(mLineClicker);
 			}
-			
+
 			v.setId(157*pos);
 			
 			RelativeLayout holder = (RelativeLayout)v.findViewById(R.id.toolbarholder);
@@ -1063,7 +1056,7 @@ public class TriggerSelectionDialog extends Dialog {
 		
 	}
 	
-	public class TriggerItem {
+	public static class TriggerItem {
 		public boolean enabled;
 		String name;
 		String extra;
@@ -1090,11 +1083,19 @@ public class TriggerSelectionDialog extends Dialog {
 	public static final int MESSAGE_MOD_TRIGGER = 101;
 	public static final int MESSAGE_DELETE_TRIGGER = 102;
 	
-	public Handler triggerModifier = new Handler() {
+	private static class TriggerModifierHandler extends Handler {
+		private final WeakReference<TriggerSelectionDialog> ref;
+		TriggerModifierHandler(TriggerSelectionDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
 		public void handleMessage(Message msg) {
+			TriggerSelectionDialog outer = ref.get();
+			if (outer == null) return;
 			switch(msg.what) {
 			case 104:
-				finishDelete();
+				outer.finishDelete();
 				break;
 			case 103:
 				//finishScroll(msg.arg1);
@@ -1102,28 +1103,22 @@ public class TriggerSelectionDialog extends Dialog {
 			case MESSAGE_NEW_TRIGGER:
 				TriggerData tmp = (TriggerData)msg.obj;
 				//attempt to modify service
-
-				service.newTrigger(tmp);
-				
+				outer.service.newTrigger(tmp);
 				break;
 			case MESSAGE_MOD_TRIGGER:
 				TriggerData[] pair = (TriggerData[])msg.obj;
 				TriggerData from = pair[0];
 				TriggerData to = pair[1];
-				
-
-				service.updateTrigger(from, to);
-				
+				outer.service.updateTrigger(from, to);
 				break;
 			case MESSAGE_DELETE_TRIGGER:
 				String which = (String)msg.obj;
-
-				service.deleteTrigger(which);
-				
+				outer.service.deleteTrigger(which);
 				break;
 			}
 		}
-	};
+	}
+	public Handler triggerModifier = new TriggerModifierHandler(this);
 	
 	protected void finishDelete() {
 		buildList();

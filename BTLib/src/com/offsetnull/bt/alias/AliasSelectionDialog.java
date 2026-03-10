@@ -1,5 +1,6 @@
 package com.offsetnull.bt.alias;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,12 +15,14 @@ import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.validator.Validator;
 import com.offsetnull.bt.window.AnimatedRelativeLayout;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -385,6 +388,7 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 			this.items = objects;
 		}
 		
+		@SuppressLint("ResourceType")
 		public View getView(int pos, View convertView, ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {
@@ -705,39 +709,48 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 	}
 	
 	
-	public final int MSG_DELETEALIAS = 101;
-	public final int MSG_MODIFYALIAS = 102;
-	public Handler aliasModifier = new Handler() {
+	public static final int MSG_DELETEALIAS = 101;
+	public static final int MSG_MODIFYALIAS = 102;
+	private static class AliasModifierHandler extends Handler {
+		private final WeakReference<AliasSelectionDialog> ref;
+		AliasModifierHandler(AliasSelectionDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
+		@SuppressWarnings("unchecked")
 		public void handleMessage(Message msg) {
+			AliasSelectionDialog outer = ref.get();
+			if (outer == null) return;
 			switch(msg.what) {
 			case MSG_DELETEALIAS:
-				AliasEntry tmp = apdapter.getItem(msg.arg1);
-				apdapter.remove(apdapter.getItem(msg.arg1));
+				AliasEntry tmp = outer.apdapter.getItem(msg.arg1);
+				outer.apdapter.remove(outer.apdapter.getItem(msg.arg1));
 				//check to see if this is an offender
-				for(int i=0;i<apdapter.getCount();i++) {
+				for(int i=0;i<outer.apdapter.getCount();i++) {
 					//AliasEntry e = apdapter.getItem(i);
-					validateList();
+					outer.validateList();
 				}
-				
-				apdapter.notifyDataSetChanged();
-				apdapter.sort(new AliasComparator());
-				
+
+				outer.apdapter.notifyDataSetChanged();
+				outer.apdapter.sort(new AliasComparator());
+
 				String oldKey = tmp.pre;
 				if(oldKey.startsWith("^")) oldKey = oldKey.substring(1,oldKey.length());
 				if(oldKey.endsWith("$")) oldKey = oldKey.substring(0,oldKey.length()-1);
-				
 
-				HashMap<String,AliasData> existingAliases = (HashMap<String, AliasData>) service.getAliases();
+
+				HashMap<String,AliasData> existingAliases = (HashMap<String, AliasData>) outer.service.getAliases();
 				existingAliases.remove(oldKey);
-				service.setAliases(existingAliases);
-				
+				outer.service.setAliases(existingAliases);
+
 				//Log.e("ALIASED","DELETING ALIAS");
 				break;
 			case MSG_MODIFYALIAS:
 				//String tomodify = (String)msg.obj;
 				//String[] parts = tomodify.split("\\Q[||]\\E");
 				int position = msg.arg1;
-				AliasEditorDialog diag = new AliasEditorDialog(AliasSelectionDialog.this.getContext(),AliasSelectionDialog.this,((AliasData)msg.obj).getPre(),((AliasData)msg.obj).getPost(),position,(AliasData)msg.obj,service,computeNames(((AliasData)msg.obj).getPre()),currentPlugin);
+				AliasEditorDialog diag = new AliasEditorDialog(outer.getContext(),outer,((AliasData)msg.obj).getPre(),((AliasData)msg.obj).getPost(),position,(AliasData)msg.obj,outer.service,outer.computeNames(((AliasData)msg.obj).getPre()),outer.currentPlugin);
 				diag.setTitle("Modify Alias:");
 				diag.show();
 				break;
@@ -745,7 +758,8 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 				break;
 			}
 		}
-	};
+	}
+	public Handler aliasModifier = new AliasModifierHandler(this);
 	
 	ArrayList<String> names = new ArrayList<String>();
 	
@@ -944,7 +958,7 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 		return retval;
 	}
 	
-	private class AliasComparator implements Comparator<AliasEntry> {
+	private static class AliasComparator implements Comparator<AliasEntry> {
 
 		public int compare(AliasEntry a, AliasEntry b) {
 			String a_str = a.pre;

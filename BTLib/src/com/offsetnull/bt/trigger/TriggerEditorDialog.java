@@ -619,7 +619,7 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 				v.setText("Regular expressions have been enabled. Unpredictable or poor performance can result from overly broad regular expressions. Please see the documentation for the Java Pattern Class for more information.");
 				int pad = (int) (5.0f * getContext().getResources().getDisplayMetrics().density);
 				
-				v.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
+				v.setTextAppearance(getContext(), android.R.style.TextAppearance_Medium);
 				v.setTextSize(3*pad);
 				Pattern wikiWordMatcher = Pattern.compile("Java Pattern Class");
 				String wikiViewURL =    "";
