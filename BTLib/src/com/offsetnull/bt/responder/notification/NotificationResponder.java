@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import org.keplerproject.luajava.LuaState;
 import org.xmlpull.v1.XmlSerializer;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -127,6 +128,8 @@ public class NotificationResponder extends TriggerResponder {
 	//vp[2] = 50;
 	//vp[3] = 200;
 
+	// Resource name for notification icon is loaded from configuration at runtime.
+	@SuppressLint("DiscouragedApi")
 	@Override
 	public boolean doResponse(Context c,TextTree tree,int lineNumber,ListIterator<TextTree.Line> iterator,TextTree.Line line,int start,int end,String matched,Object source,String displayname,String host,int port,int triggernumber,boolean windowIsOpen,Handler dispatcher,HashMap<String,String> captureMap,LuaState L,String name,String encoding) {
 		//we are going to do the window response now.

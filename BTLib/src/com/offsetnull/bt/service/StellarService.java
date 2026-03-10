@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -307,8 +308,10 @@ public class StellarService extends Service {
 	 * @param host The host name of the calling connection.
 	 * @param port The port number for the calling connection.
 	 */
+	// Resource name for notification icon is loaded from configuration at runtime.
+	@SuppressLint("DiscouragedApi")
 	@SuppressWarnings("deprecation")
-	public final void doNotifyBell(final String display, final String host, final int port) { 
+	public final void doNotifyBell(final String display, final String host, final int port) {
 		int resId = this.getResources().getIdentifier(ConfigurationLoader.getConfigurationValue("notificationIcon", this.getApplicationContext()), "drawable", this.getPackageName());
 		
 		//Notification note = new Notification(resId, "Alert!", System.currentTimeMillis());
@@ -394,6 +397,8 @@ public class StellarService extends Service {
 	 * @param host The host name associated with <b>c</b>
 	 * @param port The port name associated with <b>c</b>
 	 */
+	// Resource name for notification icon is loaded from configuration at runtime.
+	@SuppressLint("DiscouragedApi")
 	@SuppressWarnings("deprecation")
 	private void showDisconnectedNotification(final Connection c, final String display, final String host, final int port) {
 		//if we are here it means that the server has explicitly closed the connection, and nobody was around to see it.
@@ -471,6 +476,8 @@ public class StellarService extends Service {
 	 * @param host The host name of the connection.
 	 * @param port The port number of the connection.
 	 */
+	// Resource name for notification icon is loaded from configuration at runtime.
+	@SuppressLint("DiscouragedApi")
 	@SuppressWarnings("deprecation")
 	public final void showConnectionNotification(final String display, final String host, final int port) {
 		if (mConnectionNotificationMap.containsKey(display)) { return; }
