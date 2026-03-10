@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -232,7 +233,7 @@ public class HyperSAXParser extends BaseParser {
 				//we have the button set name, construct a new ColorSetSettings for it
 				//BigInteger fline = new BigInteger("FFFFFFFF",16);
 				//Log.e("PARSER","HOLY CRAP I PARSED " +fline.intValue() + " FROM FFFFFFFF");
-				setinfo.setPrimaryColor( (attributes.getValue("",ATTR_PRIMARYCOLOR) == null) ? SlickButtonData.DEFAULT_COLOR : new BigInteger((attributes.getValue("",ATTR_PRIMARYCOLOR)).toUpperCase(),16).intValue());
+				setinfo.setPrimaryColor( (attributes.getValue("",ATTR_PRIMARYCOLOR) == null) ? SlickButtonData.DEFAULT_COLOR : new BigInteger((attributes.getValue("",ATTR_PRIMARYCOLOR)).toUpperCase(Locale.ROOT),16).intValue());
 				setinfo.setSelectedColor( (attributes.getValue("",ATTR_SELECTEDCOLOR) == null) ? SlickButtonData.DEFAULT_SELECTED_COLOR : new BigInteger((attributes.getValue("",ATTR_SELECTEDCOLOR)),16).intValue());
 				setinfo.setFlipColor( (attributes.getValue("",ATTR_FLIPCOLOR) == null) ? SlickButtonData.DEFAULT_FLIP_COLOR : new BigInteger(attributes.getValue("",ATTR_FLIPCOLOR),16).intValue());
 				setinfo.setLabelColor( (attributes.getValue("",ATTR_LABELCOLOR) == null) ? SlickButtonData.DEFAULT_LABEL_COLOR : new BigInteger(attributes.getValue("",ATTR_LABELCOLOR),16).intValue());

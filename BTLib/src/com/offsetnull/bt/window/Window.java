@@ -598,6 +598,7 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 	}
 	
 
+	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public final boolean onTouchEvent(final MotionEvent t) {
 		int pointerIndex = (t.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
@@ -3218,6 +3219,7 @@ end
 		return font;
 	}
 	
+	@SuppressLint("ClickableViewAccessibility")
 	private View.OnTouchListener textSelectionTouchHandler = new View.OnTouchListener() {
 		
 		@Override

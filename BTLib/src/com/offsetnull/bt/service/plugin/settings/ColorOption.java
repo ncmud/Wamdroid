@@ -2,6 +2,7 @@ package com.offsetnull.bt.service.plugin.settings;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Locale;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -55,7 +56,7 @@ public class ColorOption extends BaseOption {
 		out.attribute("", "key", this.key);
 		out.attribute("", "title", this.title);
 		out.attribute("", "summary", this.description);
-		out.text("#"+Integer.toHexString((Integer)this.value).toUpperCase());
+		out.text("#"+Integer.toHexString((Integer)this.value).toUpperCase(Locale.ROOT));
 		out.endTag("", "color");
 	}
 }

@@ -170,7 +170,7 @@ public class StellarService extends Service {
 				//updatelibsver needs to be incremented and saved back into the shared preferences
 				SharedPreferences.Editor editor  = prefs.edit();
 				editor.putInt("CURRENT_LUA_LIBS_VERSION", packagever);
-				editor.commit();
+				editor.apply();
 			} catch (NameNotFoundException e) {
 				e.printStackTrace(); 
 			} catch (IOException e) {

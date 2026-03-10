@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
 import org.keplerproject.luajava.LuaException;
@@ -270,7 +271,7 @@ public class PluginParser extends BasePluginParser {
 					r.setSeed(System.currentTimeMillis());
 					int rand = r.nextInt();
 					
-					current_script_name = Integer.toHexString(rand).toUpperCase();
+					current_script_name = Integer.toHexString(rand).toUpperCase(Locale.ROOT);
 					
 				}
 				//current_script_body = body;

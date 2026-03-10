@@ -31,7 +31,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
-import android.os.Build;
 
 /**
  * Class that contains functions accessed by lua.
@@ -78,15 +77,11 @@ public final class LuaJavaAPI
       }
 
       Method[] methods = null;
-      if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-    	  methods = clazz.getMethods();
+      if(mCache.containsKey(clazz)) {
+    	  methods = mCache.get(clazz);
       } else {
-	      if(mCache.containsKey(clazz)) {
-	    	  methods = mCache.get(clazz);
-	      } else {
-	    	  methods = clazz.getMethods();
-	    	  mCache.put(clazz, methods);
-	      }
+    	  methods = clazz.getMethods();
+    	  mCache.put(clazz, methods);
       }
       
       Method method = null;
