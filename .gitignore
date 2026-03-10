@@ -142,3 +142,6 @@ LuaJIT-2.1/
 BTLib/jni/luajava/libluajit-*.a
 BTLib/jni/luajava/libluajit-*.so
 BTLib/obj/
+
+# Git worktrees
+.worktrees/
