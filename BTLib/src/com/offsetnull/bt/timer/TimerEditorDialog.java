@@ -1,5 +1,6 @@
 package com.offsetnull.bt.timer;
 
+import android.annotation.SuppressLint;
 import java.util.HashMap;
 
 import com.offsetnull.bt.R;
@@ -81,6 +82,7 @@ public class TimerEditorDialog extends Dialog implements DialogInterface.OnClick
 		
 	}
 	
+	@SuppressLint("SetTextI18n")
 	public void onCreate(Bundle b) {
 		super.onCreate(b);
 		
@@ -123,7 +125,7 @@ public class TimerEditorDialog extends Dialog implements DialogInterface.OnClick
 			name.setText(orig_timer.getName());
 			seconds.setText(orig_timer.getSeconds().toString());
 			repeat.setChecked(orig_timer.isRepeat());
-			donebutton.setText("Done");
+			donebutton.setText(R.string.btn_done);
 			
 		}
 	}

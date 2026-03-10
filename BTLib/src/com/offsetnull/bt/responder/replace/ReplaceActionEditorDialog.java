@@ -40,8 +40,8 @@ public class ReplaceActionEditorDialog extends Dialog {
 		
 		this.setContentView(R.layout.responder_script_dialog);
 		
-		((TextView)findViewById(R.id.titlebar)).setText("REPLACE RESPONDER");
-		((TextView)findViewById(R.id.action_label)).setText("Replace triggered text with:");
+		((TextView)findViewById(R.id.titlebar)).setText(R.string.title_replace_responder);
+		((TextView)findViewById(R.id.action_label)).setText(R.string.label_replace_triggered_text);
 		
 		with = (TextView)findViewById(R.id.function);
 		

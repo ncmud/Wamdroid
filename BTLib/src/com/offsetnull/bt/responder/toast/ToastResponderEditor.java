@@ -1,5 +1,6 @@
 package com.offsetnull.bt.responder.toast;
 
+import android.annotation.SuppressLint;
 import com.offsetnull.bt.R;
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener;
 import com.offsetnull.bt.validator.Validator;
@@ -33,6 +34,7 @@ public class ToastResponderEditor extends Dialog {
 		}
 	}
 	
+	@SuppressLint("SetTextI18n")
 	public void onCreate(Bundle b) {
 		this.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setBackgroundDrawableResource(R.drawable.dialog_window_crawler1);

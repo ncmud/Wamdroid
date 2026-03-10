@@ -153,7 +153,7 @@ public class TimerSelectionDialog extends Dialog {
 		doneHandler = new DoneHandler(this);
 		
 		TextView title = (TextView)findViewById(R.id.titlebar);
-		title.setText("TIMERS");
+		title.setText(R.string.title_timers);
 		
 		makeToolbar();
 		

@@ -191,7 +191,7 @@ public class OptionsDialog extends Dialog {
 			return 0;
 		}
 
-		@SuppressLint("InflateParams")
+		@SuppressLint({"InflateParams", "SetTextI18n"})
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
@@ -488,10 +488,11 @@ public class OptionsDialog extends Dialog {
 		
 	}
 	
+	@SuppressLint("SetTextI18n")
 	private class IntegerOptionClickedListener implements View.OnClickListener {
 
 		private TextView widget;
-		
+
 		public IntegerOptionClickedListener(TextView widget) {
 			this.widget = widget;
 		}

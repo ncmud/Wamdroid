@@ -1,5 +1,6 @@
 package com.offsetnull.bt.settings;
 
+import android.annotation.SuppressLint;
 import com.offsetnull.bt.R;
 
 import java.util.Locale;
