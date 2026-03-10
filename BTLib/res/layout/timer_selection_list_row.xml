@@ -11,14 +11,14 @@
   		android:text="1"
   		android:textColor="#FF888888"
   		android:background="#FF333333"
-  		android:layout_alignParentLeft="true"
+  		android:layout_alignParentStart="true"
   		android:layout_alignParentTop="true"
   		android:layout_alignParentBottom="true"
   		android:layout_width="wrap_content"
   		android:layout_height="wrap_content"
-  		android:textSize="45dip"
-  		android:paddingRight="15dip"
-  		android:paddingLeft="15dip"
+  		android:textSize="45sp"
+  		android:paddingEnd="15dip"
+  		android:paddingStart="15dip"
   		android:paddingTop="0dip"
   		android:paddingBottom="0dip"
   		android:textStyle="bold"
@@ -27,7 +27,7 @@
   		
   	<!--  <ImageButton
   		android:id="@+id/timer_playpause"
-  		android:layout_alignParentRight="true"
+  		android:layout_alignParentEnd="true"
   		android:layout_alignParentTop="true"
   		android:layout_width="wrap_content"
   		
@@ -39,7 +39,7 @@
   		
   	 <!-- <ImageButton
   		android:id="@+id/timer_reset"
-  		android:layout_toLeftOf="@id/timer_playpause"
+  		android:layout_toStartOf="@id/timer_playpause"
   		android:layout_alignParentTop="true"
   		android:layout_width="wrap_content"
   		android:layout_height="wrap_content"
@@ -52,12 +52,12 @@
   		android:layout_width ="match_parent"
   		android:layout_height="wrap_content"
   		android:id="@+id/display_meat"
-  		android:layout_alignParentRight="true"
+  		android:layout_alignParentEnd="true"
   		android:layout_alignParentTop="true"
-  		android:layout_toRightOf="@id/timer_ordinal"
+  		android:layout_toEndOf="@id/timer_ordinal"
   		android:stretchColumns="*"
-  		android:paddingRight="0dip"
-  		android:paddingLeft="0dip">
+  		android:paddingEnd="0dip"
+  		android:paddingStart="0dip">
   		
   		
   	<TableRow
@@ -74,7 +74,7 @@
   		android:textStyle = "bold"
   		android:ellipsize="end"
   		android:singleLine="true"
-  		android:paddingLeft = "7dip"
+  		android:paddingStart = "7dip"
   		android:background="#FF333333"/>
   		
  	 <TextView
@@ -86,7 +86,7 @@
   		android:text="MAX"
   		android:textStyle = "bold"
   		android:singleLine="true"
-  		android:paddingRight="10dip"
+  		android:paddingEnd="10dip"
   		android:background="#FF333333"/>	
   	</TableRow>	
 	<TableRow
@@ -118,7 +118,7 @@
   		android:singleLine="true"
   		android:textColorHighlight="#FFAAAAAA"
   		android:background="#FF333333"
-  		android:paddingRight="10dip"
+  		android:paddingEnd="10dip"
   		android:text="stop"/>
   	  </TableRow>	
   		
@@ -130,9 +130,9 @@
   		android:layout_width="match_parent"
   		android:layout_height="match_parent"
   		android:layout_below="@id/display_meat"
-  		android:layout_alignParentRight="true"
+  		android:layout_alignParentEnd="true"
   		android:layout_alignBottom="@id/timer_ordinal"
-  		android:layout_toRightOf="@id/timer_ordinal"
+  		android:layout_toEndOf="@id/timer_ordinal"
   		/>
   <!-- <TextView
   		android:id="@+id/trigger_extra"

@@ -7,7 +7,7 @@
   		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
   		android:text="filter option"
-  		android:textSize="15dip"
+  		android:textSize="15sp"
   		android:textStyle="bold"
   		android:textColor="#FFAAAAAA"
   		android:background="#FF111111"/>

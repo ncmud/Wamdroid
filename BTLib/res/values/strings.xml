@@ -4,10 +4,253 @@
     <string name="app_name">BaardTERM</string>
     <string name="thewelcometext">Welcome to BaardTERM version AWESOME!111!one!!!@1NOWWITHLINEBREAKSOMGWTFBBQOHANDYOUMADEITTAKEFOURTYPERCENTLESSBATTERY?!?!?!!??!!?OMGWTFBBQXIXORRRSSS!OMGDANISSOCOOL</string>
     <string name="hello2">This is the debug screen. However this text will dissapear when data arrives from the server.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n</string>
-    <string name="whatisnew">--- New Features:\n*SD Card Permissions are now asked for.\n*Support fixes for newer android versions.\n*Fixed crash when touching the top of the window.</string><string name="whatisnew_test">---- TEST VERSION 7 ----\n*Many bug fixes. Stay tuned for the switch over to the play store beta system.</string>
+    <string name="whatisnew">--- New Features:\n*SD Card Permissions are now asked for.\n*Support fixes for newer android versions.\n*Fixed crash when touching the top of the window.</string>
+    <string name="whatisnew_test">---- TEST VERSION 7 ----\n*Many bug fixes. Stay tuned for the switch over to the play store beta system.</string>
     <string name="sdcardpermissions">To access files that will not be not be removed when this app is uninstalled, grant permission to access external storage.</string>
     <string name="sd_perm_granted">SDCard public access granted, external writes will happen to\nSDCard%1$s</string>
     <string name="sd_perm_denies">SDCard public access denied, external writes will happen to\nSDCard%1$s\nThe folder will be removed when this app is uninstalled.</string>
     <string name="launcher_import_granted">Attempting to load files from:\nSDCard%1$s</string>
     <string name="launcher_import_denied">Attempting to load files from:\nSDCard%1$s\nThis folder will be removed when the application is uninstalled.</string>
+
+    <!-- Common buttons -->
+
+    <!-- Buttons -->
+    <string name="btn_accept">Accept!</string>
+    <string name="btn_add_direction">Add Direction</string>
+    <string name="btn_add_select_new_set">Add and select new set!</string>
+    <string name="btn_already_installed">Already Installed</string>
+    <string name="btn_arrow_down">&#x25BC;</string>
+    <string name="btn_arrow_up">&#x25B2;</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_del">Del</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_delete_caps">DELETE</string>
+    <string name="btn_display">DISPLAY</string>
+    <string name="btn_donate_bracket">[DONATE]</string>
+    <string name="btn_done">Done</string>
+    <string name="btn_done_excl">Done!</string>
+    <string name="btn_down">|DOWN|</string>
+    <string name="btn_edit">EDIT</string>
+    <string name="btn_enter">ENTER</string>
+    <string name="btn_execute_actions">EXECUTE ACTIONS</string>
+    <string name="btn_fit_button_to_label">Fit Button to Label</string>
+    <string name="btn_help_bracket">[HELP]</string>
+    <string name="btn_load">Load</string>
+    <string name="btn_save_list">Save List</string>
+    <string name="btn_mode_free">Free</string>
+    <string name="btn_mode_freeze">Freeze</string>
+    <string name="btn_mode_nudge">Nudge</string>
+    <string name="btn_new">New</string>
+    <string name="btn_new_action">New Action</string>
+    <string name="btn_new_alias">New Alias</string>
+    <string name="btn_new_bracket">[NEW]</string>
+    <string name="btn_new_button_set">New Button Set</string>
+    <string name="btn_new_caps">NEW</string>
+    <string name="btn_new_direction">New Direction</string>
+    <string name="btn_new_timer">New Timer</string>
+    <string name="btn_new_trigger">New Trigger</string>
+    <string name="btn_reset_to_set_defaults">Reset to Set Defaults</string>
+    <string name="btn_save_changes">Save Changes</string>
+    <string name="btn_start">START</string>
+    <string name="btn_stop">stop</string>
+    <string name="btn_up">| UP |</string>
+    <string name="btn_update">Update!</string>
+
+    <!-- Title bars -->
+    <string name="title_ack_with_responder">ACK WITH RESPONDER</string>
+    <string name="title_aliases">ALIASES</string>
+    <string name="title_color_picker">COLOR PICKER</string>
+    <string name="title_connection_properties">CONNECTION PROPERTIES</string>
+    <string name="title_directions">DIRECTIONS</string>
+    <string name="title_edit_aliases">EDIT ALIASES</string>
+    <string name="title_edit_button_set_defaults">EDIT BUTTON SET DEFAULTS</string>
+    <string name="title_edit_direction">EDIT DIRECTION</string>
+    <string name="title_enter_new_set_name">ENTER NEW SET NAME</string>
+    <string name="title_gag_responder">GAG RESPONDER</string>
+    <string name="title_install_plugin">INSTALL PLUGIN</string>
+    <string name="title_modify_alias">MODIFY ALIAS</string>
+    <string name="title_modify_button">MODIFY BUTTON</string>
+    <string name="title_modify_timers">MODIFY TIMERS</string>
+    <string name="title_new_alias">NEW ALIAS</string>
+    <string name="title_new_direction">NEW DIRECTION</string>
+    <string name="title_notification_responder">NOTIFICATION RESPONDER</string>
+    <string name="title_plugins">PLUGINS</string>
+    <string name="title_recolor_text">RECOLOR TEXT</string>
+    <string name="title_replace_responder">REPLACE RESPONDER</string>
+    <string name="title_script_responder">SCRIPT RESPONDER</string>
+    <string name="title_select_button_set">SELECT BUTTON SET</string>
+    <string name="title_select_trigger">SELECT TRIGGER</string>
+    <string name="title_timer_editor">TIMER EDITOR</string>
+    <string name="title_timers">TIMERS</string>
+    <string name="title_toast_responder">TOAST RESPONDER</string>
+    <string name="title_trigger_editor">TRIGGER EDITOR</string>
+
+    <!-- Labels -->
+    <string name="label_advanced">Advanced</string>
+    <string name="label_always_display_message">Always display this message.</string>
+    <string name="label_alias">Alias:</string>
+    <string name="label_auto">Auto</string>
+    <string name="label_automatic">Automatic</string>
+    <string name="label_background">Background</string>
+    <string name="label_button_colors">Button Colors:</string>
+    <string name="label_button_set_to_switch">Button set to switch to.</string>
+    <string name="label_chars">Chars</string>
+    <string name="label_click">Click</string>
+    <string name="label_cmd">CMD:</string>
+    <string name="label_command">Command:</string>
+    <string name="label_command_text">Command</string>
+    <string name="label_connections">Connections:</string>
+    <string name="label_currently_default">Currently: default</string>
+    <string name="label_default_time">00:05:35</string>
+    <string name="label_dir">Dir</string>
+    <string name="label_direction">Direction:</string>
+    <string name="label_display_name">Display Name: </string>
+    <string name="label_enabled">Enabled</string>
+    <string name="label_enter_file_name">Enter desired file name:</string>
+    <string name="label_enter_new_set_name">Enter new set name.</string>
+    <string name="label_equals">=</string>
+    <string name="label_execute_script_function">Execute Script Function:</string>
+    <string name="label_extended_info">Extended Info</string>
+    <string name="label_filter_by_plugin">Filter by plugin</string>
+    <string name="label_flip">FLIP:</string>
+    <string name="label_flip_label">FlipLabel</string>
+    <string name="label_flip_text">Flip</string>
+    <string name="label_flipped">Flipped</string>
+    <string name="label_focused">Focused</string>
+    <string name="label_color_swatch_summary">Text for your viewing pleasuer.</string>
+    <string name="label_foreground">Foreground</string>
+    <string name="label_hyperlink_color">Hyperlink Color</string>
+    <string name="label_gag">Gag</string>
+    <string name="label_height">  Height:  </string>
+    <string name="label_host_name">Host Name:</string>
+    <string name="label_label">LABEL:</string>
+    <string name="label_label_size">Label Size:</string>
+    <string name="label_label_text">Label</string>
+    <string name="label_land">Land</string>
+    <string name="label_landscape">Landscape</string>
+    <string name="label_lbl2">LBL2:</string>
+    <string name="label_main_title">Main Title</string>
+    <string name="label_max">MAX</string>
+    <string name="label_message">Message:</string>
+    <string name="label_movement_method">Movement method:</string>
+    <string name="label_name">Name:</string>
+    <string name="label_normal">Normal</string>
+    <string name="label_pattern">Pattern:</string>
+    <string name="label_plugin_path">/mnt/sdcard/BlowTorch/plugins</string>
+    <string name="label_port">Port</string>
+    <string name="label_port_number">Port Number:</string>
+    <string name="label_portrait">Portrait</string>
+    <string name="label_position">Position</string>
+    <string name="label_matching">matching</string>
+    <string name="label_replace">Replace:</string>
+    <string name="label_replace_with">Replace With:</string>
+    <string name="label_replace_triggered_text">Replace triggered text with:</string>
+    <string name="label_retarget_to_window">Retarget To Window:</string>
+    <string name="label_seconds">Seconds:</string>
+    <string name="label_send_this_command">Send this command:</string>
+    <string name="label_serif">serif</string>
+    <string name="label_show_for_seconds">Show for (seconds):</string>
+    <string name="label_sound_default">Sound: default</string>
+    <string name="label_switch_to_button_set">Switch to named button set:</string>
+    <string name="label_test_version">Test Version 1</string>
+    <string name="label_title">Title:</string>
+    <string name="label_two_point_five_seconds">2.5 seconds</string>
+    <string name="label_type">TYPE</string>
+    <string name="label_using_automatic">Using automatic</string>
+    <string name="label_using_landscape">Using landscape</string>
+    <string name="label_using_portrait">Using portrait</string>
+    <string name="label_when_locked">When Locked:</string>
+    <string name="label_width">    Width:   </string>
+    <string name="label_window_closed">Window\nClosed</string>
+    <string name="label_window_open">Window\nOpen</string>
+    <string name="label_with">With:</string>
+    <string name="label_x_coord">  X coord: </string>
+    <string name="label_y_coord">  Y coord: </string>
+
+    <!-- Options and checkboxes -->
+    <string name="option_auto">Auto?</string>
+    <string name="option_bright">Bright?</string>
+    <string name="option_disable_button_creation">Disable new button creation.</string>
+    <string name="option_disable_button_editing">Disable button editing.</string>
+    <string name="option_disable_button_movement">Disable button movement.</string>
+    <string name="option_fire_once">Only fire once?</string>
+    <string name="option_fire_once_short">Fire Once?</string>
+    <string name="option_gag_from_log">Gag from log</string>
+    <string name="option_gag_from_output">Gag from output</string>
+    <string name="option_interpret_literal">Interpret as literal?</string>
+    <string name="option_literal">Literal?</string>
+    <string name="option_matches_end_of_line">Matches end of line ($)</string>
+    <string name="option_matches_start_of_line">Matches start of Line (^)</string>
+    <string name="option_play_sound">Play sound?</string>
+    <string name="option_repeat">Repeat?</string>
+    <string name="option_show_lights">Show Lights?</string>
+    <string name="option_spawn_new">Spawn New?</string>
+    <string name="option_spawn_new_every_time">Spawn a new notification every time?</string>
+    <string name="option_use_ongoing">Use On-Going?</string>
+    <string name="option_vibrate">Vibrate?</string>
+
+    <!-- Messages -->
+    <string name="msg_currently_disabled">Currently disabled.</string>
+    <string name="msg_currently_using_default">Currently Using: default</string>
+    <string name="msg_currently_using_default_lower">Currently using: default</string>
+    <string name="msg_make_new_item">Make a new item bitch...</string>
+    <string name="msg_no_aliases">No aliases to display.\nNew aliases can be made with the button below.</string>
+    <string name="msg_no_connections">No connections.\nNew connections can be made with the button below.</string>
+    <string name="msg_no_directions">No directions to display.\nNew directions can be made with the button below.</string>
+    <string name="msg_no_items">No items to display.</string>
+    <string name="msg_no_timers">No timers to display.\nNew timers can be made with the button below.</string>
+    <string name="msg_no_triggers">No triggers to display.\nNew triggers can be made with the button below.</string>
+    <string name="msg_use_ongoing_description">Use service\'s on-going notification (if enabled)?</string>
+    <string name="msg_using_default_sound">Currently using default sound.</string>
+
+    <!-- Hints -->
+    <string name="hint_filter_option">filter option</string>
+    <string name="hint_one">1</string>
+    <string name="hint_replace_with_this">Replace with this.</string>
+    <string name="hint_seventy_seven">77</string>
+    <string name="hint_text_to_replace">Text to replace.</string>
+    <string name="hint_thirty">30</string>
+    <string name="hint_timer_function">Timer Function</string>
+    <string name="hint_zero">0</string>
+
+    <!-- Format strings -->
+    <string name="fmt_ack_with_label">Ack With: %1$s</string>
+    <string name="fmt_blowtorch_version">BlowTorch %1$s</string>
+    <string name="fmt_color_label">Color: %1$d</string>
+    <string name="fmt_connection_display"> %1$s</string>
+    <string name="fmt_connection_host">\t%1$s:%2$s</string>
+    <string name="fmt_contains_buttons">Contains %1$d buttons.</string>
+    <string name="fmt_currently_using">Currently using: %1$s</string>
+    <string name="fmt_currently_using_cap">Currently Using: %1$s</string>
+    <string name="fmt_direction_arrow">%1$s =&gt; %2$s</string>
+    <string name="fmt_function_label">Function: %1$s</string>
+    <string name="fmt_notification_label">Notification: %1$s</string>
+    <string name="fmt_plugin_error">Error: %1$s</string>
+    <string name="fmt_plugin_info">%1$s written by %2$s.</string>
+    <string name="fmt_plugins_count">%1$d plugins.</string>
+    <string name="fmt_replace_label">Replace: %1$s</string>
+    <string name="fmt_seconds_label">%1$d seconds.</string>
+    <string name="fmt_sound_path_error">%1$s[ERROR]</string>
+    <string name="fmt_test_version">Test Version %1$s</string>
+    <string name="fmt_toast_message_label">Toast Message: %1$s</string>
+
+    <!-- Content descriptions (accessibility) -->
+    <string name="cd_back_button">Back</string>
+    <string name="cd_bell_alert">Bell alert</string>
+    <string name="cd_delete_item">Delete item</string>
+    <string name="cd_edit_item">Edit item</string>
+    <string name="cd_notification_icon">Notification icon</string>
+    <string name="cd_pause_timer">Pause timer</string>
+    <string name="cd_play_timer">Play timer</string>
+    <string name="cd_reset_timer">Reset timer</string>
+    <string name="cd_scroll_down">Scroll down</string>
+    <string name="cd_scroll_up">Scroll up</string>
+    <string name="cd_send_input">Send input</string>
+    <string name="cd_spacer_icon">Spacer</string>
+    <string name="cd_toggle_controls">Toggle controls</string>
+    <string name="cd_toolbar_close">Close toolbar</string>
+    <string name="cd_toolbar_toggle">Toggle toolbar</string>
+
+    <!-- Long messages -->
+    <string name="msg_regex_warning">Regular expressions have been enabled. Unpredictable or poor performance can result from overly broad regular expressions. Please see the documentation for the Java Pattern Class for more information.</string>
 </resources>

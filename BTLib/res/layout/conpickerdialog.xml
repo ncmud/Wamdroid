@@ -10,25 +10,25 @@
   	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
   	android:layout_alignParentBottom="true"
-  	android:layout_alignParentLeft="true"
+  	android:layout_alignParentStart="true"
   	android:text="START"/>
   <Button
   	android:id="@+id/delbutton"
   	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
   	android:layout_alignTop="@id/startbutton"
-  	android:layout_toRightOf="@id/startbutton"
+  	android:layout_toEndOf="@id/startbutton"
   	android:text="DELETE"/>
   <Button
   	android:id="@+id/newbutton"
   	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
   	android:layout_alignTop="@id/delbutton"
-  	android:layout_toRightOf="@id/delbutton"
+  	android:layout_toEndOf="@id/delbutton"
   	android:text="NEW"/>
   <ListView
   	android:id="@+id/connectionlist"
-  	android:layout_width="275px"
+  	android:layout_width="275dp"
   	android:layout_height="match_parent" 
   	android:layout_above="@id/startbutton"/>
   <!--  <TextView

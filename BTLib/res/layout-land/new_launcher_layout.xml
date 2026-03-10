@@ -29,7 +29,7 @@
 			android:layout_height = "wrap_content"
 			android:layout_width = "300dip"
 			android:id = "@+id/c_label"
-			android:layout_alignParentRight = "true"
+			android:layout_alignParentEnd = "true"
 			android:layout_below="@id/my_toolbar"
 			android:gravity = "center"
 			android:background = "#AAAAAAAA"
@@ -38,8 +38,8 @@
 			/>
 			
 		<!-- <ImageView
-			android:layout_width="275px"
-			android:layout_height="5px"
+			android:layout_width="275dp"
+			android:layout_height="5dp"
 			android:layout_below="@id/c_label"
 			android:id="@+id/separator"
 			src="@drawable/horizontal_separator"/> -->
@@ -48,7 +48,7 @@
 			android:id = "@+id/table_container"
 			android:layout_height = "wrap_content"
 			android:layout_width = "wrap_content"
-			android:layout_alignParentRight = "true"
+			android:layout_alignParentEnd = "true"
 			android:layout_alignParentBottom = "true"
 			android:background = "#AAAAAAAA"
 			>
@@ -56,7 +56,7 @@
 				android:id="@+id/test_update"
 				android:visibility="gone"
 				android:layout_span="3">
-				<TextView android:id="@+id/update_label" android:text="Test Version 1"  android:textSize="18dip" android:textColor = "#AA222222" android:textStyle="bold"/>
+				<TextView android:id="@+id/update_label" android:text="Test Version 1"  android:textSize="18sp" android:textColor = "#AA222222" android:textStyle="bold"/>
 				<Button android:text="Update!" android:id="@+id/update_button" android:visibility="gone"/>
 				
 			</TableRow>
@@ -89,12 +89,12 @@
 			android:layout_height="match_parent"
 			android:layout_margin="0dip"
 			android:padding="0dip"
-			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
 			android:layout_above="@id/table_container"
 			android:layout_below="@id/c_label">	
 		<ListView
 			android:id = "@+id/connection_list"
-			android:layout_alignParentRight = "true"
+			android:layout_alignParentEnd = "true"
 
 			android:layout_height = "match_parent"
 			android:layout_width = "300dip"
@@ -111,7 +111,7 @@
 			android:layout_margin="0dip"
 			android:padding="0dip"
 			android:textStyle="bold"
-			android:textSize="18dip"
+			android:textSize="18sp"
 			android:gravity="center"/>
 		</FrameLayout>
 

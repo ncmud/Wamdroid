@@ -19,6 +19,6 @@
 		android:layout_width="125dip"
 		android:id="@+id/extra"
 		android:textStyle="bold"
-		android:textSize="8dip"
+		android:textSize="8sp"
 		android:text="2.5 seconds"/>
  </LinearLayout>

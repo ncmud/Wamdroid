@@ -13,7 +13,7 @@
 		android:text="ENTER NEW SET NAME"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
-		android:textSize="15dip"
+		android:textSize="15sp"
 		android:textStyle="bold"
 		android:gravity="center"/>
 	
