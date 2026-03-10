@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
 }
 
@@ -52,4 +53,15 @@ dependencies {
 	api libs.compose.ui.tooling.preview
 	api libs.activity.compose
 	debugImplementation libs.compose.ui.tooling
+
+	api libs.lifecycle.runtime
+	api libs.lifecycle.viewmodel
+	api libs.lifecycle.viewmodel.compose
+
+	api libs.room.runtime
+	api libs.room.ktx
+	ksp libs.room.compiler
+
+	api libs.coroutines.core
+	api libs.coroutines.android
 }
