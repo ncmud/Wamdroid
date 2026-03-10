@@ -1407,7 +1407,9 @@ public class TextTree {
 
 	public Color getBleedColor() {
 		Color c = new Color();
-		c.setOperations(new ArrayList<Integer>((LinkedList<Integer>)bleedColor.clone()));
+		@SuppressWarnings("unchecked")
+		LinkedList<Integer> cloned = (LinkedList<Integer>) bleedColor.clone();
+		c.setOperations(new ArrayList<>(cloned));
 		StringBuffer b = new StringBuffer();
 		try {
 			b.append(new String(new byte[]{ESC},encoding));
