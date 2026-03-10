@@ -344,11 +344,13 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 	
 	@Override
 	protected final void onAttachedToWindow() {
+		super.onAttachedToWindow();
 		windowShowing = true;
 	}
 	
 	@Override
 	protected final void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
 		windowShowing = false;
 	}
 	
@@ -3120,6 +3122,7 @@ end
 	
 	@Override
 	public void onAnimationEnd() {
+		super.onAnimationEnd();
 		//call into lua to notify that the parent animation has completed.
 		callFunction("onAnimationEnd",null);
 	}

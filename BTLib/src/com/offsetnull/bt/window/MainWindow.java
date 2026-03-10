@@ -1993,7 +1993,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		builder.show();
 		//alert.show();
 		
-		//super.onBackPressed();
+		super.onBackPressed();
 	}
 	
 	int OREINTATION = Configuration.ORIENTATION_LANDSCAPE;
@@ -2201,7 +2201,8 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
+		super.onActivityResult(requestCode, resultCode, data);
+
 		if(resultCode == RESULT_OK) {
 			//Log.e("WINDOW","onActivityResult()");
 			settingsDialogRun = true;
@@ -3147,6 +3148,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	
 	@Override
 	public void onNewIntent(Intent i) {
+		super.onNewIntent(i);
 		//this is if the activity is currently open, and a new intent has been posted.
 		Log.e("new intent","new intent : " + i.getStringExtra("DISPLAY"));
 		
@@ -3263,6 +3265,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions,
 										   int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		boolean external = false;
 		if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			external = true;
