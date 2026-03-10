@@ -2,6 +2,8 @@ package com.offsetnull.bt.settings;
 
 import com.offsetnull.bt.R;
 
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -94,12 +96,12 @@ private class SeekerUpdater implements SeekBar.OnSeekBarChangeListener {
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		SharedPreferences.Editor editor =  getEditor();
 		editor.putInt(getKey(), seekBar.getProgress());
-		editor.commit();
+		editor.apply();
 		//Log.e("SLKDF0","SAVING STUFFF!");
 	}
 	
 	public void updateLabel(int f) {
-		display.setText(String.format("%10.1f seconds.",f/10.0f));
+		display.setText(String.format(Locale.ROOT, "%10.1f seconds.",f/10.0f));
 		
 	}
 	
@@ -226,7 +228,7 @@ private void updatePreference(int newValue){
 
 SharedPreferences.Editor editor =  getEditor();
 editor.putInt(getKey(), newValue);
-editor.commit();
+editor.apply();
 }*/
 
 }

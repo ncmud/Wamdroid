@@ -30,7 +30,7 @@ public class HyperDialogPreference extends DialogPreference {
 			edit.putString("SETTINGS_TO_DEFAULT", "");
 		}
 		
-		edit.commit();
+		edit.apply();
 	}
 
 }

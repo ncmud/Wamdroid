@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
 import org.keplerproject.luajava.LuaException;
@@ -129,7 +130,7 @@ public class ConnectionSetttingsParser extends PluginParser {
 					r.setSeed(System.currentTimeMillis());
 					int rand = r.nextInt();
 					
-					current_script_name = Integer.toHexString(rand).toUpperCase();
+					current_script_name = Integer.toHexString(rand).toUpperCase(Locale.ROOT);
 					
 				}
 				//current_script_body = body;
