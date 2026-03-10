@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_marginStart="20dip"
         android:layout_marginEnd="20dip"
-        android:text="Enter desired file name:"
+        android:text="@string/label_enter_file_name"
         android:gravity="start"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 

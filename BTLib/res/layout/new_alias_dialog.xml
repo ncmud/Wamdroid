@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="NEW ALIAS"
+		android:text="@string/title_new_alias"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -24,12 +24,12 @@
   	android:id="@+id/new_alias_cancel"
   	android:layout_alignParentBottom="true"
   	android:layout_alignParentEnd="true"
-  	android:text="Cancel" />
+  	android:text="@string/btn_cancel" />
   
   <Button
   	android:layout_width="match_parent"
   	android:layout_height="wrap_content"
-  	android:text="Done"
+  	android:text="@string/btn_done"
   	android:id="@+id/new_alias_done_button"
   	android:layout_toStartOf="@id/new_alias_cancel"
   	android:layout_alignParentBottom="true"/>
@@ -62,7 +62,7 @@
   			android:singleLine = "true"
   			android:layout_marginEnd="20dip"
   			android:layout_height="wrap_content"
-  			android:hint="Text to replace." />
+  			android:hint="@string/hint_text_to_replace" />
   	
   	</TableRow>
   	<TableRow>
@@ -78,7 +78,7 @@
   			android:layout_marginEnd="20dip"
   			android:layout_height="wrap_content"
   			android:inputType="textMultiLine"
-  			android:hint="Replace with this." />
+  			android:hint="@string/hint_replace_with_this" />
   	
   	</TableRow>
   	
@@ -99,7 +99,7 @@
   					android:layout_height="40dip" 
   					android:textStyle="bold"
   					android:textSize="15sp"
-  					android:text="Matches start of Line (^)"
+  					android:text="@string/option_matches_start_of_line"
   					android:layout_marginEnd="30dip" 
   					android:checked="false"/>
   				<CheckBox 
@@ -113,7 +113,7 @@
   					android:layout_height="40dip" 
   					android:textStyle="bold"
   					android:textSize="15sp"
-  					android:text="Matches end of line ($)"
+  					android:text="@string/option_matches_end_of_line"
   					android:checked="false"/>
   				<CheckBox
   				  	android:id="@+id/enabledcheck" 
@@ -126,7 +126,7 @@
   					android:layout_height="40dip" 
   					android:textStyle="bold"
   					android:textSize="15sp"
-  					android:text="Enabled"
+  					android:text="@string/label_enabled"
   					android:checked="true"/>
   				
   				<!-- <TextView 
@@ -137,7 +137,7 @@
   					android:layout_toStartOf="@id/dollar" 
   					android:textStyle="bold"
   					android:textSize="18sp"
-  					android:text="matching" 
+  					android:text="@string/label_matching" 
   					android:gravity="center"/> -->
   					
   			

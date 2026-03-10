@@ -10,7 +10,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:text="ENTER NEW SET NAME"
+		android:text="@string/title_enter_new_set_name"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
 		android:textSize="15sp"
@@ -23,13 +23,13 @@
 		android:layout_height="wrap_content"
 		android:singleLine="true"
 		android:layout_below="@id/titlebar"
-		android:hint="Enter new set name."/>
+		android:hint="@string/label_enter_new_set_name"/>
 		
 	<Button
 		android:id="@+id/newbuttonset_done"
 		android:layout_width="280dip"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/newbuttonset_entry"
-		android:text="Add and select new set!"/> 
+		android:text="@string/btn_add_select_new_set"/> 
  
 </RelativeLayout>

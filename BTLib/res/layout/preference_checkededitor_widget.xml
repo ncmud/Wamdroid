@@ -20,7 +20,7 @@
 		  	<TextView
 		  		android:layout_width="40dip"
 		  		android:layout_height="wrap_content"
-		  		android:text="Auto?"
+		  		android:text="@string/option_auto"
 		  		android:textSize="10sp"
 		  		android:textStyle="bold"
 		  		android:gravity="top|center"/>
@@ -34,13 +34,13 @@
 	  	android:orientation="vertical">	
 		  	<EditText android:layout_width="60dip" 
 	  			android:layout_height="wrap_content" 
-	  			android:text="77"
+	  			android:text="@string/hint_seventy_seven"
 	  			android:id="@+id/text"
 	  			android:inputType="number"/>
 	  		<TextView
 		  		android:layout_width="60dip"
 		  		android:layout_height="wrap_content"
-		  		android:text="Chars"
+		  		android:text="@string/label_chars"
 		  		android:textSize="10sp"
 		  		android:textStyle="bold"
 		  		android:id="@+id/extra"

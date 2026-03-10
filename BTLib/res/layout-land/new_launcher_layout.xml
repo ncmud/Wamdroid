@@ -56,8 +56,8 @@
 				android:id="@+id/test_update"
 				android:visibility="gone"
 				android:layout_span="3">
-				<TextView android:id="@+id/update_label" android:text="Test Version 1"  android:textSize="18sp" android:textColor = "#AA222222" android:textStyle="bold"/>
-				<Button android:text="Update!" android:id="@+id/update_button" android:visibility="gone"/>
+				<TextView android:id="@+id/update_label" android:text="@string/label_test_version"  android:textSize="18sp" android:textColor = "#AA222222" android:textStyle="bold"/>
+				<Button android:text="@string/btn_update" android:id="@+id/update_button" android:visibility="gone"/>
 				
 			</TableRow>
 			<TableRow
@@ -105,7 +105,7 @@
 			android:id="@+id/launcher_empty"
 			android:layout_width="300dip"
 			android:layout_height="match_parent"
-			android:text="No connections.\nNew connections can be made with the button below."
+			android:text="@string/msg_no_connections"
 			android:textColor="#AA222222"
 			android:background="#AAAAAAAA"
 			android:layout_margin="0dip"
