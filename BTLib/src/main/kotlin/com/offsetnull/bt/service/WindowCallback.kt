@@ -1,5 +1,6 @@
 package com.offsetnull.bt.service
 
+@Suppress("TooManyFunctions")
 interface WindowCallback {
     fun isWindowShowing(): Boolean
     fun rawDataIncoming(raw: ByteArray)
