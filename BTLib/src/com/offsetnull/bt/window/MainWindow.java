@@ -566,7 +566,8 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		test_button = (ImageButton)findViewById(R.id.foldout);
 				
 		test_button.setOnClickListener(new View.OnClickListener() {
-			
+
+			@SuppressLint("InflateParams")
 			public void onClick(View v) {
 				//change my layout parameters and add a new button.
 				//RelativeLayout rl = (RelativeLayout)findViewById(R.id.input_bar);
@@ -867,7 +868,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//Log.e("Window","End on create");
 	}
 
-	@SuppressLint("SetTextI18n")
+	@SuppressLint({"SetTextI18n", "InflateParams"})
 	private void handleMainMessage(Message msg) {
 		//EditText input_box = (EditText)findViewById(R.id.textinput);
 		switch(msg.what) {

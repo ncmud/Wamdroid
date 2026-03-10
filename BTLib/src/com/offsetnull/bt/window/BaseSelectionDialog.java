@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -530,6 +531,7 @@ public class BaseSelectionDialog extends Dialog {
 			// TODO Auto-generated constructor stub
 		}
 		
+		@SuppressLint("InflateParams")
 		@Override
 		public View getView(int pos,View convertView,ViewGroup parent) {
 			View v = convertView;
@@ -653,9 +655,10 @@ public class BaseSelectionDialog extends Dialog {
 			}
 		}
 		
+		@SuppressLint("InflateParams")
 		@Override
 		public View getView(int pos,View convertView,ViewGroup parent) {
-			
+
 			BaseOptionItem item = this.getItem(pos);
 			
 			if(item instanceof DividerItem) {
@@ -711,6 +714,7 @@ public class BaseSelectionDialog extends Dialog {
 		
 	}
 	
+	@SuppressLint("InflateParams")
 	private void makeToolbar() {
 		LayoutInflater li = (LayoutInflater)BaseSelectionDialog.this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mToolbar = (LinearLayout) li.inflate(R.layout.editor_selection_list_row_toolbar, null);
