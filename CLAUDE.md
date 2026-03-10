@@ -10,14 +10,13 @@ BlowTorch (Wamdroid) — an Android MUD client with Lua scripting, plugin suppor
 
 ### Prerequisites
 - Android SDK (set `ANDROID_SDK_ROOT`)
-- Android NDK r15c (set `NDK_HOME`)
-- Set `NDK_HOST_CC_TARGET` (`darwin-x86_64` on Mac, `linux-x86_64` on Linux)
+- Android NDK (set `NDK_HOME`)
 
 ### Native Libraries (LuaJIT + Extensions)
 ```bash
-./build_ndk_libraries.sh
+./build_ndk_libraries_modern.sh
 ```
-Builds LuaJIT 2.0.5 for armeabi, armeabi-v7a, mips, x86. Then builds JNI modules (luajava, lsqlite3, sqlite3, bit, marshal, luabins) and copies `.so` files to `BTLib/libs/<abi>/`.
+Builds LuaJIT 2.1 for arm64-v8a and x86_64. Then builds JNI modules (luajava, lsqlite3, sqlite3, bit, marshal, luabins) and copies `.so` files to `BTLib/src/main/jniLibs/<abi>/`.
 
 ### Android App
 ```bash
