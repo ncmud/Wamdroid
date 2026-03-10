@@ -1,0 +1,37 @@
+build:
+  maxIssues: 0
+
+complexity:
+  LongParameterList:
+    ignoreDefaultParameters: true
+    functionThreshold: 8
+    constructorThreshold: 10
+  LongMethod:
+    threshold: 80
+  TooManyFunctions:
+    ignorePrivate: true
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - 'Composable'
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Z][A-Za-z0-9_]*'
+
+style:
+  ReturnCount:
+    max: 4
+  MagicNumber:
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotation: true
+    ignoreEnums: true
+    ignoreNumbers:
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
+  MaxLineLength:
+    maxLineLength: 120
+  UnusedPrivateMember:
+    allowedNames: '(_|ignored|expected)'

@@ -1,6 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+apply plugin: 'io.gitlab.arturbosch.detekt'
+
+detekt {
+	config.setFrom(files("${rootDir}/detekt.yml"))
+	source.setFrom(files("src"))
+	buildUponDefaultConfig = true
+}
 
 android {
 	namespace "com.offsetnull.bt"

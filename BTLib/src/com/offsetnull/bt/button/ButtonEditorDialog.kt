@@ -7,13 +7,33 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.ViewGroup
 import android.view.Window
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,26 +41,27 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.offsetnull.bt.R
-import com.offsetnull.bt.window.MainWindow
 
-class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener, DialogInterface.OnCancelListener {
+class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener,
+    DialogInterface.OnCancelListener {
 
     enum class COLOR_FIELDS {
         COLOR_MAIN, COLOR_SELECTED, COLOR_FLIPPED, COLOR_LABEL, COLOR_FLIPLABEL
     }
 
-    private val EXIT_CANCEL = 0
-    private val EXIT_DONE = 1
-    private val EXIT_DELETE = 2
+    private companion object {
+        const val EXIT_CANCEL = 0
+        const val EXIT_DONE = 1
+        const val EXIT_DELETE = 2
+    }
 
-    @JvmField var mod_cmd: String? = null
-    @JvmField var mod_lbl: String? = null
-    @JvmField var EXIT_STATE = EXIT_CANCEL
+    @JvmField var modCmd: String? = null
+    @JvmField var modLbl: String? = null
+    @JvmField var exitState = EXIT_CANCEL
 
     private var deleter: Handler? = null
     private var theButton: SlickButton? = null
 
-    private var activeColorField = COLOR_FIELDS.COLOR_MAIN
     private var onColorChanged: ((Int) -> Unit)? = null
 
     constructor(context: Context, useme: SlickButton, callback: Handler) : super(context) {
@@ -49,7 +70,9 @@ class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener, Dia
         setOnCancelListener(this)
     }
 
-    constructor(context: Context, themeid: Int, useme: SlickButton, callback: Handler) : super(context, themeid) {
+    constructor(
+        context: Context, themeid: Int, useme: SlickButton, callback: Handler
+    ) : super(context, themeid) {
         theButton = useme
         deleter = callback
         setOnCancelListener(this)
@@ -68,41 +91,12 @@ class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener, Dia
                 ButtonEditorContent(
                     data = data,
                     moveMethod = button.moveMethod,
-                    onPickColor = { field, currentColor, callback ->
-                        activeColorField = field
+                    onPickColor = { _, currentColor, callback ->
                         onColorChanged = callback
                         ColorPickerDialog(context, this@ButtonEditorDialog, currentColor).show()
                     },
-                    onDone = { label, command, flipLabel, flipCommand, moveMethod,
-                               normalColor, focusColor, flipColor, labelColor, flipLabelColor,
-                               labelSize, x, y, width, height, targetSet ->
-                        button.setLabel(label)
-                        button.text = command
-                        button.setFlipCommand(flipCommand)
-                        data.flipLabel = flipLabel
-                        data.primaryColor = normalColor
-                        data.selectedColor = focusColor
-                        data.flipColor = flipColor
-                        data.labelColor = labelColor
-                        data.flipLabelColor = flipLabelColor
-                        data.labelSize = labelSize
-                        data.x = x
-                        data.y = y
-                        data.width = width
-                        data.height = height
-                        data.targetSet = targetSet
-                        button.moveMethod = moveMethod
-
-                        button.dialog_launched = false
-                        button.iHaveChanged(button.orig_data)
-                        button.invalidate()
-                        EXIT_STATE = EXIT_DONE
-                        dismiss()
-                    },
-                    onDelete = {
-                        EXIT_STATE = EXIT_DELETE
-                        dismiss()
-                    },
+                    onDone = { result -> applyResult(button, data, result) },
+                    onDelete = { exitState = EXIT_DELETE; dismiss() },
                     onCancel = { dismiss() }
                 )
             }
@@ -111,6 +105,31 @@ class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener, Dia
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         ))
+    }
+
+    private fun applyResult(button: SlickButton, data: SlickButtonData, result: ButtonEditResult) {
+        button.setLabel(result.label)
+        button.text = result.command
+        button.setFlipCommand(result.flipCommand)
+        data.flipLabel = result.flipLabel
+        data.primaryColor = result.normalColor
+        data.selectedColor = result.focusColor
+        data.flipColor = result.flipColor
+        data.labelColor = result.labelColor
+        data.flipLabelColor = result.flipLabelColor
+        data.labelSize = result.labelSize
+        data.x = result.x
+        data.y = result.y
+        data.width = result.width
+        data.height = result.height
+        data.targetSet = result.targetSet
+        button.moveMethod = result.moveMethod
+
+        button.dialog_launched = false
+        button.iHaveChanged(button.orig_data)
+        button.invalidate()
+        exitState = EXIT_DONE
+        dismiss()
     }
 
     override fun colorChanged(color: Int) {
@@ -128,15 +147,22 @@ class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener, Dia
     }
 }
 
+private data class ButtonEditResult(
+    val label: String, val command: String,
+    val flipLabel: String, val flipCommand: String,
+    val moveMethod: Int,
+    val normalColor: Int, val focusColor: Int, val flipColor: Int,
+    val labelColor: Int, val flipLabelColor: Int,
+    val labelSize: Int, val x: Int, val y: Int, val width: Int, val height: Int,
+    val targetSet: String
+)
+
 @Composable
 private fun ButtonEditorContent(
     data: SlickButtonData,
     moveMethod: Int,
     onPickColor: (ButtonEditorDialog.COLOR_FIELDS, Int, (Int) -> Unit) -> Unit,
-    onDone: (label: String, command: String, flipLabel: String, flipCommand: String,
-             moveMethod: Int, normalColor: Int, focusColor: Int, flipColor: Int,
-             labelColor: Int, flipLabelColor: Int, labelSize: Int,
-             x: Int, y: Int, width: Int, height: Int, targetSet: String) -> Unit,
+    onDone: (ButtonEditResult) -> Unit,
     onDelete: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -147,9 +173,7 @@ private fun ButtonEditorContent(
     var flipLabel by remember { mutableStateOf(data.flipLabel ?: "") }
     var flipCommand by remember { mutableStateOf(data.flipCommand ?: "") }
 
-    var moveFree by remember { mutableStateOf(moveMethod == SlickButtonData.MOVE_FREE) }
-    var moveNudge by remember { mutableStateOf(moveMethod == SlickButtonData.MOVE_NUDGE) }
-    var moveFreeze by remember { mutableStateOf(moveMethod == SlickButtonData.MOVE_FREEZE) }
+    var selectedMove by remember { mutableIntStateOf(moveMethod) }
 
     var normalColor by remember { mutableIntStateOf(data.primaryColor) }
     var focusColor by remember { mutableIntStateOf(data.selectedColor) }
@@ -166,146 +190,23 @@ private fun ButtonEditorContent(
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    fun validate(): Boolean {
-        val fields = listOf(
-            "X Coordinate" to xText,
-            "Y Coordinate" to yText,
-            "Width" to widthText,
-            "Height" to heightText,
-            "Label Size" to labelSizeText
-        )
-        for ((name, value) in fields) {
-            if (value.isBlank()) {
-                errorMessage = "$name must not be blank."
-                return false
-            }
-            val num = value.toIntOrNull()
-            if (num == null || num == 0) {
-                errorMessage = "$name must be a non-zero number."
-                return false
-            }
-        }
-        errorMessage = null
-        return true
-    }
-
     Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-        TabRow(selectedTabIndex = selectedTab) {
-            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
-                Text("Click", modifier = Modifier.padding(12.dp))
-            }
-            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
-                Text("Flip", modifier = Modifier.padding(12.dp))
-            }
-            Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }) {
-                Text("Advanced", modifier = Modifier.padding(12.dp))
-            }
-        }
-
+        EditorTabBar(selectedTab) { selectedTab = it }
         Spacer(modifier = Modifier.height(12.dp))
 
         when (selectedTab) {
-            0 -> {
-                OutlinedTextField(
-                    value = label, onValueChange = { label = it },
-                    label = { Text("Label") }, modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = command, onValueChange = { command = it },
-                    label = { Text("Command") }, modifier = Modifier.fillMaxWidth()
-                )
-            }
-            1 -> {
-                OutlinedTextField(
-                    value = flipLabel, onValueChange = { flipLabel = it },
-                    label = { Text("Flip Label") }, modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = flipCommand, onValueChange = { flipCommand = it },
-                    label = { Text("Flip Command") }, modifier = Modifier.fillMaxWidth()
-                )
-            }
-            2 -> {
-                // Movement method
-                Text("Movement", style = MaterialTheme.typography.labelLarge)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = moveFree, onClick = {
-                        moveFree = true; moveNudge = false; moveFreeze = false
-                    })
-                    Text("Free", modifier = Modifier.clickable {
-                        moveFree = true; moveNudge = false; moveFreeze = false
-                    })
-                    Spacer(modifier = Modifier.width(8.dp))
-                    RadioButton(selected = moveNudge, onClick = {
-                        moveFree = false; moveNudge = true; moveFreeze = false
-                    })
-                    Text("Nudge", modifier = Modifier.clickable {
-                        moveFree = false; moveNudge = true; moveFreeze = false
-                    })
-                    Spacer(modifier = Modifier.width(8.dp))
-                    RadioButton(selected = moveFreeze, onClick = {
-                        moveFree = false; moveNudge = false; moveFreeze = true
-                    })
-                    Text("Freeze", modifier = Modifier.clickable {
-                        moveFree = false; moveNudge = false; moveFreeze = true
-                    })
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = targetSet, onValueChange = { targetSet = it },
-                    label = { Text("Target Set") }, modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Colors", style = MaterialTheme.typography.labelLarge)
-
-                ColorButton("Normal", normalColor) {
-                    onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_MAIN, normalColor) { normalColor = it }
-                }
-                ColorButton("Focus", focusColor) {
-                    onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_SELECTED, focusColor) { focusColor = it }
-                }
-                ColorButton("Flip", flipColor) {
-                    onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_FLIPPED, flipColor) { flipColor = it }
-                }
-                ColorButton("Label", labelColor) {
-                    onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_LABEL, labelColor) { labelColor = it }
-                }
-                ColorButton("Flip Label", flipLabelColor) {
-                    onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_FLIPLABEL, flipLabelColor) { flipLabelColor = it }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Position & Size", style = MaterialTheme.typography.labelLarge)
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = labelSizeText, onValueChange = { labelSizeText = it },
-                        label = { Text("Label Size") }, modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = xText, onValueChange = { xText = it },
-                        label = { Text("X") }, modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = yText, onValueChange = { yText = it },
-                        label = { Text("Y") }, modifier = Modifier.weight(1f)
-                    )
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = widthText, onValueChange = { widthText = it },
-                        label = { Text("Width") }, modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = heightText, onValueChange = { heightText = it },
-                        label = { Text("Height") }, modifier = Modifier.weight(1f)
-                    )
-                }
-            }
+            0 -> ClickTab(label, { label = it }, command, { command = it })
+            1 -> FlipTab(flipLabel, { flipLabel = it }, flipCommand, { flipCommand = it })
+            2 -> AdvancedTab(
+                selectedMove, { selectedMove = it }, targetSet, { targetSet = it },
+                normalColor, focusColor, flipColor, labelColor, flipLabelColor,
+                onPickColor,
+                { normalColor = it }, { focusColor = it }, { flipColor = it },
+                { labelColor = it }, { flipLabelColor = it },
+                labelSizeText, { labelSizeText = it },
+                xText, { xText = it }, yText, { yText = it },
+                widthText, { widthText = it }, heightText, { heightText = it }
+            )
         }
 
         if (errorMessage != null) {
@@ -314,31 +215,174 @@ private fun ButtonEditorContent(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            TextButton(onClick = onDelete, colors = ButtonDefaults.textButtonColors(
-                contentColor = MaterialTheme.colorScheme.error
-            )) { Text("Delete") }
-            Row {
-                TextButton(onClick = onCancel) { Text("Cancel") }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = {
-                    if (validate()) {
-                        val currentMoveMethod = when {
-                            moveFree -> SlickButtonData.MOVE_FREE
-                            moveNudge -> SlickButtonData.MOVE_NUDGE
-                            moveFreeze -> SlickButtonData.MOVE_FREEZE
-                            else -> SlickButtonData.MOVE_FREE
-                        }
-                        onDone(
-                            label, command, flipLabel, flipCommand, currentMoveMethod,
-                            normalColor, focusColor, flipColor, labelColor, flipLabelColor,
-                            labelSizeText.toInt(), xText.toInt(), yText.toInt(),
-                            widthText.toInt(), heightText.toInt(), targetSet
-                        )
-                    }
-                }) { Text("Done") }
+        EditorActionButtons(onDelete, onCancel) {
+            errorMessage = validateNumericFields(xText, yText, widthText, heightText, labelSizeText)
+            if (errorMessage == null) {
+                onDone(ButtonEditResult(
+                    label, command, flipLabel, flipCommand, selectedMove,
+                    normalColor, focusColor, flipColor, labelColor, flipLabelColor,
+                    labelSizeText.toInt(), xText.toInt(), yText.toInt(),
+                    widthText.toInt(), heightText.toInt(), targetSet
+                ))
             }
+        }
+    }
+}
+
+private fun validateNumericFields(vararg fieldValues: String): String? {
+    val names = listOf("X Coordinate", "Y Coordinate", "Width", "Height", "Label Size")
+    for ((i, value) in fieldValues.withIndex()) {
+        if (value.isBlank()) return "${names[i]} must not be blank."
+        val num = value.toIntOrNull()
+        if (num == null || num == 0) return "${names[i]} must be a non-zero number."
+    }
+    return null
+}
+
+@Composable
+private fun EditorTabBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
+    TabRow(selectedTabIndex = selectedTab) {
+        Tab(selected = selectedTab == 0, onClick = { onTabSelected(0) }) {
+            Text("Click", modifier = Modifier.padding(12.dp))
+        }
+        Tab(selected = selectedTab == 1, onClick = { onTabSelected(1) }) {
+            Text("Flip", modifier = Modifier.padding(12.dp))
+        }
+        Tab(selected = selectedTab == 2, onClick = { onTabSelected(2) }) {
+            Text("Advanced", modifier = Modifier.padding(12.dp))
+        }
+    }
+}
+
+@Composable
+private fun ClickTab(
+    label: String, onLabelChange: (String) -> Unit,
+    command: String, onCommandChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = label, onValueChange = onLabelChange,
+        label = { Text("Label") }, modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    OutlinedTextField(
+        value = command, onValueChange = onCommandChange,
+        label = { Text("Command") }, modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun FlipTab(
+    flipLabel: String, onFlipLabelChange: (String) -> Unit,
+    flipCommand: String, onFlipCommandChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = flipLabel, onValueChange = onFlipLabelChange,
+        label = { Text("Flip Label") }, modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    OutlinedTextField(
+        value = flipCommand, onValueChange = onFlipCommandChange,
+        label = { Text("Flip Command") }, modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Suppress("LongParameterList")
+@Composable
+private fun AdvancedTab(
+    selectedMove: Int, onMoveChange: (Int) -> Unit,
+    targetSet: String, onTargetSetChange: (String) -> Unit,
+    normalColor: Int, focusColor: Int, flipColor: Int, labelColor: Int, flipLabelColor: Int,
+    onPickColor: (ButtonEditorDialog.COLOR_FIELDS, Int, (Int) -> Unit) -> Unit,
+    onNormalColor: (Int) -> Unit, onFocusColor: (Int) -> Unit, onFlipColor: (Int) -> Unit,
+    onLabelColor: (Int) -> Unit, onFlipLabelColor: (Int) -> Unit,
+    labelSizeText: String, onLabelSizeChange: (String) -> Unit,
+    xText: String, onXChange: (String) -> Unit,
+    yText: String, onYChange: (String) -> Unit,
+    widthText: String, onWidthChange: (String) -> Unit,
+    heightText: String, onHeightChange: (String) -> Unit
+) {
+    MovementSelector(selectedMove, onMoveChange)
+    Spacer(modifier = Modifier.height(8.dp))
+    OutlinedTextField(
+        value = targetSet, onValueChange = onTargetSetChange,
+        label = { Text("Target Set") }, modifier = Modifier.fillMaxWidth()
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+    Text("Colors", style = MaterialTheme.typography.labelLarge)
+    ColorButton("Normal", normalColor) {
+        onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_MAIN, normalColor, onNormalColor)
+    }
+    ColorButton("Focus", focusColor) {
+        onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_SELECTED, focusColor, onFocusColor)
+    }
+    ColorButton("Flip", flipColor) {
+        onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_FLIPPED, flipColor, onFlipColor)
+    }
+    ColorButton("Label", labelColor) {
+        onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_LABEL, labelColor, onLabelColor)
+    }
+    ColorButton("Flip Label", flipLabelColor) {
+        onPickColor(ButtonEditorDialog.COLOR_FIELDS.COLOR_FLIPLABEL, flipLabelColor, onFlipLabelColor)
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+    Text("Position & Size", style = MaterialTheme.typography.labelLarge)
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(
+            value = labelSizeText, onValueChange = onLabelSizeChange,
+            label = { Text("Label Size") }, modifier = Modifier.weight(1f)
+        )
+        OutlinedTextField(
+            value = xText, onValueChange = onXChange,
+            label = { Text("X") }, modifier = Modifier.weight(1f)
+        )
+        OutlinedTextField(
+            value = yText, onValueChange = onYChange,
+            label = { Text("Y") }, modifier = Modifier.weight(1f)
+        )
+    }
+    Spacer(modifier = Modifier.height(4.dp))
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(
+            value = widthText, onValueChange = onWidthChange,
+            label = { Text("Width") }, modifier = Modifier.weight(1f)
+        )
+        OutlinedTextField(
+            value = heightText, onValueChange = onHeightChange,
+            label = { Text("Height") }, modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun MovementSelector(selectedMove: Int, onMoveChange: (Int) -> Unit) {
+    Text("Movement", style = MaterialTheme.typography.labelLarge)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RadioButton(selected = selectedMove == SlickButtonData.MOVE_FREE,
+            onClick = { onMoveChange(SlickButtonData.MOVE_FREE) })
+        Text("Free", modifier = Modifier.clickable { onMoveChange(SlickButtonData.MOVE_FREE) })
+        Spacer(modifier = Modifier.width(8.dp))
+        RadioButton(selected = selectedMove == SlickButtonData.MOVE_NUDGE,
+            onClick = { onMoveChange(SlickButtonData.MOVE_NUDGE) })
+        Text("Nudge", modifier = Modifier.clickable { onMoveChange(SlickButtonData.MOVE_NUDGE) })
+        Spacer(modifier = Modifier.width(8.dp))
+        RadioButton(selected = selectedMove == SlickButtonData.MOVE_FREEZE,
+            onClick = { onMoveChange(SlickButtonData.MOVE_FREEZE) })
+        Text("Freeze", modifier = Modifier.clickable { onMoveChange(SlickButtonData.MOVE_FREEZE) })
+    }
+}
+
+@Composable
+private fun EditorActionButtons(onDelete: () -> Unit, onCancel: () -> Unit, onDone: () -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        TextButton(onClick = onDelete, colors = ButtonDefaults.textButtonColors(
+            contentColor = MaterialTheme.colorScheme.error
+        )) { Text("Delete") }
+        Row {
+            TextButton(onClick = onCancel) { Text("Cancel") }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = onDone) { Text("Done") }
         }
     }
 }
