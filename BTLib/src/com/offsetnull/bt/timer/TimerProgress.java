@@ -1,46 +1,51 @@
 package com.offsetnull.bt.timer;
 
 public class TimerProgress {
-	private float percentage;
-	private long timeleft;
-	private STATE state;
-	public enum STATE { STOPPED,PLAYING,PAUSED; };
+    private float percentage;
+    private long timeleft;
+    private STATE state;
 
-	public TimerProgress() {
-		percentage = 1.0f;
-		timeleft = 30000;
-		state = STATE.STOPPED;
-	}
+    public enum STATE {
+        STOPPED,
+        PLAYING,
+        PAUSED;
+    };
 
-	public TimerProgress copy() {
-		TimerProgress tmp = new TimerProgress();
-		tmp.percentage = this.percentage;
-		tmp.timeleft = this.timeleft;
-		tmp.state = this.state;
-		return tmp;
-	}
+    public TimerProgress() {
+        percentage = 1.0f;
+        timeleft = 30000;
+        state = STATE.STOPPED;
+    }
 
-	public void setPercentage(float percentage) {
-		this.percentage = percentage;
-	}
+    public TimerProgress copy() {
+        TimerProgress tmp = new TimerProgress();
+        tmp.percentage = this.percentage;
+        tmp.timeleft = this.timeleft;
+        tmp.state = this.state;
+        return tmp;
+    }
 
-	public float getPercentage() {
-		return percentage;
-	}
+    public void setPercentage(float percentage) {
+        this.percentage = percentage;
+    }
 
-	public void setTimeleft(long timeleft) {
-		this.timeleft = timeleft;
-	}
+    public float getPercentage() {
+        return percentage;
+    }
 
-	public long getTimeleft() {
-		return timeleft;
-	}
+    public void setTimeleft(long timeleft) {
+        this.timeleft = timeleft;
+    }
 
-	public void setState(STATE state) {
-		this.state = state;
-	}
+    public long getTimeleft() {
+        return timeleft;
+    }
 
-	public STATE getState() {
-		return state;
-	}
+    public void setState(STATE state) {
+        this.state = state;
+    }
+
+    public STATE getState() {
+        return state;
+    }
 }

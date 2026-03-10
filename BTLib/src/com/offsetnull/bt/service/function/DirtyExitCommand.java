@@ -3,12 +3,13 @@ package com.offsetnull.bt.service.function;
 import com.offsetnull.bt.service.Connection;
 
 public class DirtyExitCommand extends SpecialCommand {
-	public DirtyExitCommand() {
-		this.commandName = "closewindow";
-	}
-	public Object execute(Object o,Connection c) {
-		
-		c.getService().doDirtyExit();
-		return null;
-	}
+    public DirtyExitCommand() {
+        this.commandName = "closewindow";
+    }
+
+    public Object execute(Object o, Connection c) {
+
+        c.getService().doDirtyExit();
+        return null;
+    }
 }

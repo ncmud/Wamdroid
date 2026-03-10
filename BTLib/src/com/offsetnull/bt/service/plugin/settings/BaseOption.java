@@ -1,18 +1,22 @@
 package com.offsetnull.bt.service.plugin.settings;
 
-import java.io.IOException;
-
 import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
 
 public abstract class BaseOption extends Option {
 
-	protected Object value;
-	protected Object defaultValue;
-	
-	abstract public void setValue(Object o);
-	abstract public Object getValue();
-	abstract public Object getDefaultValue();
-	abstract public void setDefaultValue(Object o);
-	
-	abstract public void saveToXML(XmlSerializer out) throws IllegalArgumentException, IllegalStateException, IOException;
+    protected Object value;
+    protected Object defaultValue;
+
+    public abstract void setValue(Object o);
+
+    public abstract Object getValue();
+
+    public abstract Object getDefaultValue();
+
+    public abstract void setDefaultValue(Object o);
+
+    public abstract void saveToXML(XmlSerializer out)
+            throws IllegalArgumentException, IllegalStateException, IOException;
 }

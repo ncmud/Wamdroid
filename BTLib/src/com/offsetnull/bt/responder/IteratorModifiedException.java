@@ -1,28 +1,25 @@
 package com.offsetnull.bt.responder;
 
-import java.util.ListIterator;
-
 import com.offsetnull.bt.window.TextTree;
+
+import java.util.ListIterator;
 
 public class IteratorModifiedException extends Exception {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8829946663215489331L;
+    /** */
+    private static final long serialVersionUID = 8829946663215489331L;
 
-	private ListIterator<TextTree.Line> iterator = null;
-	
-	public IteratorModifiedException(ListIterator<TextTree.Line> i) {
-		setIterator(i);
-	}
+    private ListIterator<TextTree.Line> iterator = null;
 
-	public void setIterator(ListIterator<TextTree.Line> iterator) {
-		this.iterator = iterator;
-	}
+    public IteratorModifiedException(ListIterator<TextTree.Line> i) {
+        setIterator(i);
+    }
 
-	public ListIterator<TextTree.Line> getIterator() {
-		return iterator;
-	}
-	
+    public void setIterator(ListIterator<TextTree.Line> iterator) {
+        this.iterator = iterator;
+    }
+
+    public ListIterator<TextTree.Line> getIterator() {
+        return iterator;
+    }
 }

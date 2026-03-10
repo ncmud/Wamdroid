@@ -24,104 +24,94 @@
 
 package org.keplerproject.luajava;
 
+import android.util.Log;
+
+import com.offsetnull.bt.service.Colorizer;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import com.offsetnull.bt.service.Colorizer;
-
-import android.net.Proxy;
-import android.util.Log;
-
 /**
- * Class that implements the InvocationHandler interface.
- * This class is used in the LuaJava's proxy system.
- * When a proxy object is accessed, the method invoked is
- * called from Lua
+ * Class that implements the InvocationHandler interface. This class is used in the LuaJava's proxy
+ * system. When a proxy object is accessed, the method invoked is called from Lua
+ *
  * @author Rizzato
  * @author Thiago Ponte
  */
-public class LuaInvocationHandler implements InvocationHandler
-{
-	private LuaObject obj;
+public class LuaInvocationHandler implements InvocationHandler {
+    private LuaObject obj;
 
-	
-	public LuaInvocationHandler(LuaObject obj)
-	{
-		this.obj = obj;
-	}
-	
-	/**
-	 * Function called when a proxy object function is invoked.
-	 */
-  public Object invoke(Object proxy, Method method, Object[] args) throws LuaException
-  {
-    synchronized(obj.L)
-    {
-	  	String methodName = method.getName();
-	  	LuaObject func    = obj.getField(methodName);
-	  	
-	  	if ( func.isNil() )
-	  	{
-	  		return null;
-	  	}
-	  	
-	  	try {
-		  	Class retType = method.getReturnType();
-		  	Object ret;
-	
-		  	// Checks if returned type is void. if it is returns null.
-		  	if ( retType.equals( Void.class ) || retType.equals( void.class ) )
-		  	{
-		  		func.call( args , 0 );
-		  		ret = null;
-		  	}
-		  	else
-		  	{
-		  		ret = func.call(args, 1)[0];
-		  		if( ret != null && ret instanceof Double )
-		  		{
-		  		  ret = LuaState.convertLuaNumber((Double) ret, retType);
-		  		}
-		  	}
-		  	
-		  	return ret;
-	  	} catch(LuaException e) {
-	  		e.printStackTrace();
-	  		
-	  		StringWriter sw = new StringWriter();
-	  		PrintWriter pw = new PrintWriter(sw);
-	  		e.printStackTrace(pw);
-	  		String error = sw.toString(); // stack trace as a string
-	  		
-	  		error = "\n" + Colorizer.getRedColor() + "Error in lua proxy object:\n" + e.getLocalizedMessage() + Colorizer.getWhiteColor();
-	  		obj.L.getGlobal("debug");
-	  		obj.L.getField(obj.L.getTop(), "traceback");
-	  		obj.L.remove(-2);
-			
-	  		obj.L.getGlobal("Note");
-	  		
-	  		obj.L.pushString(error);
-	  		int ret = obj.L.pcall(1, 1, -3);
-	  		if(ret !=0) {
-	  			Log.e("DFG", "failure");
-	  		} else {
-	  			Log.e("DFG", "success");
-	  			obj.L.pop(2);
-	  		}
-			//	obj.L.pop(2);
-			//	Log.e("DFG", "not a function");
-			//}
-	  		
-	  		
-	  		/*StringWriter sw = new StringWriter();
-	  		PrintWriter pw = new PrintWriter(sw);
-	  		e.printStackTrace(pw);
-	  		obj.L.pushString(sw.toString()); // stack trace as a string */
-	  		
-	  	}
-	  	return null;
-	  }
-  }
+    public LuaInvocationHandler(LuaObject obj) {
+        this.obj = obj;
+    }
+
+    /** Function called when a proxy object function is invoked. */
+    public Object invoke(Object proxy, Method method, Object[] args) throws LuaException {
+        synchronized (obj.L) {
+            String methodName = method.getName();
+            LuaObject func = obj.getField(methodName);
+
+            if (func.isNil()) {
+                return null;
+            }
+
+            try {
+                Class retType = method.getReturnType();
+                Object ret;
+
+                // Checks if returned type is void. if it is returns null.
+                if (retType.equals(Void.class) || retType.equals(void.class)) {
+                    func.call(args, 0);
+                    ret = null;
+                } else {
+                    ret = func.call(args, 1)[0];
+                    if (ret != null && ret instanceof Double) {
+                        ret = LuaState.convertLuaNumber((Double) ret, retType);
+                    }
+                }
+
+                return ret;
+            } catch (LuaException e) {
+                e.printStackTrace();
+
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                String error = sw.toString(); // stack trace as a string
+
+                error =
+                        "\n"
+                                + Colorizer.getRedColor()
+                                + "Error in lua proxy object:\n"
+                                + e.getLocalizedMessage()
+                                + Colorizer.getWhiteColor();
+                obj.L.getGlobal("debug");
+                obj.L.getField(obj.L.getTop(), "traceback");
+                obj.L.remove(-2);
+
+                obj.L.getGlobal("Note");
+
+                obj.L.pushString(error);
+                int ret = obj.L.pcall(1, 1, -3);
+                if (ret != 0) {
+                    Log.e("DFG", "failure");
+                } else {
+                    Log.e("DFG", "success");
+                    obj.L.pop(2);
+                }
+                //	obj.L.pop(2);
+                //	Log.e("DFG", "not a function");
+                // }
+
+                /*StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                obj.L.pushString(sw.toString()); // stack trace as a string */
+
+            }
+            return null;
+        }
+    }
 }

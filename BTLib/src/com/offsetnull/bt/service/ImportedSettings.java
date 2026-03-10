@@ -4,6 +4,7 @@
 package com.offsetnull.bt.service;
 
 import com.offsetnull.bt.service.plugin.Plugin;
+
 import java.util.ArrayList;
 
 public class ImportedSettings {

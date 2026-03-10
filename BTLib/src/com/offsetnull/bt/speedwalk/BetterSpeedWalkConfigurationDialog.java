@@ -1,8 +1,5 @@
 package com.offsetnull.bt.speedwalk;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,142 +10,148 @@ import android.widget.LinearLayout;
 
 import com.offsetnull.bt.R;
 import com.offsetnull.bt.service.StellarService;
-import com.offsetnull.bt.window.BetterPluginSelectionDialog;
-import com.offsetnull.bt.window.StandardSelectionDialog;
 import com.offsetnull.bt.window.BaseSelectionDialog;
+import com.offsetnull.bt.window.StandardSelectionDialog;
 
-//public class BetterPluginSelectionDialog extends StandardSelectionDialog implements BaseSelectionDialog.UtilityToolbarListener,BaseSelectionDialog.OptionItemClickListener {
+import java.util.Arrays;
+import java.util.HashMap;
 
-public class BetterSpeedWalkConfigurationDialog extends StandardSelectionDialog implements BaseSelectionDialog.UtilityToolbarListener,DirectionEditorDoneListener {
+// public class BetterPluginSelectionDialog extends StandardSelectionDialog implements
+// BaseSelectionDialog.UtilityToolbarListener,BaseSelectionDialog.OptionItemClickListener {
 
-	
-	HashMap<String,DirectionData> dataMap;
-	String[] sortedKeys;
-	
-	public BetterSpeedWalkConfigurationDialog(Context context,
-			StellarService service) {
-		super(context, service);
-		// TODO Auto-generated constructor stub
-		
-		
-		buildList();
-		this.setToolbarListener(this);
-		
-		this.clearToolbarButtons();
+public class BetterSpeedWalkConfigurationDialog extends StandardSelectionDialog
+        implements BaseSelectionDialog.UtilityToolbarListener, DirectionEditorDoneListener {
 
-		this.addToolbarButton(R.drawable.toolbar_modify_button,0);
-		this.addToolbarDeleteButton(R.drawable.toolbar_delete_button,1);
-		
-		this.setTitle("DIRECTIONS");
-	}
-	
-	private void buildList() {
-		
+    HashMap<String, DirectionData> dataMap;
+    String[] sortedKeys;
 
-		dataMap = (HashMap<String, DirectionData>) service.getDirectionData();
-		
-		sortedKeys = new String[dataMap.size()];
-		sortedKeys = dataMap.keySet().toArray(sortedKeys);
-		Arrays.sort(sortedKeys,String.CASE_INSENSITIVE_ORDER);
-		clearListItems();
-		String tag = "";
-		for(int i=0;i<sortedKeys.length;i++) {
-			DirectionData data = dataMap.get(sortedKeys[i]);
-			int resource = 0;
-			
-			this.addListItem(data.getDirection(), "Command: " + data.getCommand(),resource, true);
-		}
-		
-		invalidateList();
-	}
-	
-	private void saveList() {
-		
+    public BetterSpeedWalkConfigurationDialog(Context context, StellarService service) {
+        super(context, service);
+        // TODO Auto-generated constructor stub
 
-		service.setDirectionData(dataMap);
-		
-		
-	}
-	
-	@Override
-	public void onCreate(Bundle b) {
-		super.onCreate(b);
-		this.mOptionsButton.setOnClickListener(new HelpClickedListener());
-		this.promoteHelp();
-	}
-	private class HelpClickedListener implements View.OnClickListener {
+        buildList();
+        this.setToolbarListener(this);
 
-		@Override
-		public void onClick(View v) {
-			Intent web_help = new Intent(Intent.ACTION_VIEW,Uri.parse("http://bt.happygoatstudios.com/?view=speedwalks"));
-			BetterSpeedWalkConfigurationDialog.this.getContext().startActivity(web_help);
-		}
-		
-	}
+        this.clearToolbarButtons();
 
-	@Override
-	public void onButtonPressed(View v, int row, int index) {
-		String entry = sortedKeys[row];
-		DirectionData d = dataMap.get(entry);
-		SpeedWalkDirectionEditorDialog editor = new SpeedWalkDirectionEditorDialog(BetterSpeedWalkConfigurationDialog.this.getContext(),BetterSpeedWalkConfigurationDialog.this,d,service);
-		editor.show();
-	}
+        this.addToolbarButton(R.drawable.toolbar_modify_button, 0);
+        this.addToolbarDeleteButton(R.drawable.toolbar_delete_button, 1);
 
-	@Override
-	public void onButtonStateChanged(ImageButton v, int row, int index,
-			boolean state) {
-		// TODO Auto-generated method stub
-		
-	}
+        this.setTitle("DIRECTIONS");
+    }
 
-	@Override
-	public void onItemDeleted(int row) {
-		String key = sortedKeys[row];
-		dataMap.remove(key);
-		
-		saveList();
-		buildList();
-	}
+    private void buildList() {
 
-	@Override
-	public void onNewPressed(View v) {
-		SpeedWalkDirectionEditorDialog editor = new SpeedWalkDirectionEditorDialog(BetterSpeedWalkConfigurationDialog.this.getContext(),BetterSpeedWalkConfigurationDialog.this,service);
-		editor.show();
-	}
+        dataMap = (HashMap<String, DirectionData>) service.getDirectionData();
 
-	@Override
-	public void onDonePressed(View v) {
+        sortedKeys = new String[dataMap.size()];
+        sortedKeys = dataMap.keySet().toArray(sortedKeys);
+        Arrays.sort(sortedKeys, String.CASE_INSENSITIVE_ORDER);
+        clearListItems();
+        String tag = "";
+        for (int i = 0; i < sortedKeys.length; i++) {
+            DirectionData data = dataMap.get(sortedKeys[i]);
+            int resource = 0;
 
-		service.saveSettings();
-		
-	}
+            this.addListItem(data.getDirection(), "Command: " + data.getCommand(), resource, true);
+        }
 
-	@Override
-	public void willShowToolbar(LinearLayout v, int row) {
-		// TODO Auto-generated method stub
-		
-	}
+        invalidateList();
+    }
 
-	@Override
-	public void willHideToolbar(LinearLayout v, int row) {
-		// TODO Auto-generated method stub
-		
-	}
+    private void saveList() {
 
-	@Override
-	public void newDirection(DirectionData d) {
-		dataMap.put(d.getDirection(), d);
-		//buildList();
-		saveList();
-		buildList();
-	}
+        service.setDirectionData(dataMap);
+    }
 
-	@Override
-	public void editDirection(DirectionData old, DirectionData mod) {
-		dataMap.remove(old.getDirection());
-		dataMap.put(mod.getDirection(),mod);
-		saveList();
-		buildList();
-	}
+    @Override
+    public void onCreate(Bundle b) {
+        super.onCreate(b);
+        this.mOptionsButton.setOnClickListener(new HelpClickedListener());
+        this.promoteHelp();
+    }
 
+    private class HelpClickedListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            Intent web_help =
+                    new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("http://bt.happygoatstudios.com/?view=speedwalks"));
+            BetterSpeedWalkConfigurationDialog.this.getContext().startActivity(web_help);
+        }
+    }
+
+    @Override
+    public void onButtonPressed(View v, int row, int index) {
+        String entry = sortedKeys[row];
+        DirectionData d = dataMap.get(entry);
+        SpeedWalkDirectionEditorDialog editor =
+                new SpeedWalkDirectionEditorDialog(
+                        BetterSpeedWalkConfigurationDialog.this.getContext(),
+                        BetterSpeedWalkConfigurationDialog.this,
+                        d,
+                        service);
+        editor.show();
+    }
+
+    @Override
+    public void onButtonStateChanged(ImageButton v, int row, int index, boolean state) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onItemDeleted(int row) {
+        String key = sortedKeys[row];
+        dataMap.remove(key);
+
+        saveList();
+        buildList();
+    }
+
+    @Override
+    public void onNewPressed(View v) {
+        SpeedWalkDirectionEditorDialog editor =
+                new SpeedWalkDirectionEditorDialog(
+                        BetterSpeedWalkConfigurationDialog.this.getContext(),
+                        BetterSpeedWalkConfigurationDialog.this,
+                        service);
+        editor.show();
+    }
+
+    @Override
+    public void onDonePressed(View v) {
+
+        service.saveSettings();
+    }
+
+    @Override
+    public void willShowToolbar(LinearLayout v, int row) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void willHideToolbar(LinearLayout v, int row) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void newDirection(DirectionData d) {
+        dataMap.put(d.getDirection(), d);
+        // buildList();
+        saveList();
+        buildList();
+    }
+
+    @Override
+    public void editDirection(DirectionData old, DirectionData mod) {
+        dataMap.remove(old.getDirection());
+        dataMap.put(mod.getDirection(), mod);
+        saveList();
+        buildList();
+    }
 }
