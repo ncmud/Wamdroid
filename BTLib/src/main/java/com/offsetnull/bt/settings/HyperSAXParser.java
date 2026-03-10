@@ -708,7 +708,7 @@ public class HyperSAXParser extends BaseParser {
 
                     public void end() {
                         tmp.getTimers()
-                                .put(current_timer.getOrdinal().toString(), current_timer.copy());
+                                .put(String.valueOf(current_timer.getOrdinal()), current_timer.copy());
                     }
                 });
         timerNotificationResponder.setStartElementListener(

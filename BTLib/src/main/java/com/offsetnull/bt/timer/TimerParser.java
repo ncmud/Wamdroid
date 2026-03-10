@@ -39,7 +39,7 @@ public final class TimerParser {
         // out.startTag("", BasePluginParser.TAG_TIMER);
         out.attribute("", BasePluginParser.ATTR_TIMERNAME, timer.getName());
         // out.attribute("", BasePluginParser.ATTR_ORDINAL, timer.getOrdinal().toString());
-        out.attribute("", BasePluginParser.ATTR_SECONDS, timer.getSeconds().toString());
+        out.attribute("", BasePluginParser.ATTR_SECONDS, String.valueOf(timer.getSeconds()));
         out.attribute("", BasePluginParser.ATTR_REPEAT, (timer.isRepeat()) ? "true" : "false");
         out.attribute("", BasePluginParser.ATTR_PLAYING, (timer.isPlaying()) ? "true" : "false");
         for (TriggerResponder r : timer.getResponders()) {

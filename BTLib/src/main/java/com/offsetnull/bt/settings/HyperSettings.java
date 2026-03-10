@@ -519,8 +519,8 @@ public class HyperSettings {
             for (TimerData timer : data.getTimers().values()) {
                 out.startTag("", BaseParser.TAG_TIMER);
                 out.attribute("", BaseParser.ATTR_TIMERNAME, timer.getName());
-                out.attribute("", BaseParser.ATTR_ORDINAL, timer.getOrdinal().toString());
-                out.attribute("", BaseParser.ATTR_SECONDS, timer.getSeconds().toString());
+                out.attribute("", BaseParser.ATTR_ORDINAL, String.valueOf(timer.getOrdinal()));
+                out.attribute("", BaseParser.ATTR_SECONDS, String.valueOf(timer.getSeconds()));
                 out.attribute("", BaseParser.ATTR_REPEAT, (timer.isRepeat()) ? "true" : "false");
                 out.attribute("", BaseParser.ATTR_PLAYING, (timer.isPlaying()) ? "true" : "false");
                 OutputResponders(out, timer.getResponders());
