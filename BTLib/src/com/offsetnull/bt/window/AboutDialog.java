@@ -1,8 +1,5 @@
 package com.offsetnull.bt.window;
 
-import com.offsetnull.bt.R;
-import com.offsetnull.bt.settings.ConfigurationLoader;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
@@ -14,52 +11,80 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+import com.offsetnull.bt.R;
+import com.offsetnull.bt.settings.ConfigurationLoader;
+
 public class AboutDialog extends Dialog {
 
-	public AboutDialog(Context context) {
-		super(context);
+    public AboutDialog(Context context) {
+        super(context);
+    }
 
-	}
+    // Resource IDs are in the app module, not this library, so getIdentifier is required.
+    @SuppressLint("DiscouragedApi")
+    public void onCreate(Bundle b) {
+        super.onCreate(b);
 
-	// Resource IDs are in the app module, not this library, so getIdentifier is required.
-	@SuppressLint("DiscouragedApi")
-	public void onCreate(Bundle b) {
-		super.onCreate(b);
+        this.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-		this.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        this.setContentView(ConfigurationLoader.getAboutDialogResource(this.getContext()));
 
-		this.setContentView(ConfigurationLoader.getAboutDialogResource(this.getContext()));
+        try {
+            String str =
+                    this.getContext()
+                            .getPackageManager()
+                            .getPackageInfo(
+                                    this.getContext().getPackageName(),
+                                    Context.CONTEXT_INCLUDE_CODE)
+                            .versionName;
+            int abtid =
+                    this.getContext()
+                            .getResources()
+                            .getIdentifier(
+                                    "blowtorch_about", "id", this.getContext().getPackageName());
+            TextView v = (TextView) this.findViewById(abtid);
+            v.setText(getContext().getString(R.string.fmt_blowtorch_version, str));
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
-		try {
-			String str = this.getContext().getPackageManager().getPackageInfo(this.getContext().getPackageName(), Context.CONTEXT_INCLUDE_CODE).versionName;
-			int abtid = this.getContext().getResources().getIdentifier("blowtorch_about", "id", this.getContext().getPackageName());
-			TextView v = (TextView) this.findViewById(abtid);
-			v.setText(getContext().getString(R.string.fmt_blowtorch_version, str));
-		} catch (NameNotFoundException e) {
-			e.printStackTrace();
-		}
+        int aardid =
+                this.getContext()
+                        .getResources()
+                        .getIdentifier("aardwolf_button", "id", this.getContext().getPackageName());
+        if (aardid != 0) {
+            this.findViewById(aardid)
+                    .setOnClickListener(
+                            new View.OnClickListener() {
 
-		int aardid = this.getContext().getResources().getIdentifier("aardwolf_button", "id", this.getContext().getPackageName());
-		if(aardid != 0) {
-		this.findViewById(aardid).setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    Intent web_help =
+                                            new Intent(
+                                                    Intent.ACTION_VIEW,
+                                                    Uri.parse("http://www.aardmud.org/"));
+                                    AboutDialog.this.getContext().startActivity(web_help);
+                                }
+                            });
+        }
 
-			public void onClick(View v) {
-				Intent web_help = new Intent(Intent.ACTION_VIEW,Uri.parse("http://www.aardmud.org/"));
-				AboutDialog.this.getContext().startActivity(web_help);
-			}
-		});
-		}
+        int btid =
+                this.getContext()
+                        .getResources()
+                        .getIdentifier(
+                                "blowtorch_button", "id", this.getContext().getPackageName());
+        this.findViewById(btid)
+                .setOnClickListener(
+                        new View.OnClickListener() {
 
-		int btid = this.getContext().getResources().getIdentifier("blowtorch_button", "id", this.getContext().getPackageName());
-		this.findViewById(btid).setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                Intent web_help =
+                                        new Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse("http://bt.happygoatstudios.com/"));
+                                AboutDialog.this.getContext().startActivity(web_help);
+                            }
+                        });
 
-			public void onClick(View v) {
-				Intent web_help = new Intent(Intent.ACTION_VIEW,Uri.parse("http://bt.happygoatstudios.com/"));
-				AboutDialog.this.getContext().startActivity(web_help);
-			}
-		});
-
-		//setup links
-	}
-
+        // setup links
+    }
 }

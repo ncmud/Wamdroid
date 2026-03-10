@@ -8,29 +8,28 @@ import android.util.AttributeSet;
 
 public class HyperDialogPreference extends DialogPreference {
 
-	Handler dodefaulter = null;
-	
-	public HyperDialogPreference(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
-	
-	public void setHandler(Handler in) {
-		dodefaulter = in;
-	}
-	
-	public void onDialogClosed(boolean positiveResult) {
-		SharedPreferences pref = this.getSharedPreferences();
-		
-		SharedPreferences.Editor edit = pref.edit();
-		
-		if(positiveResult) {
-			edit.putString("SETTINGS_TO_DEFAULT", "doit");
-			dodefaulter.sendEmptyMessageDelayed(0, 15);
-		} else {
-			edit.putString("SETTINGS_TO_DEFAULT", "");
-		}
-		
-		edit.apply();
-	}
+    Handler dodefaulter = null;
 
+    public HyperDialogPreference(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public void setHandler(Handler in) {
+        dodefaulter = in;
+    }
+
+    public void onDialogClosed(boolean positiveResult) {
+        SharedPreferences pref = this.getSharedPreferences();
+
+        SharedPreferences.Editor edit = pref.edit();
+
+        if (positiveResult) {
+            edit.putString("SETTINGS_TO_DEFAULT", "doit");
+            dodefaulter.sendEmptyMessageDelayed(0, 15);
+        } else {
+            edit.putString("SETTINGS_TO_DEFAULT", "");
+        }
+
+        edit.apply();
+    }
 }

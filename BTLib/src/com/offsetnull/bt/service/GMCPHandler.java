@@ -31,7 +31,8 @@ public class GMCPHandler {
                             if (r instanceof ScriptResponder) {
                                 ScriptResponder s = (ScriptResponder) r;
                                 String callback = s.getFunction();
-                                String module = t.getPattern().substring(1, t.getPattern().length());
+                                String module =
+                                        t.getPattern().substring(1, t.getPattern().length());
                                 String name = p.getName();
                                 context.getProcessor().addWatcher(module, name, callback);
                             }
