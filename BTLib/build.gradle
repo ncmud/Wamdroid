@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.detekt)
 }
@@ -12,43 +11,39 @@ detekt {
 }
 
 android {
-	namespace "com.offsetnull.bt"
-	compileSdk libs.versions.compileSdk.get().toInteger()
-
+	namespace = "com.offsetnull.bt"
+	compileSdk = libs.versions.compileSdk.get().toInteger()
 
 	defaultConfig {
-		minSdk libs.versions.minSdk.get().toInteger()
-		targetSdk libs.versions.targetSdk.get().toInteger()
-		versionCode 219
-		versionName "2.0"
+		minSdk = libs.versions.minSdk.get().toInteger()
+		targetSdk = libs.versions.targetSdk.get().toInteger()
+		versionCode = 219
+		versionName = "2.0"
 	}
 
 	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_17
-		targetCompatibility JavaVersion.VERSION_17
-	}
-
-	kotlinOptions {
-		jvmTarget = libs.versions.jvmTarget.get()
+		sourceCompatibility = JavaVersion.VERSION_17
+		targetCompatibility = JavaVersion.VERSION_17
 	}
 
 	buildFeatures {
-		viewBinding true
-		compose true
+		viewBinding = true
+		compose = true
 	}
 
 	lint {
-		warningsAsErrors false
-		abortOnError false
-		xmlReport true
-		htmlReport true
-		baseline file("lint-baseline.xml")
+		warningsAsErrors = false
+		abortOnError = false
+		xmlReport = true
+		htmlReport = true
+		baseline = file("lint-baseline.xml")
 	}
 
 	sourceSets {
 		main {
 			manifest.srcFile 'AndroidManifest.xml'
 			java.srcDirs = ['src']
+			kotlin.srcDirs = ['src']
 			resources.srcDirs = ['src']
 			res.srcDirs = ['res']
 			assets.srcDirs = ['assets']
