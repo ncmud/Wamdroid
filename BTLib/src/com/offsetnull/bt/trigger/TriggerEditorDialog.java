@@ -1,5 +1,6 @@
 package com.offsetnull.bt.trigger;
 
+import android.annotation.SuppressLint;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -178,7 +179,7 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 		
 		if(isEditor) {
 			Button editdone = (Button)findViewById(R.id.trigger_editor_done_button);
-			editdone.setText("Done");
+			editdone.setText(R.string.btn_done);
 		}	
 		//}
 		
@@ -616,7 +617,7 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 				LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
 				scroller.setLayoutParams(tp);
 				TextView v = new TextView(TriggerEditorDialog.this.getContext());
-				v.setText("Regular expressions have been enabled. Unpredictable or poor performance can result from overly broad regular expressions. Please see the documentation for the Java Pattern Class for more information.");
+				v.setText(R.string.msg_regex_warning);
 				int pad = (int) (5.0f * getContext().getResources().getDisplayMetrics().density);
 				
 				v.setTextAppearance(getContext(), android.R.style.TextAppearance_Medium);
@@ -644,7 +645,7 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 				CheckBox b = new CheckBox(getContext());
 				b.setChecked(mEditorWarning);
 				b.setOnCheckedChangeListener(new WarningCheckChangedLitener());
-				b.setText("Always display this message.");
+				b.setText(R.string.label_always_display_message);
 				//b.setChecked(true);
 				b.setPadding(pad, pad, pad, pad);
 				b.setLayoutParams(tp);

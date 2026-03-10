@@ -1214,7 +1214,7 @@ public class TriggerSelectionDialog extends Dialog {
 					LayoutInflater li = (LayoutInflater) TriggerSelectionDialog.this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					
 					tmp = li.inflate(R.layout.editor_selection_filter_divider_row, null);
-					((TextView)tmp).setText("Filter by plugin");
+					((TextView)tmp).setText(R.string.label_filter_by_plugin);
 					//tmp = new TextView(TriggerSelectionDialog.this.getContext());
 					//AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT,AbsListView.LayoutParams.WRAP_CONTENT);
 					//tmp.setLayoutParams(params);

@@ -70,7 +70,7 @@ public class PluginSelectorDialog extends Dialog {
 		this.service = service;
 	}
 
-	@SuppressLint("InflateParams")
+	@SuppressLint({"InflateParams", "SetTextI18n"})
 	public void onCreate(Bundle b) {
 		super.onCreate(b);
 
@@ -167,7 +167,7 @@ public class PluginSelectorDialog extends Dialog {
 					
 
 					if(service.isLinkLoaded(path)) {
-						b.setText("Already Installed");
+						b.setText(R.string.btn_already_installed);
 						b.setEnabled(false);
 					}
 					

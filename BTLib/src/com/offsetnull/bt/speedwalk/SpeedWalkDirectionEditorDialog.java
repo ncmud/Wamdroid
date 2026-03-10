@@ -56,10 +56,10 @@ public class SpeedWalkDirectionEditorDialog extends Dialog {
 		
 		
 		if(isEditor) {
-			((TextView)findViewById(R.id.titlebar)).setText("EDIT DIRECTION");
+			((TextView)findViewById(R.id.titlebar)).setText(R.string.title_edit_direction);
 			((TextView)findViewById(R.id.sw_dir)).setText(oldData.getDirection());
 			((TextView)findViewById(R.id.sw_cmd)).setText(oldData.getCommand());
-			((Button)findViewById(R.id.new_sw_done_button)).setText("Save Changes");
+			((Button)findViewById(R.id.new_sw_done_button)).setText(R.string.btn_save_changes);
 			findViewById(R.id.new_sw_done_button).setOnClickListener(new View.OnClickListener() {
 				
 				
@@ -74,7 +74,7 @@ public class SpeedWalkDirectionEditorDialog extends Dialog {
 				}
 			});
 		} else {
-			((TextView)findViewById(R.id.titlebar)).setText("NEW DIRECTION");
+			((TextView)findViewById(R.id.titlebar)).setText(R.string.title_new_direction);
 			findViewById(R.id.new_sw_done_button).setOnClickListener(new View.OnClickListener() {
 				
 				public void onClick(View v) {
