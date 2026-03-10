@@ -1,5 +1,6 @@
 package com.offsetnull.bt.launcher;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 
 import android.content.Context;
@@ -46,6 +47,7 @@ public class NewConnectionDialog extends Dialog {
 		m_prev = old;
 	}
 	
+	@SuppressLint("SetTextI18n")
 	@Override
 	public void onCreate(Bundle settings) {
 		

@@ -23,7 +23,7 @@
 		android:layout_height = "wrap_content"
 		android:layout_alignParentBottom="true"
 		android:layout_alignParentStart="true"
-		android:text = "Delete"/>
+		android:text = "@string/btn_delete"/>
 	<Button
 		android:id = "@+id/button_done_btn"
 		android:layout_width = "match_parent"
@@ -31,7 +31,7 @@
 		android:layout_alignParentBottom="true"
 		android:layout_toEndOf="@id/button_delete_btn"
 		android:layout_alignTop="@id/button_delete_btn"
-		android:text = "Done!"/>
+		android:text = "@string/btn_done_excl"/>
 	
 	<TabHost android:id="@+id/btn_editor_tabhost" android:layout_marginTop="3dip" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_above="@id/button_delete_btn" android:layout_below="@id/titlebar">
 		<TabWidget android:id="@android:id/tabs" android:layout_width="match_parent" android:layout_height="28sp"/>
@@ -49,10 +49,10 @@
 							android:layout_width = "wrap_content"
 							android:layout_height = "wrap_content"
 							android:textSize="22sp"
-							android:text = "LABEL:"
+							android:text = "@string/label_label"
 							android:layout_alignParentTop = "true"
 							android:layout_alignParentStart = "true"
-							android:gravity = "right"/>
+							android:gravity = "end"/>
 						<EditText
 							android:id = "@+id/button_text_et"
 							android:layout_width = "225dp"
@@ -71,8 +71,8 @@
 					android:textSize="22sp"
 					android:layout_below = "@id/lbl_label"
 					android:layout_alignBottom = "@id/button_text_et"
-					android:text = "CMD:"
-					android:gravity = "right"/>
+					android:text = "@string/label_cmd"
+					android:gravity = "end"/>
 					<EditText
 					android:id = "@+id/button_command_et"
 					android:layout_width = "225dp"
@@ -93,8 +93,8 @@
 					android:textSize="22sp"
 					android:layout_below = "@id/cmd_label"
 					android:layout_alignBottom = "@id/button_command_et"
-					android:text = "LABEL:"
-					android:gravity = "right"/>
+					android:text = "@string/label_label"
+					android:gravity = "end"/>
 					<EditText
 					android:id = "@+id/button_flip_label_et"
 					android:layout_width = "225dp"
@@ -114,8 +114,8 @@
 					android:textSize="22sp"
 					android:layout_below = "@id/cmd_label"
 					android:layout_alignBottom = "@id/button_command_et"
-					android:text = "CMD:"
-					android:gravity = "right"/>
+					android:text = "@string/label_cmd"
+					android:gravity = "end"/>
 					<EditText
 					android:id = "@+id/button_flip_et"
 					android:layout_width = "225dp"

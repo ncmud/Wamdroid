@@ -91,7 +91,7 @@ public class PluginSelectorDialog extends Dialog {
 		
 		//build list
 		
-		title.setText("/mnt/sdcard/BlowTorch/plugins");
+		title.setText(Environment.getExternalStorageDirectory().getPath() + "/BlowTorch/plugins");
 		
 		//ViewFlipper flipper = (ViewFlipper) root.findViewById(R.id.flipper);
 		//flipper.addView(content);
@@ -497,7 +497,7 @@ public class PluginSelectorDialog extends Dialog {
 			content.setBackgroundColor(0xFF000000);
 			//content.setFo
 			
-			content.loadDataWithBaseURL("/mnt/sdcard/BlowTorch/plugins/aardwolf/", desc.getDescription(), null, null, null);
+			content.loadDataWithBaseURL(Environment.getExternalStorageDirectory().getPath() + "/BlowTorch/plugins/aardwolf/", desc.getDescription(), null, null, null);
 			
 			return view;
 		}

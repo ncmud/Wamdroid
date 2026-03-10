@@ -215,7 +215,7 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 		});
 		
 		TextView title = (TextView)findViewById(R.id.titlebar);
-		title.setText("ALIASES");
+		title.setText(R.string.title_aliases);
 		
 		makeToolbar();
 	}

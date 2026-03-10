@@ -593,7 +593,7 @@ end
 			if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 				L.pushString(Environment.getExternalStorageDirectory().getAbsolutePath());
 			} else {
-				L.pushString("/mnt/sdcard/");
+				L.pushString(Environment.getExternalStorageDirectory().getPath() + "/");
 			}
 			return 1;
 		}

@@ -75,8 +75,8 @@ public class HyperSettingsActivity extends PreferenceActivity {
 		Preference pimport = findPreference("IMPORT_PATH");
 		Preference pexport = findPreference("EXPORT_PATH");
 		String exportDir = ConfigurationLoader.getConfigurationValue("exportDirectory", this);
-		pimport.setSummary("Import settings from .xml files in /sdcard/"+exportDir+"/");
-		pexport.setSummary("Export settings to an .xml file in /sdcard/"+exportDir+"/");
+		pimport.setSummary("Import settings from .xml files in " + Environment.getExternalStorageDirectory().getPath() + "/" + exportDir + "/");
+		pexport.setSummary("Export settings to an .xml file in " + Environment.getExternalStorageDirectory().getPath() + "/" + exportDir + "/");
 		ListPreference fonts = (ListPreference)findPreference("FONT_NAME");
 		//List<String> fontnames = new ArrayList<String>();
 		

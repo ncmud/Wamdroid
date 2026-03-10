@@ -42,9 +42,7 @@
   				<TextView
   					android:text="@string/label_title" android:layout_marginStart="15dip"/>
   				<EditText
-  					android:id="@+id/responder_notification_title"
-  					android:hint=""
-  					android:singleLine="true"
+  					android:id="@+id/responder_notification_title"  					android:singleLine="true"
   					android:inputType="text"
   					android:layout_marginEnd="15dip"/>
 
@@ -53,9 +51,7 @@
   				<TextView
   					android:text="@string/label_message" android:layout_marginStart="15dip"/>
   				<EditText
-  					android:id="@+id/responder_notification_extra"
-  					android:hint=""
-  					android:singleLine="true"
+  					android:id="@+id/responder_notification_extra"  					android:singleLine="true"
   					android:inputType="text"
   					android:layout_marginEnd="15dip"
   					/>
@@ -66,7 +62,7 @@
   			<TableRow android:background="@drawable/movemethod_frame" android:layout_marginStart="10dip" android:layout_marginEnd="10dip">
   				<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
   					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/option_play_sound" android:layout_marginStart="30dip" android:gravity="center" android:textStyle="bold" android:textSize="20sp"/>
-  					<TextView android:id="@+id/responder_notification_sound_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/label_sound_default" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="10sp"/>
+  					<TextView android:id="@+id/responder_notification_sound_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/label_sound_default" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="12sp"/>
   				</LinearLayout>
   				<CheckBox android:id="@+id/responder_notification_sound_check" android:checked="false" android:layout_marginEnd="40dip" android:gravity="center_vertical|center"/>
   			</TableRow>
@@ -77,28 +73,28 @@
   			<TableRow android:background="@drawable/movemethod_frame" android:layout_marginStart="10dip" android:layout_marginEnd="10dip" android:layout_marginTop="-3dip">
   				<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
 					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/option_vibrate" android:layout_marginStart="30dip" android:gravity="center" android:textStyle="bold" android:textSize="20sp"/>
-					<TextView android:id="@+id/responder_notification_vibrate_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/label_currently_default" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="10sp"/>
+					<TextView android:id="@+id/responder_notification_vibrate_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/label_currently_default" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="12sp"/>
 				</LinearLayout>
 				<CheckBox android:id="@+id/responder_notification_vibrate_check" android:checked="false" android:layout_marginEnd="40dip" android:gravity="center_vertical|center"/>
 			</TableRow>
 			<TableRow android:background="@drawable/movemethod_frame" android:layout_marginStart="10dip" android:layout_marginEnd="10dip" android:layout_marginTop="-3dip">
   				<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
 					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/option_show_lights" android:layout_marginStart="30dip" android:gravity="center" android:textStyle="bold" android:textSize="20sp"/>
-					<TextView android:id="@+id/responder_notification_lights_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/label_currently_default" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="10sp"/>
+					<TextView android:id="@+id/responder_notification_lights_extra" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/label_currently_default" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="12sp"/>
 				</LinearLayout>
 				<CheckBox android:id="@+id/responder_notification_lights_check" android:checked="false" android:layout_marginEnd="40dip" android:gravity="center_vertical|center"/>
 			</TableRow>
 			<TableRow android:background="@drawable/movemethod_frame" android:layout_marginStart="10dip" android:layout_marginEnd="10dip" android:layout_marginTop="-3dip">
   				<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
 					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/option_spawn_new" android:layout_marginStart="30dip" android:gravity="center" android:textStyle="bold" android:textSize="20sp"/>
-					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/option_spawn_new_every_time" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="10sp"/>
+					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/option_spawn_new_every_time" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="12sp"/>
 				</LinearLayout>
 				<CheckBox android:id="@+id/responder_notification_spawnnew_check" android:checked="false" android:layout_marginEnd="40dip" android:gravity="center_vertical|center"/>
 			</TableRow>
 			<!--<TableRow android:background="@drawable/movemethod_frame" android:layout_marginStart="10dip" android:layout_marginEnd="10dip" android:layout_marginTop="-3dip">
   				<LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
 					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/option_use_ongoing" android:layout_marginStart="30dip" android:gravity="center" android:textStyle="bold" android:textSize="20sp"/>
-					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/msg_use_ongoing_description" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="10sp"/>
+					<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/msg_use_ongoing_description" android:layout_marginEnd="30dip" android:layout_marginStart="30dip" android:textStyle="italic" android:textSize="12sp"/>
 				</LinearLayout>
 				<CheckBox android:id="@+id/responder_notification_useongoing_check" android:checked="false" android:layout_marginEnd="40dip" android:gravity="center_vertical|center"/>
 			</TableRow>-->

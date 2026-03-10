@@ -1,5 +1,6 @@
 package com.offsetnull.bt.button;
 
+import android.annotation.SuppressLint;
 import java.util.List;
 
 import com.offsetnull.bt.R;
@@ -50,8 +51,9 @@ public class ButtonSetEditor extends Dialog implements ColorPickerDialog.OnColor
 		notifychanged = use_this_handler;
 	}
 	
+	@SuppressLint("SetTextI18n")
 	public void onCreate(Bundle b) {
-		
+	
 		this.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setBackgroundDrawableResource(R.drawable.dialog_window_crawler1);
 		

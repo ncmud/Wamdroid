@@ -121,8 +121,8 @@
   			</TableRow>
   			<TableRow android:id="@+id/timer_new_responder_row">
   				<Button android:id="@+id/timer_new_notification" android:text="@string/btn_new_action" android:paddingStart="10dip" android:paddingEnd="10dip"/>
-  				<TextView android:text=""/>
-  				<TextView android:text=""/>
+  				<TextView />
+  				<TextView />
   			</TableRow>
   		</TableLayout>
   	</LinearLayout>

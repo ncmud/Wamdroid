@@ -207,10 +207,10 @@ public class AliasEditorDialog extends Dialog {
 		setContentView(R.layout.new_alias_dialog);
 		
 		TextView titlebar = (TextView)findViewById(R.id.titlebar);
-		titlebar.setText("MODIFY ALIAS");
-		
+		titlebar.setText(R.string.title_modify_alias);
+
 		Button b = (Button)findViewById(R.id.new_alias_done_button);
-		b.setText("Done");
+		b.setText(R.string.btn_done);
 		EditText tpre = (EditText)AliasEditorDialog.this.findViewById(R.id.new_alias_pre);
 		EditText tpost = (EditText)AliasEditorDialog.this.findViewById(R.id.new_alias_post);
 		

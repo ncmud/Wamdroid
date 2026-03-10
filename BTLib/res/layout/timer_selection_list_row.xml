@@ -68,26 +68,28 @@
   		android:id="@+id/timer_title"
   		android:layout_width="100dip"
   		android:layout_height="wrap_content"
-  		android:gravity = "left"
+  		android:gravity = "start"
   		android:textSize = "24sp"
   		android:text="@string/btn_display"
   		android:textStyle = "bold"
   		android:ellipsize="end"
   		android:singleLine="true"
   		android:paddingStart = "7dip"
+  		android:paddingEnd = "7dip"
   		android:background="#FF333333"/>
   		
  	 <TextView
   		android:id="@+id/timer_total"
   		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
-  		android:gravity = "right"
+  		android:gravity = "end"
   		android:textSize = "24sp"
   		android:text="@string/label_max"
   		android:textStyle = "bold"
   		android:singleLine="true"
+  		android:paddingStart="10dip"
   		android:paddingEnd="10dip"
-  		android:background="#FF333333"/>	
+  		android:background="#FF333333"/>
   	</TableRow>	
 	<TableRow
   		android:layout_width="match_parent"
@@ -112,12 +114,13 @@
   		android:layout_width="match_parent"
   		android:layout_height="wrap_content"
 		
-  		android:gravity = "right"
+  		android:gravity = "end"
   		android:textSize = "16sp"
   		android:textStyle = "bold"
   		android:singleLine="true"
   		android:textColorHighlight="#FFAAAAAA"
   		android:background="#FF333333"
+  		android:paddingStart="10dip"
   		android:paddingEnd="10dip"
   		android:text="@string/btn_stop"/>
   	  </TableRow>	

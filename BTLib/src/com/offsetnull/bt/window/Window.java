@@ -514,6 +514,7 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 	 * @param line Starting line.
 	 * @param column Starting column.
 	 */
+	@SuppressLint("ClickableViewAccessibility")
 	private void startSelection(final int line, final int column) {
 		
 		theSelection = mBuffer.getSelectionForPoint(line, column);
@@ -723,16 +724,16 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 				mTouchPreEvent = null;
 				//prev_y = Float.valueOf(0);
 		        
-		        //reset the priority
-		        pointer = -1;
-	
-		        mTouchPreEvent = null;
-		        mFingerDown = false;
-		        finger_down_to_up = true;
-		         
+				//reset the priority
+				pointer = -1;
+
+				mTouchPreEvent = null;
+				mFingerDown = false;
+				finger_down_to_up = true;
+
 				if (mTouchInLink > -1) {
 					mMainWindowHandler.sendMessage(mMainWindowHandler.obtainMessage(MainWindow.MESSAGE_LAUNCHURL, linkBoxes.get(mTouchInLink).getData()));
-			        mTouchInLink = -1;
+					mTouchInLink = -1;
 				}
 				
 				

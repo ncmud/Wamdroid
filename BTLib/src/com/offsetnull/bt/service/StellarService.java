@@ -430,8 +430,8 @@ public class StellarService extends Service {
 			e1.printStackTrace();
 		}
 		Class<?> w = null;
-    	PathClassLoader cl = new dalvik.system.PathClassLoader(apkName, ClassLoader.getSystemClassLoader());
-    	try {
+		PathClassLoader cl = new dalvik.system.PathClassLoader(apkName, ClassLoader.getSystemClassLoader());
+		try {
 			w = Class.forName("com.offsetnull.bt.window.MainWindow", false, cl);
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace();
