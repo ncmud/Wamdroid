@@ -25,6 +25,9 @@ jobs:
       - name: Build debug APK
         run: ./gradlew :BT_Free:assembleDebug
 
+      - name: Detekt
+        run: ./gradlew :BTLib:detekt
+
       - name: Lint
         run: ./gradlew :BTLib:lint :BT_Free:lint
         continue-on-error: true
