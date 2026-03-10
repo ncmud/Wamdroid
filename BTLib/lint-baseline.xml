@@ -182,11 +182,11 @@
         errorLine2="~~">
         <location
             file="src/com/offsetnull/bt/launcher/Launcher.java"
-            line="1255"
+            line="1254"
             column="1"/>
         <location
             file="src/com/offsetnull/bt/launcher/Launcher.java"
-            line="1251"
+            line="1250"
             column="1"
             message="Previous line indentation here"/>
     </issue>
@@ -198,11 +198,11 @@
         errorLine2="~~">
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="559"
+            line="558"
             column="1"/>
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="525"
+            line="524"
             column="1"
             message="Previous line indentation here"/>
     </issue>
@@ -3494,7 +3494,7 @@
         errorLine2="                                                                                                                                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="1562"
+            line="1561"
             column="155"/>
     </issue>
 
@@ -3505,7 +3505,7 @@
         errorLine2="                                                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="1563"
+            line="1562"
             column="162"/>
     </issue>
 
@@ -3516,7 +3516,7 @@
         errorLine2="                                                                                                                                                             ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="1564"
+            line="1563"
             column="158"/>
     </issue>
 
@@ -3527,7 +3527,7 @@
         errorLine2="                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="1565"
+            line="1564"
             column="160"/>
     </issue>
 
@@ -4429,7 +4429,7 @@
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="846"
+            line="845"
             column="3"/>
     </issue>
 
@@ -5545,171 +5545,6 @@
     </issue>
 
     <issue
-        id="SetTextI18n"
-        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
-        errorLine1="  title.setText(Environment.getExternalStorageDirectory().getPath() + &quot;/BlowTorch/plugins&quot;);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/window/PluginSelectorDialog.java"
-            line="94"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="  title.setText(Environment.getExternalStorageDirectory().getPath() + &quot;/BlowTorch/plugins&quot;);"
-        errorLine2="                                                                      ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/window/PluginSelectorDialog.java"
-            line="94"
-            column="71"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="  ((TextView)findViewById(R.id.titlebar)).setText(&quot;REPLACE RESPONDER&quot;);"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/responder/replace/ReplaceActionEditorDialog.java"
-            line="43"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="  ((TextView)findViewById(R.id.action_label)).setText(&quot;Replace triggered text with:&quot;);"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/responder/replace/ReplaceActionEditorDialog.java"
-            line="44"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="   ((TextView)findViewById(R.id.titlebar)).setText(&quot;EDIT DIRECTION&quot;);"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/speedwalk/SpeedWalkDirectionEditorDialog.java"
-            line="59"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="   ((Button)findViewById(R.id.new_sw_done_button)).setText(&quot;Save Changes&quot;);"
-        errorLine2="                                                           ~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/speedwalk/SpeedWalkDirectionEditorDialog.java"
-            line="62"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="   ((TextView)findViewById(R.id.titlebar)).setText(&quot;NEW DIRECTION&quot;);"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/speedwalk/SpeedWalkDirectionEditorDialog.java"
-            line="77"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="Number formatting does not take into account locale settings. Consider using `String.format` instead."
-        errorLine1="   seconds.setText(orig_timer.getSeconds().toString());"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/timer/TimerEditorDialog.java"
-            line="124"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="   donebutton.setText(&quot;Done&quot;);"
-        errorLine2="                      ~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/timer/TimerEditorDialog.java"
-            line="126"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="  title.setText(&quot;TIMERS&quot;);"
-        errorLine2="                ~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/timer/TimerSelectionDialog.java"
-            line="156"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="Number formatting does not take into account locale settings. Consider using `String.format` instead."
-        errorLine1="  delay.setText(Integer.toString(the_responder.getDelay()));"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/responder/toast/ToastResponderEditor.java"
-            line="47"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="   editdone.setText(&quot;Done&quot;);"
-        errorLine2="                    ~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/trigger/TriggerEditorDialog.java"
-            line="181"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="    v.setText(&quot;Regular expressions have been enabled. Unpredictable or poor performance can result from overly broad regular expressions. Please see the documentation for the Java Pattern Class for more information.&quot;);"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/trigger/TriggerEditorDialog.java"
-            line="619"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="    b.setText(&quot;Always display this message.&quot;);"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/trigger/TriggerEditorDialog.java"
-            line="647"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="     ((TextView)tmp).setText(&quot;Filter by plugin&quot;);"
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/com/offsetnull/bt/trigger/TriggerSelectionDialog.java"
-            line="1217"
-            column="30"/>
-    </issue>
-
-    <issue
         id="HardcodedText"
         message="Hardcoded string &quot;Replace:&quot;, should use `@string` resource"
         errorLine1="    android:text = &quot;Replace:&quot;"
@@ -5881,7 +5716,7 @@
         errorLine2="                                            ~~~~~">
         <location
             file="src/com/offsetnull/bt/window/MainWindow.java"
-            line="1103"
+            line="1102"
             column="45"/>
     </issue>
 
