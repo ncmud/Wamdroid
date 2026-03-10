@@ -9,11 +9,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
-    <application android:label="BlowTorch" android:theme="@android:style/Theme.NoTitleBar">
+    <application android:label="BlowTorch" android:theme="@android:style/Theme.NoTitleBar" android:supportsRtl="true">
         <!-- android:windowSoftInputMode="adjustResize" -->
-        <activity android:name="com.happygoatstudios.bt.window.MainWindow"
+        <activity android:name="com.offsetnull.bt.window.MainWindow"
         		  android:windowSoftInputMode="adjustPan|stateHidden"
-        		  android:label="BlowTorch"
         		  android:exported="false"
 				  android:configChanges="orientation|keyboard|keyboardHidden|screenLayout|screenSize"
         		  android:launchMode = "singleTask">

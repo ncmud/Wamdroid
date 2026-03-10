@@ -222,6 +222,7 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 	
 	private class LineClickedListener implements View.OnClickListener {
 
+		@SuppressLint("ResourceType")
 		@Override
 		public void onClick(View v) {
 			int pos = v.getId() / 157;

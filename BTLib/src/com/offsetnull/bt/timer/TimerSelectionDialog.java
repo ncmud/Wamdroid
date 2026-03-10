@@ -268,7 +268,7 @@ public class TimerSelectionDialog extends Dialog {
 				//TextView status = (TextView)v.findViewById(R.id.timer_status);
 				//TextView total = (TextView)v.findViewById(R.id.timer_total);
 				label.setText(e.name);
-				extra.setText(getContext().getString(R.string.fmt_seconds_label, e.seconds));
+				extra.setText(getContext().getResources().getQuantityString(R.plurals.fmt_seconds_label, e.seconds, e.seconds));
 				
 				//int text_color = 0xFF888888;
 				//int non_selected = 0xFF333333;
@@ -349,6 +349,7 @@ public class TimerSelectionDialog extends Dialog {
 	
 	private class LineClickedListener implements View.OnClickListener {
 
+		@SuppressLint("ResourceType")
 		@Override
 		public void onClick(View v) {
 			int pos = v.getId() / 157;

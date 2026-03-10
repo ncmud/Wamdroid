@@ -386,7 +386,7 @@ public class PluginSelectorDialog extends Dialog {
 				
 				if(info.length > 1) {
 					title.setText(file.getName());
-					extra.setText(getContext().getString(R.string.fmt_plugins_count, info.length));
+					extra.setText(getContext().getResources().getQuantityString(R.plurals.fmt_plugins_count, info.length, info.length));
 				} else {
 					if(info[0].isError()) {
 						icon.setImageResource(R.drawable.icon_plugin_error);

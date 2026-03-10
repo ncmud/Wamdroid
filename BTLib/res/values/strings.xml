@@ -3,7 +3,7 @@
     <string name="hello">Hello World, BaardTERMLauncher!</string>
     <string name="app_name">BaardTERM</string>
     <string name="thewelcometext">Welcome to BaardTERM version AWESOME!111!one!!!@1NOWWITHLINEBREAKSOMGWTFBBQOHANDYOUMADEITTAKEFOURTYPERCENTLESSBATTERY?!?!?!!??!!?OMGWTFBBQXIXORRRSSS!OMGDANISSOCOOL</string>
-    <string name="hello2">This is the debug screen. However this text will dissapear when data arrives from the server.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n</string>
+    <string name="hello2">This is the debug screen. However this text will disappear when data arrives from the server.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n</string>
     <string name="whatisnew">--- New Features:\n*SD Card Permissions are now asked for.\n*Support fixes for newer android versions.\n*Fixed crash when touching the top of the window.</string>
     <string name="whatisnew_test">---- TEST VERSION 7 ----\n*Many bug fixes. Stay tuned for the switch over to the play store beta system.</string>
     <string name="sdcardpermissions">To access files that will not be not be removed when this app is uninstalled, grant permission to access external storage.</string>
@@ -193,7 +193,7 @@
     <string name="msg_currently_disabled">Currently disabled.</string>
     <string name="msg_currently_using_default">Currently Using: default</string>
     <string name="msg_currently_using_default_lower">Currently using: default</string>
-    <string name="msg_make_new_item">Make a new item bitch...</string>
+    <string name="msg_make_new_item">Make a new item bitch…</string>
     <string name="msg_no_aliases">No aliases to display.\nNew aliases can be made with the button below.</string>
     <string name="msg_no_connections">No connections.\nNew connections can be made with the button below.</string>
     <string name="msg_no_directions">No directions to display.\nNew directions can be made with the button below.</string>
@@ -219,7 +219,10 @@
     <string name="fmt_color_label">Color: %1$d</string>
     <string name="fmt_connection_display"> %1$s</string>
     <string name="fmt_connection_host">\t%1$s:%2$s</string>
-    <string name="fmt_contains_buttons">Contains %1$d buttons.</string>
+    <plurals name="fmt_contains_buttons">
+        <item quantity="one">Contains %1$d button.</item>
+        <item quantity="other">Contains %1$d buttons.</item>
+    </plurals>
     <string name="fmt_currently_using">Currently using: %1$s</string>
     <string name="fmt_currently_using_cap">Currently Using: %1$s</string>
     <string name="fmt_direction_arrow">%1$s =&gt; %2$s</string>
@@ -227,9 +230,15 @@
     <string name="fmt_notification_label">Notification: %1$s</string>
     <string name="fmt_plugin_error">Error: %1$s</string>
     <string name="fmt_plugin_info">%1$s written by %2$s.</string>
-    <string name="fmt_plugins_count">%1$d plugins.</string>
+    <plurals name="fmt_plugins_count">
+        <item quantity="one">%1$d plugin.</item>
+        <item quantity="other">%1$d plugins.</item>
+    </plurals>
     <string name="fmt_replace_label">Replace: %1$s</string>
-    <string name="fmt_seconds_label">%1$d seconds.</string>
+    <plurals name="fmt_seconds_label">
+        <item quantity="one">%1$d second.</item>
+        <item quantity="other">%1$d seconds.</item>
+    </plurals>
     <string name="fmt_sound_path_error">%1$s[ERROR]</string>
     <string name="fmt_test_version">Test Version %1$s</string>
     <string name="fmt_toast_message_label">Toast Message: %1$s</string>

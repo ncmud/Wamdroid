@@ -1250,8 +1250,8 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
     	edit.apply();
     	
     	//this.unbindService(connectionChecker);
-    	
-		Launcher.this.startActivity(the_intent);
+
+    	Launcher.this.startActivity(the_intent);
 	}
 	
 	private ConnectionComparator ccmp = new ConnectionComparator();

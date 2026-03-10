@@ -49,7 +49,7 @@
   			android:layout_alignParentStart="true"
   			android:layout_width="80dip"
   			android:layout_height="wrap_content"
- 			android:text = "Direction:"/>
+ 			android:text = "@string/label_direction"/>
   		<EditText
   			android:id = "@+id/sw_dir"
   			android:layout_width="60dip"
@@ -59,7 +59,9 @@
   			android:layout_toEndOf="@id/dirlabel"
   			android:layout_alignParentTop="true"
   			android:layout_height="wrap_content"
-  			android:hint="@string/label_dir" />
+  			android:hint="@string/label_dir"
+  			android:inputType="text"
+  			android:importantForAutofill="no" />
   		 <TextView 
   		 	android:layout_marginTop="10dip"
   			android:layout_below="@id/sw_dir"
@@ -67,7 +69,7 @@
   			android:id="@+id/cmdlabel"
   			android:layout_width="80dip"
   			android:layout_height="wrap_content"
- 			android:text = "Command:"/>
+ 			android:text = "@string/label_command"/>
   		<EditText
   			android:id="@+id/sw_cmd"
   			android:layout_width="200dip"
@@ -76,7 +78,9 @@
   			android:singleLine="true"
   			android:layout_toEndOf="@id/cmdlabel"
   			android:layout_below="@id/sw_dir"
-  			android:hint="@string/label_command_text" /> 
+  			android:hint="@string/label_command_text"
+  			android:inputType="text"
+  			android:importantForAutofill="no" /> 
   	</RelativeLayout>
   
 </RelativeLayout>
