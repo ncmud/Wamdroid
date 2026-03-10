@@ -63,7 +63,7 @@
   	android:layout_height="wrap_content"
   	android:text="@string/btn_load"
   	android:id="@+id/load"
-  	android:layout_toStartOf="@id/cancel"
+  	android:layout_toStartOf="@id/done"
   	android:layout_alignParentBottom="true"/>
   
 

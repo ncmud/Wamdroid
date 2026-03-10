@@ -45,15 +45,13 @@
   <TableLayout
   	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
-  	android:layout_alignParentStart="true"
-  	android:id="@+id/alias_label"
-  	android:layout_alignParentTop="true">
+  	android:id="@+id/alias_label">
 
   	<TableRow>
   		<TextView 
   			android:layout_width="80dip"
   			android:layout_height="wrap_content"
- 			android:text = "Replace:"
+ 			android:text = "@string/label_replace"
  			android:gravity="end"
  			android:layout_marginEnd="5dip"/>
   		<EditText
@@ -62,14 +60,16 @@
   			android:singleLine = "true"
   			android:layout_marginEnd="20dip"
   			android:layout_height="wrap_content"
-  			android:hint="@string/hint_text_to_replace" />
+  			android:hint="@string/hint_text_to_replace"
+  			android:inputType="text"
+  			android:importantForAutofill="no" />
   	
   	</TableRow>
   	<TableRow>
   		<TextView 
   			android:layout_width="80dip"
   			android:layout_height="wrap_content"
- 			android:text = "With:"
+ 			android:text = "@string/label_with"
  			android:gravity="end"
  			android:layout_marginEnd="5dip"/>
   		<EditText
@@ -78,6 +78,7 @@
   			android:layout_marginEnd="20dip"
   			android:layout_height="wrap_content"
   			android:inputType="textMultiLine"
+  			android:importantForAutofill="no"
   			android:hint="@string/hint_replace_with_this" />
   	
   	</TableRow>

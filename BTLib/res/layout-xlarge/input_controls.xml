@@ -16,7 +16,8 @@
     	android:textSize="16sp"
     	android:typeface="monospace"
     	android:textColor="#9999FF"
-    	android:text="@string/btn_down"/>
+    	android:text="@string/btn_down"
+    	android:contentDescription="@string/cd_scroll_down"/>
 
     <ImageButton
     	android:id="@+id/up_btn_c"
@@ -27,7 +28,8 @@
     	android:textSize="16sp"
     	android:typeface="monospace"
     	android:textColor="#9999FF"
-    	android:text="@string/btn_up"/>
+    	android:text="@string/btn_up"
+    	android:contentDescription="@string/cd_scroll_up"/>
     <ImageButton
     	android:id="@+id/enter_btn_c"
     	android:layout_width="100dip"
@@ -37,5 +39,6 @@
     	android:textSize="16sp"
     	android:typeface="monospace"
     	android:textColor="#9999FF"
-    	android:text="@string/btn_enter"/>
+    	android:text="@string/btn_enter"
+    	android:contentDescription="@string/cd_send_input"/>
 </LinearLayout>

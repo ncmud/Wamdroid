@@ -423,14 +423,6 @@ public class ButtonSetSelectorDialog extends Dialog {
 					iv.setVisibility(View.INVISIBLE);
 				}
 				
-				ImageView icon = (ImageView) v.findViewById(R.id.icon);
-				if(e.locked) {
-					icon.setImageResource(R.drawable.toolbar_mini_locked);
-					icon.setVisibility(View.VISIBLE);
-				} else {
-					icon.setVisibility(View.INVISIBLE);
-				}
-				
 				ImageButton load = new ImageButton(ButtonSetSelectorDialog.this.getContext());
 				ImageButton lock = new ImageButton(ButtonSetSelectorDialog.this.getContext());
 				ImageButton modify = new ImageButton(ButtonSetSelectorDialog.this.getContext());
@@ -478,7 +470,7 @@ public class ButtonSetSelectorDialog extends Dialog {
 				int width = load.getDrawable().getIntrinsicWidth() + lock.getDrawable().getIntrinsicWidth() + modify.getDrawable().getIntrinsicWidth() + delete.getDrawable().getIntrinsicWidth();
 				
 				load.setOnClickListener(new LoadButtonListener(pos));
-				lock.setOnClickListener(new LockButtonListener(pos,icon));
+				lock.setOnClickListener(new LockButtonListener(pos,iv));
 				modify.setOnClickListener(new ModifyButtonListener(pos));
 				delete.setOnClickListener(new DeleteButtonListener(pos,(ViewFlipper)v.findViewById(R.id.flipper),width));
 				
@@ -504,16 +496,15 @@ public class ButtonSetSelectorDialog extends Dialog {
 				TextView extra = (TextView)v.findViewById(R.id.infoExtended);
 				
 				label.setText(e.name);
-				extra.setText(getContext().getString(R.string.fmt_contains_buttons, e.entries));
-				RelativeLayout r = (RelativeLayout)v.findViewById(R.id.root);
+				extra.setText(getContext().getResources().getQuantityString(R.plurals.fmt_contains_buttons, e.entries, e.entries));
 				if(e.name.equals(selected_set)) {
 					label.setBackgroundColor(0x00888888);
 					extra.setBackgroundColor(0x00888888);
-					r.setBackgroundColor(0xAA707070);
+					root.setBackgroundColor(0xAA707070);
 				} else {
 					label.setBackgroundColor(0x00333333);
 					extra.setBackgroundColor(0x00333333);
-					r.setBackgroundColor(0xAA333333);
+					root.setBackgroundColor(0xAA333333);
 				}
 			}
 			

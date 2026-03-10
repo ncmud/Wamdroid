@@ -344,7 +344,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	private int titleBarHeight;
 	
 	//private LayerManager mLayers = null;
-	@SuppressLint("ResourceType")
+	@SuppressLint({"ResourceType", "ClickableViewAccessibility"})
 	public void onCreate(Bundle icicle) {
 		//Log.e("Window","start onCreate");
 		//Debug.startMethodTracing("window");
@@ -517,14 +517,14 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
         //TextView filler = (TextView)findViewById(R.id.filler);
         //filler.setFocusable(false);
         //filler.setClickable(false);
-        
-        mInputBox.setOnTouchListener(mEditBoxTouchListener);
-        
-        
-        mInputBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-        
 
-        
+		mInputBox.setOnTouchListener(mEditBoxTouchListener);
+
+
+		mInputBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+
+
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 		
 				//EditText input_box = (EditText)findViewById(R.id.textinput);
@@ -834,7 +834,6 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		b.setEnabled(false);
 		//b.setClickable(false);
 		//b.setFocusable(false);
-		@SuppressLint("ClickableViewAccessibility")
 		View.OnTouchListener touchListener = new View.OnTouchListener() {
 
 			@Override
@@ -1099,7 +1098,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 
 			belltoast.setView(v);
 			float density = getResources().getDisplayMetrics().density;
-			belltoast.setGravity(Gravity.TOP|Gravity.RIGHT, (int)(40*density), (int)(30*density));
+			belltoast.setGravity(Gravity.TOP|Gravity.END, (int)(40*density), (int)(30*density));
 			belltoast.setDuration(Toast.LENGTH_SHORT);
 			belltoast.show();
 			break;
@@ -1540,7 +1539,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 				MenuItem hurdur = menu.add(0,i,0,scriptCallbacks.get(i-1000).getTitle());
 				if(scriptCallbacks.get(i-1000).getDrawable() != null) {
 					hurdur.setIcon(scriptCallbacks.get(i-1000).getDrawable());
-					hurdur.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+					hurdur.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 				} else {
 					hurdur.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 				}
@@ -1558,11 +1557,11 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 			boolean hide = true;
 			
 
-			MenuItemCompat.setShowAsAction(menu.add(0,100,100,"Aliases").setIcon(R.drawable.ic_menu_alias),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
-		    MenuItemCompat.setShowAsAction(menu.add(0,200,200,"Triggers").setIcon(R.drawable.ic_menu_triggers),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
-		    MenuItemCompat.setShowAsAction(menu.add(0,300,300,"Timers").setIcon(R.drawable.ic_menu_timers),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
-		    MenuItemCompat.setShowAsAction(menu.add(0,400,400,"Options").setIcon(R.drawable.ic_menu_options),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
-			//menu.add(0,102,0,"Button Sets").setIcon(R.drawable.ic_menu_button_sets).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			MenuItemCompat.setShowAsAction(menu.add(0,100,100,"Aliases").setIcon(R.drawable.ic_menu_alias),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		    MenuItemCompat.setShowAsAction(menu.add(0,200,200,"Triggers").setIcon(R.drawable.ic_menu_triggers),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		    MenuItemCompat.setShowAsAction(menu.add(0,300,300,"Timers").setIcon(R.drawable.ic_menu_timers),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		    MenuItemCompat.setShowAsAction(menu.add(0,400,400,"Options").setIcon(R.drawable.ic_menu_options),(hide==true) ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+			//menu.add(0,102,0,"Button Sets").setIcon(R.drawable.ic_menu_button_sets).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 		//SubMenu sm = menu.addSubMenu(0, 900, 0, "More");
 		menu.add(0, 500, 500 ,"Speedwalk Directions");

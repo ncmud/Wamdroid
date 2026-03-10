@@ -705,7 +705,7 @@ public class BaseSelectionDialog extends Dialog {
 			if(item.centered) {
 				retView.setGravity(Gravity.CENTER);
 			} else {
-				retView.setGravity(Gravity.LEFT);
+				retView.setGravity(Gravity.START);
 			}
 			return retView;
 		}

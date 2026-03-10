@@ -9,7 +9,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:scaleType="centerCrop"
-		android:src="@drawable/background"/>
+		android:src="@drawable/background"
+		android:importantForAccessibility="no"/>
 
 	<androidx.appcompat.widget.Toolbar
 		android:id="@+id/my_toolbar"
@@ -24,7 +25,7 @@
 
 		
 		<TextView
-			android:text = "Connections:"
+			android:text = "@string/label_connections"
 			android:textSize = "20sp"
 			android:layout_height = "wrap_content"
 			android:layout_width = "300dip"
@@ -34,7 +35,7 @@
 			android:gravity = "center"
 			android:background = "#AAAAAAAA"
 			android:textColor = "#AA222222"
-			android:drawableBottom = "@drawable/horizontal_separator"
+			app:drawableBottomCompat="@drawable/horizontal_separator"
 			/>
 			
 		<!-- <ImageView
@@ -54,8 +55,7 @@
 			>
 			<TableRow
 				android:id="@+id/test_update"
-				android:visibility="gone"
-				android:layout_span="3">
+				android:visibility="gone">
 				<TextView android:id="@+id/update_label" android:text="@string/label_test_version"  android:textSize="18sp" android:textColor = "#AA222222" android:textStyle="bold"/>
 				<Button android:text="@string/btn_update" android:id="@+id/update_button" android:visibility="gone"/>
 				
@@ -66,20 +66,20 @@
 				android:gravity = "center"
 				android:background = "#AAAAAAAA">
 				<Button
-					android:id = "@+id/new_connection"
+					style="?android:attr/buttonBarButtonStyle" android:id = "@+id/new_connection"
 					android:layout_height = "wrap_content"
 					android:layout_width = "100dip"
-					android:text = "[NEW]"/>
+					android:text = "@string/btn_new_bracket"/>
 				<Button
-					android:id = "@+id/help_button"
+					style="?android:attr/buttonBarButtonStyle" android:id = "@+id/help_button"
 					android:layout_height = "wrap_content"
 					android:layout_width = "100dip"
-					android:text = "[HELP]"/>
+					android:text = "@string/btn_help_bracket"/>
 				<Button
-					android:id = "@+id/donate_button"
+					style="?android:attr/buttonBarButtonStyle" android:id = "@+id/donate_button"
 					android:layout_height = "wrap_content"
 					android:layout_width = "100dip"
-					android:text = "[DONATE]"/>
+					android:text = "@string/btn_donate_bracket"/>
 			</TableRow>
 			
 		</TableLayout>
@@ -94,7 +94,6 @@
 			android:layout_below="@id/c_label">	
 		<ListView
 			android:id = "@+id/connection_list"
-			android:layout_alignParentEnd = "true"
 
 			android:layout_height = "match_parent"
 			android:layout_width = "300dip"

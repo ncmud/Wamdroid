@@ -36,6 +36,7 @@
         </activity>
 
         <activity android:name="com.offsetnull.bt.window.MainWindow"
+                  tools:replace="android:exported"
                   android:windowSoftInputMode="adjustPan|stateHidden"
                   android:label="BlowTorch"
                   android:exported="true"

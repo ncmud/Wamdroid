@@ -723,6 +723,7 @@ public class TriggerSelectionDialog extends Dialog {
 
 	private class LineClickedListener implements View.OnClickListener {
 
+		@SuppressLint("ResourceType")
 		@Override
 		public void onClick(View v) {
 			int pos = v.getId() / 157;
@@ -1249,7 +1250,7 @@ public class TriggerSelectionDialog extends Dialog {
 			if(pos == 1 || pos ==0) {
 				retView.setGravity(Gravity.CENTER);
 			} else {
-				retView.setGravity(Gravity.LEFT);
+				retView.setGravity(Gravity.START);
 			}
 			return retView;
 		}

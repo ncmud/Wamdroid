@@ -11,7 +11,7 @@
   	android:id="@+id/message"
   	android:typeface = "monospace"
   	android:textStyle="bold"
-  	android:textSize = "18dip"
+  	android:textSize = "18sp"
   	android:textColor="#FFF1F1F1"
   	android:background="@drawable/toast_background"
   	

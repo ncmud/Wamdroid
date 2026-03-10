@@ -510,7 +510,7 @@ public class OptionsDialog extends Dialog {
 			input.setTextSize(26);
 			input.setText(Integer.toString((Integer)o.getValue()));
 			input.setInputType(InputType.TYPE_CLASS_NUMBER);
-			input.setGravity(Gravity.RIGHT);
+			input.setGravity(Gravity.END);
 			builder.setView(input);
 			
 			//builder.setView(input);
@@ -589,7 +589,7 @@ public class OptionsDialog extends Dialog {
 			input.setTextSize(26);
 			input.setText(((String)o.getValue()));
 			input.setInputType(InputType.TYPE_CLASS_TEXT);
-			input.setGravity(Gravity.LEFT);
+			input.setGravity(Gravity.START);
 			builder.setView(input);
 			
 			//builder.setView(input);

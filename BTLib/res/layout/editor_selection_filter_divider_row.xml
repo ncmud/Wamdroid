@@ -9,5 +9,4 @@
   		android:text="@string/hint_filter_option"
   		android:textSize="15sp"
   		android:textStyle="bold"
-  		android:textColor="#FFAAAAAA"
-  		android:background="#FF111111"/>
+  		android:textColor="#FFAAAAAA"/>

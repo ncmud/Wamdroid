@@ -34,44 +34,47 @@
 		android:layout_width="133dip"
 		android:text="@string/btn_done"/>
 		
-	<TableLayout
+	<LinearLayout
 		android:id="@+id/button_table"
 		android:layout_above="@id/timer_cancel_button"
 		android:layout_alignParentStart = "true"
 		android:layout_alignParentEnd="true"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:stretchColumns="*"
+		android:orientation="horizontal"
 		android:layout_marginBottom="10dip">
-		<TableRow
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content">
 		<ImageButton
 			android:id="@+id/timer_pause"
-			android:layout_width = "wrap_content"
+			android:layout_width = "0dip"
 			android:layout_height="wrap_content"
-			android:src = "@android:drawable/ic_media_pause"/>
-			
+			android:layout_weight="1"
+			android:src = "@android:drawable/ic_media_pause"
+			android:contentDescription="@string/cd_pause_timer"/>
+
 		<ImageButton
 			android:id="@+id/timer_play"
-			android:layout_width = "wrap_content"
+			android:layout_width = "0dip"
 			android:layout_height="wrap_content"
-			android:src = "@android:drawable/ic_media_play"/>
+			android:layout_weight="1"
+			android:src = "@android:drawable/ic_media_play"
+			android:contentDescription="@string/cd_play_timer"/>
 
 		<ImageButton
 			android:id="@+id/timer_reset"
-			android:layout_width = "wrap_content"
+			android:layout_width = "0dip"
 			android:layout_height="wrap_content"
-			android:src = "@android:drawable/ic_media_ff"/>	
-			
+			android:layout_weight="1"
+			android:src = "@android:drawable/ic_media_ff"
+			android:contentDescription="@string/cd_reset_timer"/>
+
 		<Button
 			android:id="@+id/timer_edit"
-			android:layout_width = "wrap_content"
+			android:layout_width = "0dip"
 			android:layout_height="wrap_content"
-			android:text = "EDIT"/>
-			
-		</TableRow>		
-	</TableLayout>	
+			android:layout_weight="1"
+			android:text = "@string/btn_edit"/>
+
+	</LinearLayout>	
 	<!-- <ScrollView
 		android:id="@+id/buttonset_scroller"
 		android:layout_alignParentTop="true"
