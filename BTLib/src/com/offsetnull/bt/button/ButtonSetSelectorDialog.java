@@ -11,6 +11,7 @@ import com.offsetnull.bt.R;
 import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.MainWindow;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -387,6 +388,7 @@ public class ButtonSetSelectorDialog extends Dialog {
 			this.items = objects;
 		}
 		
+		@SuppressLint("InflateParams")
 		public View getView(int pos, View convertView,ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {
@@ -502,7 +504,7 @@ public class ButtonSetSelectorDialog extends Dialog {
 				TextView extra = (TextView)v.findViewById(R.id.infoExtended);
 				
 				label.setText(e.name);
-				extra.setText("Contains " + e.entries + " buttons.");
+				extra.setText(getContext().getString(R.string.fmt_contains_buttons, e.entries));
 				RelativeLayout r = (RelativeLayout)v.findViewById(R.id.root);
 				if(e.name.equals(selected_set)) {
 					label.setBackgroundColor(0x00888888);

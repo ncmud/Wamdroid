@@ -1,5 +1,6 @@
 package com.offsetnull.bt.window;
 
+import com.offsetnull.bt.R;
 import com.offsetnull.bt.settings.ConfigurationLoader;
 
 import android.annotation.SuppressLint;
@@ -33,7 +34,7 @@ public class AboutDialog extends Dialog {
 			String str = this.getContext().getPackageManager().getPackageInfo(this.getContext().getPackageName(), Context.CONTEXT_INCLUDE_CODE).versionName;
 			int abtid = this.getContext().getResources().getIdentifier("blowtorch_about", "id", this.getContext().getPackageName());
 			TextView v = (TextView) this.findViewById(abtid);
-			v.setText("BlowTorch " + str);
+			v.setText(getContext().getString(R.string.fmt_blowtorch_version, str));
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}

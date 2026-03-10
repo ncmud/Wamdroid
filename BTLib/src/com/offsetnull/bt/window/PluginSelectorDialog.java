@@ -19,6 +19,7 @@ import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.service.plugin.settings.PluginDescription;
 import com.offsetnull.bt.service.plugin.settings.QuickPluginParser;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.AlertDialog.Builder;
@@ -69,9 +70,10 @@ public class PluginSelectorDialog extends Dialog {
 		this.service = service;
 	}
 
+	@SuppressLint("InflateParams")
 	public void onCreate(Bundle b) {
 		super.onCreate(b);
-		
+
 		LayoutInflater li = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		RelativeLayout tmp = new RelativeLayout(this.getContext());
 		
@@ -110,6 +112,7 @@ public class PluginSelectorDialog extends Dialog {
 		addPage(extDir + "/BlowTorch/plugins");
 	}
 	
+	@SuppressLint("InflateParams")
 	private void addPage(String path) {
 		
 		if(infoCacheStack.size() > 0) {
@@ -382,15 +385,15 @@ public class PluginSelectorDialog extends Dialog {
 				
 				if(info.length > 1) {
 					title.setText(file.getName());
-					extra.setText(info.length + " plugins.");
+					extra.setText(getContext().getString(R.string.fmt_plugins_count, info.length));
 				} else {
 					if(info[0].isError()) {
 						icon.setImageResource(R.drawable.icon_plugin_error);
 						title.setText(file.getName());
-						extra.setText("Error: " + info[0].getErrorMessage());
+						extra.setText(getContext().getString(R.string.fmt_plugin_error, info[0].getErrorMessage()));
 					} else {
 						title.setText(file.getName());
-						extra.setText(info[0].getName() + " written by " + info[0].getAuthor() + ".");
+						extra.setText(getContext().getString(R.string.fmt_plugin_info, info[0].getName(), info[0].getAuthor()));
 					}
 				}
 			}

@@ -359,19 +359,19 @@ public class TriggerEditorDialog extends Dialog implements DialogInterface.OnCli
 			TextView label = new TextView(this.getContext());
 			label.setOnClickListener(new EditResponderListener(the_trigger.getResponders().indexOf(responder)));
 			if(responder.getType() == RESPONDER_TYPE.NOTIFICATION) {
-				label.setText("Notification: " + ((NotificationResponder)responder).getTitle());
+				label.setText(getContext().getString(R.string.fmt_notification_label, ((NotificationResponder)responder).getTitle()));
 			} else if(responder.getType() == RESPONDER_TYPE.TOAST) {
-				label.setText("Toast Message: " + ((ToastResponder)responder).getMessage());
+				label.setText(getContext().getString(R.string.fmt_toast_message_label, ((ToastResponder)responder).getMessage()));
 			} else if(responder.getType() == RESPONDER_TYPE.ACK){
-				label.setText("Ack With: " + ((AckResponder)responder).getAckWith());
+				label.setText(getContext().getString(R.string.fmt_ack_with_label, ((AckResponder)responder).getAckWith()));
 			} else if(responder.getType() == RESPONDER_TYPE.SCRIPT) {
-				label.setText("Function: " + ((ScriptResponder)responder).getFunction());
+				label.setText(getContext().getString(R.string.fmt_function_label, ((ScriptResponder)responder).getFunction()));
 			} else if(responder.getType() == RESPONDER_TYPE.REPLACE) {
-				label.setText("Replace: " + ((ReplaceResponder)responder).getWith());
+				label.setText(getContext().getString(R.string.fmt_replace_label, ((ReplaceResponder)responder).getWith()));
 			} else if(responder.getType() == RESPONDER_TYPE.GAG) {
-				label.setText("Gag");
+				label.setText(R.string.label_gag);
 			} else if(responder.getType() == RESPONDER_TYPE.COLOR) {
-				label.setText("Color: " + Integer.toString(((ColorAction)responder).getColor()));
+				label.setText(getContext().getString(R.string.fmt_color_label, ((ColorAction)responder).getColor()));
 			}
 			label.setGravity(Gravity.CENTER);
 			label.setSingleLine(true);

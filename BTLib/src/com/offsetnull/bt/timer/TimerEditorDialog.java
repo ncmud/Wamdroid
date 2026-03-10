@@ -218,11 +218,11 @@ public class TimerEditorDialog extends Dialog implements DialogInterface.OnClick
 			TextView label = new TextView(this.getContext());
 			label.setOnClickListener(new EditResponderListener(the_timer.getResponders().indexOf(responder)));
 			if(responder.getType() == RESPONDER_TYPE.NOTIFICATION) {
-				label.setText("Notification: " + ((NotificationResponder)responder).getTitle());
+				label.setText(getContext().getString(R.string.fmt_notification_label, ((NotificationResponder)responder).getTitle()));
 			} else if(responder.getType() == RESPONDER_TYPE.TOAST) {
-				label.setText("Toast Message: " + ((ToastResponder)responder).getMessage());
+				label.setText(getContext().getString(R.string.fmt_toast_message_label, ((ToastResponder)responder).getMessage()));
 			} else if(responder.getType() == RESPONDER_TYPE.ACK){
-				label.setText("Ack With: " + ((AckResponder)responder).getAckWith());
+				label.setText(getContext().getString(R.string.fmt_ack_with_label, ((AckResponder)responder).getAckWith()));
 			}
 			label.setGravity(Gravity.CENTER);
 			label.setSingleLine(true);

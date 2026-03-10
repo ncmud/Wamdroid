@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -1343,6 +1344,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		
 	}
 
+	@SuppressLint("InflateParams")
 	private void AskExportFileName(final boolean external) {
 
 		LayoutInflater factory = LayoutInflater.from(this);
@@ -1486,6 +1488,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 			this.items = objects;
 		}
 		
+		@SuppressLint("InflateParams")
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {
