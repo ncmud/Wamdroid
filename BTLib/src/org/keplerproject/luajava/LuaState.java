@@ -1131,7 +1131,7 @@ public class LuaState
 	 * @param retType type to convert to
 	 * @return The converted number
 	 */
-	public static Number convertLuaNumber(Double db, Class retType)
+	public static Number convertLuaNumber(Double db, Class<?> retType)
 	{
 	  // checks if retType is a primitive type
     if (retType.isPrimitive())
