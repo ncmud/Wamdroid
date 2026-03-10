@@ -15,6 +15,7 @@ import com.offsetnull.bt.button.ButtonEditorDialog.COLOR_FIELDS;
 import com.offsetnull.bt.button.ColorPickerDialog;
 import com.offsetnull.bt.service.StellarService;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.AlertDialog.Builder;
@@ -73,6 +74,7 @@ public class OptionsDialog extends Dialog {
 		//this.mFragementManager = fragmentManager;
 	}
 
+	@SuppressLint("InflateParams")
 	public void onCreate(Bundle b) {
 		super.onCreate(b);
 		pluginSettingsMap.clear();
@@ -189,6 +191,7 @@ public class OptionsDialog extends Dialog {
 			return 0;
 		}
 
+		@SuppressLint("InflateParams")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
@@ -712,6 +715,7 @@ public class OptionsDialog extends Dialog {
 			this.pos = pos;
 		}
 		
+		@SuppressLint("InflateParams")
 		@Override
 		public void onClick(View v) {
 			//get the tag for this view, it will be the key.

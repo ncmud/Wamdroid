@@ -3,6 +3,7 @@ package com.offsetnull.bt.validator;
 import java.util.TreeMap;
 
 import com.offsetnull.bt.R;
+import android.annotation.SuppressLint;
 import android.content.Context;
 //import android.util.Log;
 import android.view.LayoutInflater;
@@ -137,6 +138,7 @@ public class Validator {
 		}
 	}
 	
+	@SuppressLint("InflateParams")
 	public void showMessage(Context c,String result) {
 		
 		String[] parts = result.split("\n");
@@ -172,6 +174,7 @@ public class Validator {
 		
 	}
 	
+@SuppressLint("InflateParams")
 public void showMessageNoDecoration(Context c,String result) {
 		
 		

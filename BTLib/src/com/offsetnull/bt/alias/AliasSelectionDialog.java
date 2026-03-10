@@ -290,6 +290,7 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 	
 	private LineClickedListener mLineClicker = new LineClickedListener();
 	
+	@SuppressLint("InflateParams")
 	private void makeToolbar() {
 		LayoutInflater li = (LayoutInflater)AliasSelectionDialog.this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		theToolbar = (LinearLayout) li.inflate(R.layout.editor_selection_list_row_toolbar, null);
@@ -388,7 +389,7 @@ public class AliasSelectionDialog extends Dialog implements AliasEditorDialogDon
 			this.items = objects;
 		}
 		
-		@SuppressLint("ResourceType")
+		@SuppressLint({"ResourceType", "InflateParams"})
 		public View getView(int pos, View convertView, ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {

@@ -234,7 +234,7 @@ public class TimerSelectionDialog extends Dialog {
 			entries = objects;
 		}
 		
-		@SuppressLint("ResourceType")
+		@SuppressLint({"ResourceType", "InflateParams"})
 		public View getView(int pos, View convertView,ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {
@@ -268,7 +268,7 @@ public class TimerSelectionDialog extends Dialog {
 				//TextView status = (TextView)v.findViewById(R.id.timer_status);
 				//TextView total = (TextView)v.findViewById(R.id.timer_total);
 				label.setText(e.name);
-				extra.setText(Integer.toString(e.seconds) + " seconds.");
+				extra.setText(getContext().getString(R.string.fmt_seconds_label, e.seconds));
 				
 				//int text_color = 0xFF888888;
 				//int non_selected = 0xFF333333;
@@ -417,6 +417,7 @@ public class TimerSelectionDialog extends Dialog {
 	
 	private LineClickedListener mLineClicker = new LineClickedListener();
 	
+	@SuppressLint("InflateParams")
 	private void makeToolbar() {
 		LayoutInflater li = (LayoutInflater)TimerSelectionDialog.this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		theToolbar = (LinearLayout) li.inflate(R.layout.editor_selection_list_row_toolbar, null);

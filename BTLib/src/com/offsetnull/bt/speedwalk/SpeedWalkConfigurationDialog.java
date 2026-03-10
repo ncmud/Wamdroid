@@ -9,6 +9,7 @@ import com.offsetnull.bt.R;
 import com.offsetnull.bt.service.StellarService;
 
 //import android.R;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -165,6 +166,7 @@ public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEdi
 			items = objects;
 		}
 		
+		@SuppressLint("InflateParams")
 		public View getView(int position, View v, ViewGroup parent) {
 			
 			if(v == null) {
@@ -175,7 +177,7 @@ public class SpeedWalkConfigurationDialog extends Dialog implements DirectionEdi
 			SWEntry tmp = items.get(position);
 			
 			if(tmp != null) {
-				((TextView)v.findViewById(R.id.dir_str)).setText(tmp.dir + " => " + tmp.cmd);
+				((TextView)v.findViewById(R.id.dir_str)).setText(getContext().getString(R.string.fmt_direction_arrow, tmp.dir, tmp.cmd));
 				v.findViewById(R.id.dir_edit).setOnClickListener(new EditClickListener(position));
 				v.findViewById(R.id.dir_del).setOnClickListener(new DeleteClickListener(position));
 				

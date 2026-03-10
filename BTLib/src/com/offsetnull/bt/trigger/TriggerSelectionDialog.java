@@ -331,6 +331,7 @@ public class TriggerSelectionDialog extends Dialog {
 		
 	}
 	
+	@SuppressLint("InflateParams")
 	private void makeToolbar() {
 		LayoutInflater li = (LayoutInflater)TriggerSelectionDialog.this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		theToolbar = (LinearLayout) li.inflate(R.layout.editor_selection_list_row_toolbar, null);
@@ -800,7 +801,7 @@ public class TriggerSelectionDialog extends Dialog {
 			entries = objects;
 		}
 		
-		@SuppressLint("ResourceType")
+		@SuppressLint({"ResourceType", "InflateParams"})
 		public View getView(int pos, View convertView,ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {
@@ -1202,9 +1203,10 @@ public class TriggerSelectionDialog extends Dialog {
 			}
 		}
 		
+		@SuppressLint("InflateParams")
 		@Override
 		public View getView(int pos,View convertView,ViewGroup parent) {
-			
+
 			if(pos == 2) {
 				//need to do the special text view.
 				View tmp = convertView;

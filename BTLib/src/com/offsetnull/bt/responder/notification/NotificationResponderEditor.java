@@ -106,7 +106,7 @@ public class NotificationResponderEditor extends Dialog {
 				if(the_responder.getSoundPath().equals("")) {
 					sound_extra.setText("Currently disabled.");
 				} else {
-					sound_extra.setText(the_responder.getSoundPath() + "[ERROR]");
+					sound_extra.setText(getContext().getString(R.string.fmt_sound_path_error, the_responder.getSoundPath()));
 				}
 				//the_responder.setSoundPath("");
 			}
@@ -114,7 +114,7 @@ public class NotificationResponderEditor extends Dialog {
 			if(the_responder.isUseDefaultLight()) {
 				lights.setChecked(true);
 				if(the_responder.getColorToUse() != 0) {
-					lights_extra.setText("Currently Using: " + lookupRawColor(the_responder.getColorToUse()));
+					lights_extra.setText(getContext().getString(R.string.fmt_currently_using_cap, lookupRawColor(the_responder.getColorToUse())));
 				} else {
 					lights_extra.setText("Currently Using: default");
 				}
@@ -128,9 +128,9 @@ public class NotificationResponderEditor extends Dialog {
 				vibrate.setChecked(true);
 				if(the_responder.getVibrateLength() != 0) {
 					//vibrate_extra.setText("Currently using: " + the_responder.getVibrateLength());
-					vibrate_extra.setText("Currently using: " + lookupVibrateLength(the_responder.getVibrateLength()));
+					vibrate_extra.setText(getContext().getString(R.string.fmt_currently_using, lookupVibrateLength(the_responder.getVibrateLength())));
 				} else {
-					vibrate_extra.setText("Currently using: default");
+					vibrate_extra.setText(R.string.msg_currently_using_default_lower);
 				}
 			} else {
 				vibrate.setChecked(false);
@@ -484,7 +484,7 @@ public class NotificationResponderEditor extends Dialog {
 					break;
 				}
 				if(arg1 != 0) {	
-					lights_extra.setText("Currently using: " + lookupColor(arg1));
+					lights_extra.setText(getContext().getString(R.string.fmt_currently_using, lookupColor(arg1)));
 				} else {
 					lights_extra.setText(DEFAULT_MSG);
 				}
@@ -529,7 +529,7 @@ public class NotificationResponderEditor extends Dialog {
 					break;
 				}
 				if(arg1 != 0){
-					vibrate_extra.setText("Currently using: " + lookupVibrateLength(arg1));
+					vibrate_extra.setText(getContext().getString(R.string.fmt_currently_using, lookupVibrateLength(arg1)));
 				} else {
 					vibrate_extra.setText(DEFAULT_MSG);
 				}
@@ -561,7 +561,7 @@ public class NotificationResponderEditor extends Dialog {
 					if(path.equals("")) {
 						sound_extra.setText(DEFAULT_MSG);
 					} else {
-						sound_extra.setText("Currently using: " + path);
+						sound_extra.setText(getContext().getString(R.string.fmt_currently_using, path));
 					}
 					
 					//so we have a path now, we should just play it and be cool.
