@@ -1,10 +1,9 @@
 package com.offsetnull.bt.responder.script
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -14,16 +13,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import com.offsetnull.bt.R
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener
 import com.offsetnull.bt.ui.EditorDialogScaffold
+import com.offsetnull.bt.ui.setComposeContent
 
 class ScriptResponderEditor(
     context: Context,
     input: ScriptResponder?,
     private val finishWith: TriggerResponderEditorDoneListener
-) : Dialog(context) {
+) : ComponentDialog(context) {
 
     private val original: ScriptResponder? = input?.copy()
     private val responder: ScriptResponder = input?.copy() ?: ScriptResponder()
@@ -33,19 +32,13 @@ class ScriptResponderEditor(
         window?.requestFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawableResource(R.drawable.dialog_window_crawler1)
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                ScriptEditorContent(
-                    initialFunction = responder.function ?: "",
-                    onDone = { function -> doExit(function) },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            ScriptEditorContent(
+                initialFunction = responder.function ?: "",
+                onDone = { function -> doExit(function) },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun doExit(function: String) {

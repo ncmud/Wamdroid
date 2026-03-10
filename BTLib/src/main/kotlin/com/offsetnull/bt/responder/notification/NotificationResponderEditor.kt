@@ -1,14 +1,13 @@
 package com.offsetnull.bt.responder.notification
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,12 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import com.offsetnull.bt.R
 import com.offsetnull.bt.responder.TriggerResponder.FIRE_WHEN
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener
 import com.offsetnull.bt.ui.EditorDialogScaffold
+import com.offsetnull.bt.ui.setComposeContent
 import java.io.File
 import java.io.IOException
 
@@ -53,7 +52,7 @@ class NotificationResponderEditor(
     context: Context,
     input: NotificationResponder?,
     private val finishWith: TriggerResponderEditorDoneListener
-) : Dialog(context) {
+) : ComponentDialog(context) {
 
     private val responder: NotificationResponder
     private val original: NotificationResponder?
@@ -78,30 +77,24 @@ class NotificationResponderEditor(
         window?.requestFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawableResource(R.drawable.dialog_window_crawler1)
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                NotificationEditorContent(
-                    initialTitle = responder.title ?: "",
-                    initialMessage = responder.message ?: "",
-                    initialUseLights = responder.isUseDefaultLight,
-                    initialLightColor = responder.colorToUse,
-                    initialUseVibrate = responder.isUseDefaultVibrate,
-                    initialVibrateLength = responder.vibrateLength,
-                    initialUseSound = responder.isUseDefaultSound,
-                    initialSoundPath = responder.soundPath ?: "",
-                    initialSpawnNew = responder.isSpawnNewNotification,
-                    onPickLightColor = { onChecked, callback -> pickLightColor(onChecked, callback) },
-                    onPickVibrate = { onChecked, callback -> pickVibrate(onChecked, callback) },
-                    onPickSound = { onChecked, callback -> pickSound(onChecked, callback) },
-                    onDone = { result -> doFinish(result) },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            NotificationEditorContent(
+                initialTitle = responder.title ?: "",
+                initialMessage = responder.message ?: "",
+                initialUseLights = responder.isUseDefaultLight,
+                initialLightColor = responder.colorToUse,
+                initialUseVibrate = responder.isUseDefaultVibrate,
+                initialVibrateLength = responder.vibrateLength,
+                initialUseSound = responder.isUseDefaultSound,
+                initialSoundPath = responder.soundPath ?: "",
+                initialSpawnNew = responder.isSpawnNewNotification,
+                onPickLightColor = { onChecked, callback -> pickLightColor(onChecked, callback) },
+                onPickVibrate = { onChecked, callback -> pickVibrate(onChecked, callback) },
+                onPickSound = { onChecked, callback -> pickSound(onChecked, callback) },
+                onDone = { result -> doFinish(result) },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun doFinish(result: NotificationResult) {

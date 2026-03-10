@@ -1,12 +1,11 @@
 package com.offsetnull.bt.button
 
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,12 +36,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.offsetnull.bt.R
+import com.offsetnull.bt.ui.setComposeContent
 
-class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener,
+class ButtonEditorDialog : ComponentDialog, ColorPickerDialog.OnColorChangedListener,
     DialogInterface.OnCancelListener {
 
     enum class COLOR_FIELDS {
@@ -86,25 +85,19 @@ class ButtonEditorDialog : Dialog, ColorPickerDialog.OnColorChangedListener,
         val button = theButton ?: return
         val data = button.data
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                ButtonEditorContent(
-                    data = data,
-                    moveMethod = button.moveMethod,
-                    onPickColor = { _, currentColor, callback ->
-                        onColorChanged = callback
-                        ColorPickerDialog(context, this@ButtonEditorDialog, currentColor).show()
-                    },
-                    onDone = { result -> applyResult(button, data, result) },
-                    onDelete = { exitState = EXIT_DELETE; dismiss() },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            ButtonEditorContent(
+                data = data,
+                moveMethod = button.moveMethod,
+                onPickColor = { _, currentColor, callback ->
+                    onColorChanged = callback
+                    ColorPickerDialog(context, this@ButtonEditorDialog, currentColor).show()
+                },
+                onDone = { result -> applyResult(button, data, result) },
+                onDelete = { exitState = EXIT_DELETE; dismiss() },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun applyResult(button: SlickButton, data: SlickButtonData, result: ButtonEditResult) {

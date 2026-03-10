@@ -1,10 +1,9 @@
 package com.offsetnull.bt.launcher
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
@@ -15,12 +14,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.input.KeyboardType
 import com.offsetnull.bt.R
 import com.offsetnull.bt.ui.EditorDialogScaffold
+import com.offsetnull.bt.ui.setComposeContent
 
-class NewConnectionDialog : Dialog {
+class NewConnectionDialog : ComponentDialog {
 
     private val reportTo: ReadyListener
     private val prev: MudConnection?
@@ -40,21 +39,15 @@ class NewConnectionDialog : Dialog {
         window?.requestFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawableResource(R.drawable.dialog_window_crawler1)
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                NewConnectionContent(
-                    initialDisplay = prev?.displayName ?: "",
-                    initialHost = prev?.hostName ?: "",
-                    initialPort = if (prev != null) prev.portString else "",
-                    onSave = { display, host, port -> doSave(display, host, port) },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            NewConnectionContent(
+                initialDisplay = prev?.displayName ?: "",
+                initialHost = prev?.hostName ?: "",
+                initialPort = if (prev != null) prev.portString else "",
+                onSave = { display, host, port -> doSave(display, host, port) },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun doSave(display: String, host: String, port: String) {

@@ -1,10 +1,9 @@
 package com.offsetnull.bt.responder.replace
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -14,17 +13,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import com.offsetnull.bt.R
 import com.offsetnull.bt.responder.TriggerResponder
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener
 import com.offsetnull.bt.ui.EditorDialogScaffold
+import com.offsetnull.bt.ui.setComposeContent
 
 class ReplaceActionEditorDialog(
     context: Context,
     private val original: TriggerResponder?,
     private val finishWith: TriggerResponderEditorDoneListener
-) : Dialog(context) {
+) : ComponentDialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,19 +32,13 @@ class ReplaceActionEditorDialog(
 
         val initialWith = (original as? ReplaceResponder)?.with ?: ""
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                ReplaceEditorContent(
-                    initialWith = initialWith,
-                    onDone = { replaceWith -> doExit(replaceWith) },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            ReplaceEditorContent(
+                initialWith = initialWith,
+                onDone = { replaceWith -> doExit(replaceWith) },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun doExit(replaceWith: String) {

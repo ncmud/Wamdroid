@@ -1,10 +1,9 @@
 package com.offsetnull.bt.responder.color
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,19 +34,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.offsetnull.bt.R
 import com.offsetnull.bt.responder.TriggerResponder
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener
 import com.offsetnull.bt.service.Colorizer
+import com.offsetnull.bt.ui.setComposeContent
 
 class ColorActionEditor(
     context: Context,
     private val original: TriggerResponder?,
     private val finishWith: TriggerResponderEditorDoneListener
-) : Dialog(context) {
+) : ComponentDialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,20 +56,14 @@ class ColorActionEditor(
         val initialFg = (original as? ColorAction)?.color ?: ColorAction.DEFAULT_COLOR
         val initialBg = (original as? ColorAction)?.backgroundColor ?: ColorAction.DEFAULT_BACKGROUND_COLOR
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                ColorEditorContent(
-                    initialForeground = initialFg,
-                    initialBackground = initialBg,
-                    onDone = { fg, bg -> doExit(fg, bg) },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            ColorEditorContent(
+                initialForeground = initialFg,
+                initialBackground = initialBg,
+                onDone = { fg, bg -> doExit(fg, bg) },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun doExit(foregroundColor: Int, backgroundColor: Int) {

@@ -1,10 +1,9 @@
 package com.offsetnull.bt.responder.toast
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
@@ -15,17 +14,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.input.KeyboardType
 import com.offsetnull.bt.R
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener
 import com.offsetnull.bt.ui.EditorDialogScaffold
+import com.offsetnull.bt.ui.setComposeContent
 
 class ToastResponderEditor(
     context: Context,
     input: ToastResponder?,
     private val finishWith: TriggerResponderEditorDoneListener
-) : Dialog(context) {
+) : ComponentDialog(context) {
 
     private val original: ToastResponder? = input?.copy()
     private val responder: ToastResponder = input?.copy() ?: ToastResponder()
@@ -35,20 +34,14 @@ class ToastResponderEditor(
         window?.requestFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawableResource(R.drawable.dialog_window_crawler1)
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                ToastEditorContent(
-                    initialMessage = responder.message ?: "",
-                    initialDelay = responder.delay,
-                    onDone = { message, delay -> doExit(message, delay) },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            ToastEditorContent(
+                initialMessage = responder.message ?: "",
+                initialDelay = responder.delay,
+                onDone = { message, delay -> doExit(message, delay) },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun doExit(message: String, delay: Int) {

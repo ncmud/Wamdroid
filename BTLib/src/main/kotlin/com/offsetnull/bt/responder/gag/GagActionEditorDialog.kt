@@ -1,10 +1,9 @@
 package com.offsetnull.bt.responder.gag
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Checkbox
@@ -17,17 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import com.offsetnull.bt.R
 import com.offsetnull.bt.responder.TriggerResponder
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener
 import com.offsetnull.bt.ui.EditorDialogScaffold
+import com.offsetnull.bt.ui.setComposeContent
 
 class GagActionEditorDialog(
     context: Context,
     private val original: TriggerResponder?,
     private val finishWith: TriggerResponderEditorDoneListener
-) : Dialog(context) {
+) : ComponentDialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,23 +38,17 @@ class GagActionEditorDialog(
         val initialLog = gagOriginal?.isGagLog ?: true
         val initialRetarget = gagOriginal?.retarget ?: ""
 
-        val composeView = ComposeView(context).apply {
-            setContent {
-                GagEditorContent(
-                    initialGagOutput = initialOutput,
-                    initialGagLog = initialLog,
-                    initialRetarget = initialRetarget,
-                    onDone = { gagOutput, gagLog, retarget ->
-                        doExit(gagOutput, gagLog, retarget)
-                    },
-                    onCancel = { dismiss() }
-                )
-            }
+        setComposeContent {
+            GagEditorContent(
+                initialGagOutput = initialOutput,
+                initialGagLog = initialLog,
+                initialRetarget = initialRetarget,
+                onDone = { gagOutput, gagLog, retarget ->
+                    doExit(gagOutput, gagLog, retarget)
+                },
+                onCancel = { dismiss() }
+            )
         }
-        setContentView(composeView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
     }
 
     private fun doExit(gagOutput: Boolean, gagLog: Boolean, retarget: String) {
