@@ -354,9 +354,10 @@ public class PluginSelectorDialog extends Dialog {
 			
 		}
 		
+		@SuppressLint("InflateParams")
 		@Override
 		public View getView(int pos,View view,ViewGroup root)  {
-			
+
 			if(view == null) {
 				view = inflater.inflate(R.layout.options_list_row, null);
 			}
@@ -476,6 +477,7 @@ public class PluginSelectorDialog extends Dialog {
 			
 		}
 		
+		@SuppressLint("InflateParams")
 		@Override
 		public View getView(int pos,View view,ViewGroup root) {
 			if(view == null) {
