@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-BlowTorch (Wamdroid) — an Android MUD client with Lua scripting, plugin support, and multi-connection capability. Two app variants: **BT_Free** (generic MUD client) and **BT_Aard** (Aardwolf-specific, hardcoded to aardmud.org:7777).
+BlowTorch (Wamdroid) — an Android MUD client with Lua scripting, plugin support, and multi-connection capability.
 
 ## Build Commands
 
@@ -22,13 +22,11 @@ Builds LuaJIT 2.0.5 for armeabi, armeabi-v7a, mips, x86. Then builds JNI modules
 ### Android App
 ```bash
 ./gradlew :BT_Free:assembleDebug     # Debug APK
-./gradlew :BT_Aard:assembleDebug     # Debug APK (Aardwolf)
 ./gradlew :BT_Free:assembleRelease   # Release (needs signing cert + BT_RELEASE_PASS env var)
-./gradlew :BT_Aard:assembleRelease   # Release (needs signing cert + BT_AARD_PASS env var)
 ```
-Output: `BT_Free/build/outputs/apk/` or `BT_Aard/build/outputs/apk/`
+Output: `BT_Free/build/outputs/apk/`
 
-Release signing certs: `BTLib/key/bt_privatekey.keystore` (Free), `BT_Aard/key/signiture_cert` (Aard).
+Release signing cert: `BTLib/key/bt_privatekey.keystore`.
 
 ### No Test Infrastructure
 No unit or integration tests exist.
@@ -36,9 +34,8 @@ No unit or integration tests exist.
 ## Architecture
 
 ### Module Structure
-- **BTLib** — Shared library (177 Java files, all core logic). Package: `com.offsetnull.bt`
+- **BTLib** — Shared library (all core logic). Package: `com.offsetnull.bt`
 - **BT_Free** — Thin app wrapper (1 Java file: `FreeLauncher`). Package: `com.happygoatstudios.bt`
-- **BT_Aard** — Thin app wrapper (1 Java file: `AardLauncher`). Package: `com.happygoatstudios.aardwolf`
 
 ### Key Classes (all in BTLib `com.offsetnull.bt`)
 
