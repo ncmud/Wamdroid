@@ -1,5 +1,6 @@
 package com.offsetnull.bt.alias;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -172,19 +174,26 @@ public class BetterAliasSelectionDialog extends PluginFilterSelectionDialog impl
 		}
 	}
 	
-	private final Handler aliasEditorDoneHandler = new Handler() {
-		
+	private static class AliasEditorDoneHandler extends Handler {
+		private final WeakReference<BetterAliasSelectionDialog> ref;
+		AliasEditorDoneHandler(BetterAliasSelectionDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
 		public void handleMessage(Message msg) {
+			BetterAliasSelectionDialog outer = ref.get();
+			if (outer == null) return;
 			switch(msg.what) {
 			case 100:
 				AliasData d = (AliasData)msg.obj;
-				BetterAliasSelectionDialog.this.buildList();
-				BetterAliasSelectionDialog.this.scrollToSelection(d.getPre());
+				outer.buildList();
+				outer.scrollToSelection(d.getPre());
 				break;
 			}
-			
 		}
-	};
+	}
+	private final Handler aliasEditorDoneHandler = new AliasEditorDoneHandler(this);
 	private ArrayList<String> names = new ArrayList<String>();
 	
 	private List<String> computeNames(String name) {

@@ -1,5 +1,6 @@
 package com.offsetnull.bt.button;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -756,24 +758,30 @@ public class ButtonSetSelectorDialog extends Dialog {
 	}
 	
 	boolean setSettingsHaveChanged = false;
-	private Handler editordonelistenr = new Handler() {
+	private static class EditorDoneHandler extends Handler {
+		private final WeakReference<ButtonSetSelectorDialog> ref;
+		EditorDoneHandler(ButtonSetSelectorDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
 		public void handleMessage(Message msg) {
+			ButtonSetSelectorDialog outer = ref.get();
+			if (outer == null) return;
 			switch(msg.what) {
 			case 104:
-				finishDelete();
+				outer.finishDelete();
 				break;
 			case 100:
 				//entry no name change;
 				//int index = lastSelectedIndex;
-				setSettingsHaveChanged = true;
-				ButtonSetSelectorDialog.this.buildList();
+				outer.setSettingsHaveChanged = true;
+				outer.buildList();
 				break;
 			case 101:
 				//edited entry;
-				
-				setSettingsHaveChanged = true;
-				ButtonSetSelectorDialog.this.buildList();
-				
+				outer.setSettingsHaveChanged = true;
+				outer.buildList();
 				break;
 			}
 			//handle the thing comin back;
@@ -781,7 +789,8 @@ public class ButtonSetSelectorDialog extends Dialog {
 
 			//Log.e("EDITOR","REBUILDING LIST");
 		}
-	};
+	}
+	private Handler editordonelistenr = new EditorDoneHandler(this);
 	
 	protected void finishDelete() {
 		buildList();

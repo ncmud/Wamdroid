@@ -1,5 +1,6 @@
 package com.offsetnull.bt.trigger;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -163,19 +165,26 @@ public class BetterTriggerSelectionDialog extends PluginFilterSelectionDialog im
 		}
 	}
 	
-private final Handler triggerEditorDoneHandler = new Handler() {
-		
+private static class TriggerEditorDoneHandler extends Handler {
+		private final WeakReference<BetterTriggerSelectionDialog> ref;
+		TriggerEditorDoneHandler(BetterTriggerSelectionDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
 		public void handleMessage(Message msg) {
+			BetterTriggerSelectionDialog outer = ref.get();
+			if (outer == null) return;
 			switch(msg.what) {
 			case 100:
 				TriggerData d = (TriggerData)msg.obj;
-				BetterTriggerSelectionDialog.this.buildList();
-				BetterTriggerSelectionDialog.this.scrollToSelection(d.getName());
+				outer.buildList();
+				outer.scrollToSelection(d.getName());
 				break;
 			}
-			
 		}
-	};
+	}
+private final Handler triggerEditorDoneHandler = new TriggerEditorDoneHandler(this);
 
 @Override
 public void willHideToolbar(LinearLayout v, int row) {

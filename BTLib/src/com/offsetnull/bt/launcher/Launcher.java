@@ -52,6 +52,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -167,60 +168,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 			this.finish();
 		}*/
 		
-		actionHandler = new Handler() {
-			public void handleMessage(Message msg) {
-				switch(msg.what) {
-				case MESSAGE_USERNAME:
-					SharedPreferences.Editor edit = Launcher.this.getSharedPreferences("TEST_USER", Context.MODE_PRIVATE).edit();
-					edit.putString("USER_NAME", (String)msg.obj);
-					edit.commit();
-					break;
-				case MESSAGE_WHATSNEW:
-					break;
-				case MESSAGE_IMPORT:
-
-					//if the file exists, we will get here, if not, it will go to file not found.
-					try {
-						LauncherSAXParser parser = new LauncherSAXParser((String)msg.obj,Launcher.this);
-						launcher_settings = parser.load();
-					} catch (RuntimeException e) {
-						AlertDialog.Builder error = new AlertDialog.Builder(Launcher.this);
-						error.setTitle("Error loading XML");
-						error.setMessage(e.getMessage());
-						error.setPositiveButton("Acknowledge.",new DialogInterface.OnClickListener() {
-							
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-						AlertDialog errordialog = error.create();
-						errordialog.show();
-						return;
-					}
-					//update this list to the new version.
-					PackageManager m = Launcher.this.getPackageManager();
-					String versionString = null;
-					try {
-						versionString = m.getPackageInfo(Launcher.this.getApplicationInfo().packageName, PackageManager.GET_CONFIGURATIONS).versionName;
-					} catch (NameNotFoundException e) {
-						//can't execute on our package aye?
-						throw new RuntimeException(e);
-					}
-					launcher_settings.setCurrentVersion(versionString);
-					buildList();
-					saveXML();
-					break;
-				case MESSAGE_EXPORT:
-
-					break;
-				case MESSAGE_DORECOVERY:
-
-					break;
-				default:
-					break;
-				}
-			}
-		};
+		actionHandler = new ActionHandler(this);
 		
 		setContentView(R.layout.new_launcher_layout);
 		androidx.appcompat.widget.Toolbar myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
@@ -1576,176 +1524,18 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		
 	}
 	
-	private final int MESSAGE_STARTUPDATE = 10098;
-	private final int MESSAGE_STARTDOWNLOAD = 10099;
-	private final int MESSAGE_CANCELDOWNLOAD = 10100;
-	private final int MESSAGE_FINISHUPDATE = 10101;
-	private final int MESSAGE_DOWNLOADEDBYTES = 10102;
-	private final int MESSAGE_UPTODATE = 10103;
-	private final int MESSAGE_NOSDCARD = 10104;
-	private final int MESSAGE_BYTESINCOMING = 10105;
-	private final int MESSAGE_NEEDSUPDATE = 10106;
+	private static final int MESSAGE_STARTUPDATE = 10098;
+	private static final int MESSAGE_STARTDOWNLOAD = 10099;
+	private static final int MESSAGE_CANCELDOWNLOAD = 10100;
+	private static final int MESSAGE_FINISHUPDATE = 10101;
+	private static final int MESSAGE_DOWNLOADEDBYTES = 10102;
+	private static final int MESSAGE_UPTODATE = 10103;
+	private static final int MESSAGE_NOSDCARD = 10104;
+	private static final int MESSAGE_BYTESINCOMING = 10105;
+	private static final int MESSAGE_NEEDSUPDATE = 10106;
 	ProgressDialog updateDialog = null;
 	UpdateThread update = null;
-	Handler updateHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			switch(msg.what) {
-			case MESSAGE_NEEDSUPDATE:
-				AlertDialog.Builder builder = new AlertDialog.Builder(Launcher.this);
-				builder.setTitle("Update Available");
-				builder.setMessage("An update is available for this package, would you like to update now?");
-				builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						UpdateThread t = new UpdateThread(updateHandler);
-						t.start();
-						dialog.dismiss();
-					}
-				});
-				builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-					
-				});
-				AlertDialog d = builder.create();
-				d.show();
-				break;
-			case MESSAGE_BYTESINCOMING:
-				updateDialog.setMessage("Downloading "+(Integer)msg.obj+"bytes.");
-				updateDialog.setMax((Integer)msg.obj);
-				break;
-			case MESSAGE_DOWNLOADEDBYTES:
-				updateDialog.incrementProgressBy(msg.arg1);
-				break;
-			case MESSAGE_STARTUPDATE:
-				updateDialog = ProgressDialog.show(Launcher.this,"","Checking update status.",true,true,new DialogInterface.OnCancelListener() {
-					
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						return;
-					}
-				});
-				break;
-			case MESSAGE_NOSDCARD:
-				Toast nodsd = Toast.makeText(Launcher.this, "External storage is unavailable to write to, cannot download update.", Toast.LENGTH_SHORT);
-				nodsd.show();
-				break;
-			case MESSAGE_UPTODATE:
-				//Integer newVersion = Integer.parseInt(buf.toString());
-				//Log.e("BlowTorch","Web update version: " + newVersion);
-				updateDialog.dismiss();
-				
-				ApplicationInfo testLauncher = null;
-				try {
-					testLauncher = Launcher.this.getPackageManager().getApplicationInfo(launcher_source, PackageManager.GET_META_DATA);
-				} catch (NameNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				int testversionName = testLauncher.metaData.getInt("BLOWTORCH_TEST_VERSION");
-				
-				Toast t = Toast.makeText(Launcher.this, "BlowTorch Test Version "+testversionName+" is up to date.", Toast.LENGTH_SHORT);
-				t.show();
-				break;
-			case MESSAGE_STARTDOWNLOAD:
-				
-				updateDialog.dismiss();
-				updateDialog = null;
-				
-				updateDialog = new ProgressDialog(Launcher.this);
-				updateDialog.setCancelable(true);
-				updateDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-				updateDialog.setMessage("Starting download.");
-				updateDialog.setCancelMessage(this.obtainMessage(MESSAGE_CANCELDOWNLOAD));
-				//updateDialog.setMax(size);
-				//updateDialog.setProgress(0);
-				updateDialog.show();
-				
-				
-				
-//				synchronized(this) {
-//				try {
-//					
-//					this.wait(50);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				}
-				/*URL updateSize;
-				try {
-					updateSize = new URL("http://bt.happygoatstudios.com/test/size");
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return;
-				}
-				BufferedReader in;
-				try {
-					in = new BufferedReader(new InputStreamReader(updateSize.openStream()));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return;
-				}
-				String tmp = "";
-				StringBuffer buf = new StringBuffer();
-				try {
-					while((tmp = in.readLine())!=null) {
-						buf.append(tmp);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return;
-				}
-				Integer size = Integer.parseInt(buf.toString());
-				Log.e("BlowTorch","Update size is: " + size + " bytes.");*/
-				
-				
-				
-				
-				//update = new UpdateThread(this);
-				//update.run();
-				
-				
-				break;
-			case MESSAGE_CANCELDOWNLOAD:
-				update.doCancel();
-				if(updateDialog != null) {
-					updateDialog.dismiss();
-				}
-				updateDialog = null;
-				String delyou = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/launcher/TestPackage.apk";
-				//proceed with download.
-				File delme = new File(delyou);
-				if(delme.exists()) delme.delete();
-				break;
-			case MESSAGE_FINISHUPDATE:
-				updateDialog.dismiss();
-				updateDialog = null;
-				update = null;
-				String updatepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/launcher/TestPackage.apk";
-				File file = new File(updatepath);
-				if(!file.exists()) {
-					//Log.e("BlowTorch","Test application update does not exist.");
-					return; //file doesn't exist
-				}
-				
-				Intent i = new Intent();
-				i.setAction(Intent.ACTION_VIEW);
-				Uri data = Uri.parse("file://" + updatepath);
-				i.setDataAndType(data, "application/vnd.android.package-archive");
-				startActivity(i);
-				Launcher.this.finish();
-				break;
-			}
-		}
-	};
+	Handler updateHandler = new UpdateHandler(this);
 
 	private class UpdateThread extends Thread {
 		
@@ -2043,6 +1833,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		private final WeakReference<Launcher> mActivity;
 
 		ConnectionModifierHandler(Launcher activity) {
+			super(Looper.getMainLooper());
 			mActivity = new WeakReference<>(activity);
 		}
 
@@ -2064,6 +1855,168 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 				diag.show();
 				break;
 			default:
+				break;
+			}
+		}
+	}
+
+	private static class ActionHandler extends Handler {
+		private final WeakReference<Launcher> ref;
+		ActionHandler(Launcher outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			Launcher outer = ref.get();
+			if (outer == null) return;
+			switch(msg.what) {
+			case MESSAGE_USERNAME:
+				SharedPreferences.Editor edit = outer.getSharedPreferences("TEST_USER", Context.MODE_PRIVATE).edit();
+				edit.putString("USER_NAME", (String)msg.obj);
+				edit.commit();
+				break;
+			case MESSAGE_WHATSNEW:
+				break;
+			case MESSAGE_IMPORT:
+				//if the file exists, we will get here, if not, it will go to file not found.
+				try {
+					LauncherSAXParser parser = new LauncherSAXParser((String)msg.obj,outer);
+					outer.launcher_settings = parser.load();
+				} catch (RuntimeException e) {
+					AlertDialog.Builder error = new AlertDialog.Builder(outer);
+					error.setTitle("Error loading XML");
+					error.setMessage(e.getMessage());
+					error.setPositiveButton("Acknowledge.",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+					AlertDialog errordialog = error.create();
+					errordialog.show();
+					return;
+				}
+				//update this list to the new version.
+				PackageManager m = outer.getPackageManager();
+				String versionString = null;
+				try {
+					versionString = m.getPackageInfo(outer.getApplicationInfo().packageName, PackageManager.GET_CONFIGURATIONS).versionName;
+				} catch (NameNotFoundException e) {
+					//can't execute on our package aye?
+					throw new RuntimeException(e);
+				}
+				outer.launcher_settings.setCurrentVersion(versionString);
+				outer.buildList();
+				outer.saveXML();
+				break;
+			case MESSAGE_EXPORT:
+				break;
+			case MESSAGE_DORECOVERY:
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	private static class UpdateHandler extends Handler {
+		private final WeakReference<Launcher> ref;
+		UpdateHandler(Launcher outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			final Launcher outer = ref.get();
+			if (outer == null) return;
+			switch(msg.what) {
+			case MESSAGE_NEEDSUPDATE:
+				AlertDialog.Builder builder = new AlertDialog.Builder(outer);
+				builder.setTitle("Update Available");
+				builder.setMessage("An update is available for this package, would you like to update now?");
+				builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						UpdateThread t = outer.new UpdateThread(outer.updateHandler);
+						t.start();
+						dialog.dismiss();
+					}
+				});
+				builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+				AlertDialog d = builder.create();
+				d.show();
+				break;
+			case MESSAGE_BYTESINCOMING:
+				outer.updateDialog.setMessage("Downloading "+(Integer)msg.obj+"bytes.");
+				outer.updateDialog.setMax((Integer)msg.obj);
+				break;
+			case MESSAGE_DOWNLOADEDBYTES:
+				outer.updateDialog.incrementProgressBy(msg.arg1);
+				break;
+			case MESSAGE_STARTUPDATE:
+				outer.updateDialog = ProgressDialog.show(outer,"","Checking update status.",true,true,new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						return;
+					}
+				});
+				break;
+			case MESSAGE_NOSDCARD:
+				Toast nodsd = Toast.makeText(outer, "External storage is unavailable to write to, cannot download update.", Toast.LENGTH_SHORT);
+				nodsd.show();
+				break;
+			case MESSAGE_UPTODATE:
+				outer.updateDialog.dismiss();
+				ApplicationInfo testLauncher = null;
+				try {
+					testLauncher = outer.getPackageManager().getApplicationInfo(outer.launcher_source, PackageManager.GET_META_DATA);
+				} catch (NameNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				int testversionName = testLauncher.metaData.getInt("BLOWTORCH_TEST_VERSION");
+				Toast t = Toast.makeText(outer, "BlowTorch Test Version "+testversionName+" is up to date.", Toast.LENGTH_SHORT);
+				t.show();
+				break;
+			case MESSAGE_STARTDOWNLOAD:
+				outer.updateDialog.dismiss();
+				outer.updateDialog = null;
+				outer.updateDialog = new ProgressDialog(outer);
+				outer.updateDialog.setCancelable(true);
+				outer.updateDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+				outer.updateDialog.setMessage("Starting download.");
+				outer.updateDialog.setCancelMessage(outer.updateHandler.obtainMessage(MESSAGE_CANCELDOWNLOAD));
+				outer.updateDialog.show();
+				break;
+			case MESSAGE_CANCELDOWNLOAD:
+				outer.update.doCancel();
+				if(outer.updateDialog != null) {
+					outer.updateDialog.dismiss();
+				}
+				outer.updateDialog = null;
+				String delyou = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/launcher/TestPackage.apk";
+				File delme = new File(delyou);
+				if(delme.exists()) delme.delete();
+				break;
+			case MESSAGE_FINISHUPDATE:
+				outer.updateDialog.dismiss();
+				outer.updateDialog = null;
+				outer.update = null;
+				String updatepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/launcher/TestPackage.apk";
+				File file = new File(updatepath);
+				if(!file.exists()) {
+					return; //file doesn't exist
+				}
+				Intent i = new Intent();
+				i.setAction(Intent.ACTION_VIEW);
+				Uri data = Uri.parse("file://" + updatepath);
+				i.setDataAndType(data, "application/vnd.android.package-archive");
+				outer.startActivity(i);
+				outer.finish();
 				break;
 			}
 		}

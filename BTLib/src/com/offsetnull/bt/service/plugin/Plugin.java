@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
@@ -137,15 +139,7 @@ public class Plugin implements SettingsChangedListener {
 	HashMap<String,Long> timerStartTimes;
 	
 	public void initTimers() {
-		innerHandler = new Handler() { 
-			public void handleMessage(Message msg) {
-				switch(msg.what) {
-				case 100:
-					DoTimerResponders((String)msg.obj);
-					break;
-				}
-			}
-		};
+		innerHandler = new InnerHandler(this);
 		timerStartTimes = new HashMap<String,Long>();
 		CONNECTION_TIMER = new Timer("blowtorch_"+this.getName()+"_timer",true);
 		
@@ -3108,8 +3102,21 @@ WindowXCallS(GetPluginID().."_chat_window",42)
 		return g.getOptionValue(key);
 	}
 
-
-	
-	
-	
+	private static class InnerHandler extends Handler {
+		private final WeakReference<Plugin> ref;
+		InnerHandler(Plugin outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			Plugin outer = ref.get();
+			if (outer == null) return;
+			switch(msg.what) {
+			case 100:
+				outer.DoTimerResponders((String)msg.obj);
+				break;
+			}
+		}
+	}
 }
