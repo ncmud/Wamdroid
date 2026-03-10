@@ -1,5 +1,6 @@
 package com.offsetnull.bt.button;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.app.Dialog;
 import android.content.Context;
@@ -33,6 +34,9 @@ public class ColorPickerDialog extends Dialog {
         //private ButtonEditorDialog.COLOR_FIELDS thefield;
         private Path circle_path;
         private Paint mCenterCircle;
+        private final RectF mOvalRect = new RectF();
+        private final Matrix mRotationMatrix = new Matrix();
+        private final RectF mDrawOvalRect = new RectF();
 
         ColorPickerView(Context c, OnColorChangedListener l, int color) {
             super(c);
@@ -95,21 +99,26 @@ public class ColorPickerDialog extends Dialog {
         	
         	//CENTER_RADIUS = (int) (21*scale);
         	//float r = CENTER_RADIUS;
-            circle_path = new Path();
+            if (circle_path == null) {
+                circle_path = new Path();
+            } else {
+                circle_path.reset();
+            }
             //circle_path.addCircle(0, 0, (float) (r*0.5), Direction.CW);
             float nr = (float) (mCenterPaint.getStrokeWidth() + CENTER_RADIUS + 5 * this.getContext().getResources().getDisplayMetrics().density);
-            circle_path.addOval(new RectF(-nr, -nr, nr, nr), Direction.CW);
-            Matrix m = new Matrix();
-            m.reset();
-            m.postRotate(-190);
-            circle_path.transform(m);
+            mOvalRect.set(-nr, -nr, nr, nr);
+            circle_path.addOval(mOvalRect, Direction.CW);
+            mRotationMatrix.reset();
+            mRotationMatrix.postRotate(-190);
+            circle_path.transform(mRotationMatrix);
 
             canvas.translate(CENTER_X, CENTER_X);
 
             canvas.drawTextOnPath("Select Inside To Confirm.", circle_path, 0, -3, mCenterIndicator);
             canvas.drawPath(circle_path, mCenterCircle);
-            
-            canvas.drawOval(new RectF(-r, -r, r, r), mPaint);            
+
+            mDrawOvalRect.set(-r, -r, r, r);
+            canvas.drawOval(mDrawOvalRect, mPaint);
             canvas.drawCircle(0, 0, CENTER_RADIUS, mCenterPaint);
 
             if (mTrackingCenter) {
@@ -289,6 +298,7 @@ public class ColorPickerDialog extends Dialog {
     
     
 
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

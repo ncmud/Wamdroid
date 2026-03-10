@@ -13,24 +13,37 @@ public class ProgressMeter extends View {
 
 	private float progress;
 	private float range;
-	
+	private final Paint mDrawPaint = new Paint();
+	private final Rect mDrawRect = new Rect();
+	private final Paint mBackgroundPaint = new Paint();
+	private static final int[] GRADIENT_COLORS = { 0xFFFF0000, 0xFFEDBF24, 0xFF00FF00 };
+	private static final float[] GRADIENT_POSITIONS = { 0f, 0.3f, 1f };
+	private Shader mGradientShader;
+
 	public ProgressMeter(Context context) {
 		super(context);
-		
+
 		init();
 	}
 	public ProgressMeter(Context context,AttributeSet set) {
 		super(context,set);
 		init();
 	}
-	
+
 	private void init() {
 		progress = 25;
 		range = 100;
+		mBackgroundPaint.setColor(0xFF030303);
 	}
 	
 	//private int indicatorWidth = 10;
-	
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		mGradientShader = new LinearGradient(0, 0, getRight(), 0, GRADIENT_COLORS, GRADIENT_POSITIONS, Shader.TileMode.REPEAT);
+	}
+
 	public void onDraw(Canvas c) {
 		//Log.e("PROGRESS","DRAWING THE PROGRESS BAR");
 		
@@ -39,27 +52,16 @@ public class ProgressMeter extends View {
 		int indicator_pos = (int) (this.getWidth()*(progress/range));
 		//c.translate(center_x, center_y);
 		//this.getP
-		Paint p = new Paint();
-		int yellow = 0xFFEDBF24;
-		//int orange = 0xFFED6124;
-		int[] colors = { 0xFFFF0000, yellow, 0xFF00FF00 };
-		float[] pos = { 0f , 0.3f , 1f };
-		Shader s = new LinearGradient(0,0,this.getRight(),0,colors,pos,Shader.TileMode.REPEAT);
-		
-		p.setStrokeWidth(19*getResources().getDisplayMetrics().density);
-		
-		p.setShader(s);
+		mDrawPaint.setStrokeWidth(19*getResources().getDisplayMetrics().density);
+		mDrawPaint.setShader(mGradientShader);
 		//p.
-		Rect r = new Rect();
-		r.top = this.getTop();
-		r.bottom = this.getBottom();
-		r.left = this.getLeft();
-		r.right = this.getRight();
-		
-		Paint alt = new Paint();
-		alt.setColor(0xFF030303);
-		c.drawRect(r, alt);
-		c.drawLine(0, 0, indicator_pos, 0, p);
+		mDrawRect.top = this.getTop();
+		mDrawRect.bottom = this.getBottom();
+		mDrawRect.left = this.getLeft();
+		mDrawRect.right = this.getRight();
+
+		c.drawRect(mDrawRect, mBackgroundPaint);
+		c.drawLine(0, 0, indicator_pos, 0, mDrawPaint);
 		
 		
 	}

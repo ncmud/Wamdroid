@@ -6,6 +6,7 @@ package com.offsetnull.bt.window;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -26,6 +27,7 @@ import com.offsetnull.bt.service.plugin.settings.ListOption;
 import com.offsetnull.bt.service.plugin.settings.SettingsGroup;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -41,6 +43,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.content.ClipData;
@@ -292,6 +295,7 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 	private String mName = null;
 	/** The clipping rectangle for the draw routine. */
 	private Rect mClipRect = new Rect();
+	private final Rect mTempLinkRect = new Rect();
 	/** The current link click that is being clicked. */
 	private StringBuffer mCurrentLink = new StringBuffer();
 	
@@ -401,71 +405,7 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 			mBuffer.debugLineAdd = true;
 		}
 		mHoldBuffer = new TextTree();
-		mHandler = new Handler() {
-			public void handleMessage(final Message msg) {
-				switch(msg.what) {
-				case MESSAGE_RESETWITHDATA:
-					Window.this.resetAndAddText((byte[]) msg.obj);
-					break;
-				case MESSAGE_SCROLLLEFT:
-					mScrollRepeatRate -= (mScrollRepeatRateStep++) * 5; if (mScrollRepeatRate < mScrollRepeatRateMin) { mScrollRepeatRate = mScrollRepeatRateMin; }
-					Window.this.doScrollLeft(true);
-					break;
-				case MESSAGE_SCROLLRIGHT:
-					mScrollRepeatRate -= (mScrollRepeatRateStep++) *5 ; if (mScrollRepeatRate < mScrollRepeatRateMin) { mScrollRepeatRate = mScrollRepeatRateMin; }
-					Window.this.doScrollRight(true);
-					break;
-				case MESSAGE_SCROLLDOWN:
-					mScrollRepeatRate -= (mScrollRepeatRateStep++) * 5; if (mScrollRepeatRate < mScrollRepeatRateMin) { mScrollRepeatRate = mScrollRepeatRateMin; }
-					Window.this.doScrollDown(true);
-					break;
-				case MESSAGE_SCROLLUP:
-					mScrollRepeatRate -= (mScrollRepeatRateStep++) * 5; if (mScrollRepeatRate < mScrollRepeatRateMin) { mScrollRepeatRate = mScrollRepeatRateMin; }
-					Window.this.doScrollUp(true);
-					break;
-				case MESSAGE_STARTSELECTION:
-					Window.this.startSelection(msg.arg1, msg.arg2);
-					break;
-				case MESSAGE_ENCODINGCHANGED:
-					Window.this.updateEncoding((String) msg.obj);
-					break;
-				case MESSAGE_SETTINGSCHANGED:
-					Window.this.doUpdateSetting(msg.getData().getString("KEY"), msg.getData().getString("VALUE"));
-					break;
-				case MESSAGE_CLEARTEXT:
-					mBuffer.empty();
-					mHoldBuffer.empty();
-					break;
-				case MESSAGE_SHUTDOWN:
-					Window.this.shutdown();
-					break;
-				case MESSAGE_FLUSHBUFFER:
-					Window.this.flushBuffer();
-					break;
-				case MESSAGE_DRAW:
-					Window.this.invalidate();
-					break;
-					
-				case MESSAGE_ADDTEXT:
-					Window.this.addBytes((byte[]) msg.obj, false);
-					break;
-				case MESSAGE_PROCESSXCALLS:
-					Window.this.xcallS(msg.getData().getString("FUNCTION"), (String) msg.obj);
-					
-					break;
-				case MESSAGE_XCALLB:
-					//try {
-					try {
-						Window.this.xcallB(msg.getData().getString("FUNCTION"), (byte[]) msg.obj);
-					} catch (LuaException e) {
-						e.printStackTrace();
-					}
-					break;
-				default:
-					break;
-				}
-			}
-		};
+		mHandler = new WindowHandler(this);
 		
 		
 		//lua startup.
@@ -918,6 +858,7 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 	}
 	
 
+	@SuppressLint("DrawAllocation")
 	@Override
 	public final void onDraw(final Canvas c) {
 		if (selectedSelector != null) {
@@ -1240,27 +1181,25 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 								mCurrentLink.append(text.getString());
 								
 								
-								Rect r = new Rect();
-								r.left = (int) x;
-								r.top = (int) (y - p.getTextSize());
-								r.right = (int) (x + p.measureText(text.getString()));
-								r.bottom = (int) (y + 5);
+								mTempLinkRect.left = (int) x;
+								mTempLinkRect.top = (int) (y - p.getTextSize());
+								mTempLinkRect.right = (int) (x + p.measureText(text.getString()));
+								mTempLinkRect.bottom = (int) (y + 5);
 								if (mLinkMode == LINK_MODE.BACKGROUND) {
 									linkColor.setColor(mLinkHighlightColor);
-									c.drawRect(r.left, r.top, r.right, r.bottom, linkColor);
+									c.drawRect(mTempLinkRect.left, mTempLinkRect.top, mTempLinkRect.right, mTempLinkRect.bottom, linkColor);
 								}
-								
-								int linkBoxHeightDips = (int) ((r.bottom - r.top) / this.getResources().getDisplayMetrics().density);
+
+								int linkBoxHeightDips = (int) ((mTempLinkRect.bottom - mTempLinkRect.top) / this.getResources().getDisplayMetrics().density);
 								if (linkBoxHeightDips < mLinkBoxHeightMinimum) {
 									int additionalAmount = (mLinkBoxHeightMinimum - linkBoxHeightDips) / 2;
 									if (additionalAmount > 0) {
-										r.top -= additionalAmount * this.getResources().getDisplayMetrics().density;
-										r.bottom += additionalAmount * this.getResources().getDisplayMetrics().density;
+										mTempLinkRect.top -= additionalAmount * this.getResources().getDisplayMetrics().density;
+										mTempLinkRect.bottom += additionalAmount * this.getResources().getDisplayMetrics().density;
 									}
 								}
-								
-								LinkBox linkbox = new LinkBox(null, r);
-								linkBoxes.add(linkbox);
+
+								linkBoxes.add(new LinkBox(null, mTempLinkRect));
 								
 							}
 						}
@@ -1513,7 +1452,7 @@ public class Window extends View implements AnimatedRelativeLayout.OnAnimationEn
 		 */
 		public LinkBox(final String link, final Rect rect) {
 			//this.mData = link;
-			this.mBox = rect;
+			this.mBox = new Rect(rect);
 		}
 		/** Setter for data. 
 		 * 
@@ -2848,15 +2787,21 @@ ScheduleCallback(104,"delayCallback",5000)
 	
 
 	
-	private Handler callbackHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			//
-			//just call the string.
-			Window.this.callScheduleCallback(msg.arg1,(String)msg.obj);
-			
-			
+	private static class CallbackHandler extends Handler {
+		private final WeakReference<Window> ref;
+		CallbackHandler(Window outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
 		}
-	};
+		@Override
+		public void handleMessage(Message msg) {
+			Window outer = ref.get();
+			if (outer == null) return;
+			//just call the string.
+			outer.callScheduleCallback(msg.arg1,(String)msg.obj);
+		}
+	}
+	private Handler callbackHandler = new CallbackHandler(this);
 	
 	
 	
@@ -4221,6 +4166,77 @@ end
 	
 	public double measure(String str) {
 		return featurePaint.measureText(str);
+	}
+
+	private static class WindowHandler extends Handler {
+		private final WeakReference<Window> ref;
+		WindowHandler(Window outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
+		public void handleMessage(final Message msg) {
+			Window outer = ref.get();
+			if (outer == null) return;
+			switch(msg.what) {
+			case MESSAGE_RESETWITHDATA:
+				outer.resetAndAddText((byte[]) msg.obj);
+				break;
+			case MESSAGE_SCROLLLEFT:
+				outer.mScrollRepeatRate -= (outer.mScrollRepeatRateStep++) * 5; if (outer.mScrollRepeatRate < outer.mScrollRepeatRateMin) { outer.mScrollRepeatRate = outer.mScrollRepeatRateMin; }
+				outer.doScrollLeft(true);
+				break;
+			case MESSAGE_SCROLLRIGHT:
+				outer.mScrollRepeatRate -= (outer.mScrollRepeatRateStep++) *5 ; if (outer.mScrollRepeatRate < outer.mScrollRepeatRateMin) { outer.mScrollRepeatRate = outer.mScrollRepeatRateMin; }
+				outer.doScrollRight(true);
+				break;
+			case MESSAGE_SCROLLDOWN:
+				outer.mScrollRepeatRate -= (outer.mScrollRepeatRateStep++) * 5; if (outer.mScrollRepeatRate < outer.mScrollRepeatRateMin) { outer.mScrollRepeatRate = outer.mScrollRepeatRateMin; }
+				outer.doScrollDown(true);
+				break;
+			case MESSAGE_SCROLLUP:
+				outer.mScrollRepeatRate -= (outer.mScrollRepeatRateStep++) * 5; if (outer.mScrollRepeatRate < outer.mScrollRepeatRateMin) { outer.mScrollRepeatRate = outer.mScrollRepeatRateMin; }
+				outer.doScrollUp(true);
+				break;
+			case MESSAGE_STARTSELECTION:
+				outer.startSelection(msg.arg1, msg.arg2);
+				break;
+			case MESSAGE_ENCODINGCHANGED:
+				outer.updateEncoding((String) msg.obj);
+				break;
+			case MESSAGE_SETTINGSCHANGED:
+				outer.doUpdateSetting(msg.getData().getString("KEY"), msg.getData().getString("VALUE"));
+				break;
+			case MESSAGE_CLEARTEXT:
+				outer.mBuffer.empty();
+				outer.mHoldBuffer.empty();
+				break;
+			case MESSAGE_SHUTDOWN:
+				outer.shutdown();
+				break;
+			case MESSAGE_FLUSHBUFFER:
+				outer.flushBuffer();
+				break;
+			case MESSAGE_DRAW:
+				outer.invalidate();
+				break;
+			case MESSAGE_ADDTEXT:
+				outer.addBytes((byte[]) msg.obj, false);
+				break;
+			case MESSAGE_PROCESSXCALLS:
+				outer.xcallS(msg.getData().getString("FUNCTION"), (String) msg.obj);
+				break;
+			case MESSAGE_XCALLB:
+				try {
+					outer.xcallB(msg.getData().getString("FUNCTION"), (byte[]) msg.obj);
+				} catch (LuaException e) {
+					e.printStackTrace();
+				}
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }
 

@@ -2,6 +2,7 @@ package com.offsetnull.bt.button;
 
 //import java.io.UnsupportedEncodingException;
 //import java.nio.ByteBuffer;
+import java.lang.ref.WeakReference;
 
 import com.offsetnull.bt.window.MainWindow;
 
@@ -81,35 +82,7 @@ public class SlickButton extends View {
 		data.setLabel("NULL!");
 		updateRect();
 		
-		myhandler = new Handler(Looper.getMainLooper()) {
-			public void handleMessage(Message msg) {
-				switch(msg.what) {
-				case MSG_BEGINMOVE:
-					moving = true;
-					SlickButton.this.invalidate();
-					
-					//SlickButton.this.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-					dispatcher.sendEmptyMessage(856); //the haptic feeback message
-					//SlickButton.this.invalidate(SlickButton.this.rect); //only invaldate my rect.
-					break;
-				case MSG_DELETE:
-					//SlickButton.this.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-					dispatcher.sendEmptyMessage(856); //the haptic feeback message
-					
-					dialog_launched = true;
-					button_down = false;
-					moving = false;
-					nudged = false;
-					hasfocus = false;
-					if(!lockEdit) {
-						//Message deleme = deleter.obtainMessage(ByteView.MSG_DELETEBUTTON, SlickButton.this);
-						//deleter.sendMessage(deleme);
-					}
-					//dispatcher.
-					break;
-				}
-			}
-		};
+		myhandler = new SlickButtonHandler(this);
 		
 		
 		//Log.e("SB","SLICKBUTTON CONSTRUCTOR PASSED");
@@ -445,6 +418,10 @@ public class SlickButton extends View {
 	}*/
 	Paint p = new Paint();
 	Paint opts = new Paint();
+	private final RectF mDrawRectF = new RectF();
+	private final Rect mMovingRect = new Rect();
+	private final Paint mMovingPaint = new Paint();
+	private final RectF mMovingRectF = new RectF();
 	public void onDraw(Canvas c) {
 		//c.
 		//Log.e("BUTTON","DRAWING BUTTON!");
@@ -489,9 +466,9 @@ public class SlickButton extends View {
 		
 		if(drawRound) {
 			p.setAntiAlias(true);
-	
-			RectF frect = new RectF(rect);
-			c.drawRoundRect(frect, radius,radius, p);
+
+			mDrawRectF.set(rect);
+			c.drawRoundRect(mDrawRectF, radius,radius, p);
 			
 		} else {
 			p.setAntiAlias(false);
@@ -524,18 +501,16 @@ public class SlickButton extends View {
 		//c.drawText(data.getLabel(), data.getX()-tsize/2, data.getY()+12, opts);
 		
 		if(moving) {
-			Rect m_rect = new Rect();
-			m_rect.set(data.getX()-(int)((data.getWidth()*density)/2)+5,data.getY()-(int)((data.getHeight()*density)/2)+5,data.getX()+(int)((data.getWidth()*density)/2)-5,data.getY()+(int)((data.getHeight()*density)/2)-5);
-			Paint rpaint = new Paint();
-			rpaint.setColor(0xAAFF0000);
-			
-			
+			mMovingRect.set(data.getX()-(int)((data.getWidth()*density)/2)+5,data.getY()-(int)((data.getHeight()*density)/2)+5,data.getX()+(int)((data.getWidth()*density)/2)-5,data.getY()+(int)((data.getHeight()*density)/2)-5);
+			mMovingPaint.setColor(0xAAFF0000);
+
+
 			if(drawRound) {
 				float rradius = 5 * this.getResources().getDisplayMetrics().density;
-				RectF frect = new RectF(m_rect);
-				c.drawRoundRect(frect, radius,rradius, rpaint);
+				mMovingRectF.set(mMovingRect);
+				c.drawRoundRect(mMovingRectF, radius,rradius, mMovingPaint);
 			} else {
-				c.drawRect(m_rect, rpaint);
+				c.drawRect(mMovingRect, mMovingPaint);
 			}
 			
 			//RectF frect = new RectF(m_rect);
@@ -668,7 +643,40 @@ public class SlickButton extends View {
 	public boolean isLockMove() {
 		return lockMove;
 	}
-	
 
-
+	private static class SlickButtonHandler extends Handler {
+		private final WeakReference<SlickButton> ref;
+		SlickButtonHandler(SlickButton outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			SlickButton outer = ref.get();
+			if (outer == null) return;
+			switch(msg.what) {
+			case MSG_BEGINMOVE:
+				outer.moving = true;
+				outer.invalidate();
+				//SlickButton.this.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+				outer.dispatcher.sendEmptyMessage(856); //the haptic feeback message
+				//SlickButton.this.invalidate(SlickButton.this.rect); //only invaldate my rect.
+				break;
+			case MSG_DELETE:
+				//SlickButton.this.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+				outer.dispatcher.sendEmptyMessage(856); //the haptic feeback message
+				outer.dialog_launched = true;
+				outer.button_down = false;
+				outer.moving = false;
+				outer.nudged = false;
+				outer.hasfocus = false;
+				if(!outer.lockEdit) {
+					//Message deleme = deleter.obtainMessage(ByteView.MSG_DELETEBUTTON, SlickButton.this);
+					//deleter.sendMessage(deleme);
+				}
+				//dispatcher.
+				break;
+			}
+		}
+	}
 }
