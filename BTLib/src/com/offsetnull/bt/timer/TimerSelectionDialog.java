@@ -1,5 +1,6 @@
 package com.offsetnull.bt.timer;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,12 +10,14 @@ import com.offsetnull.bt.R;
 import com.offsetnull.bt.service.StellarService;
 import com.offsetnull.bt.window.AnimatedRelativeLayout;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 //import android.util.Log;
 import android.text.TextUtils.TruncateAt;
@@ -147,49 +150,7 @@ public class TimerSelectionDialog extends Dialog {
 		});
 		
 		//set click listeners.
-		doneHandler = new Handler() {
-			public void handleMessage(Message msg) {
-				//do some stuff;
-				
-				//if(msg.what == 100) {
-				
-					//if(this.hasMessages(100)) {
-						
-					//} else {
-					//	this.sendEmptyMessageDelayed(100, 330);
-					//}
-				
-				//} else {
-				switch(msg.what) {
-				case 99:
-					//special editor non new exit, means we need to clear the progress wad of the ordinal.
-					//wad.remove((String)msg.obj);
-					buildList();
-					break;
-				case 101: 
-					
-					//ListView tmp = (ListView) TimerSelectionDialog.this.findViewById(R.id.list);
-					//tmp.invalidate();
-					//adapter.notifyDataSetInvalidated();
-					//updateTimers();
-					buildList();
-					break;
-					//this.sendEmptyMessageDelayed(101, 1000);
-				case 100:
-					//editor new 
-					//button_row.setVisibility(View.VISIBLE);
-					lastSelectedIndex = Integer.parseInt((String)msg.obj);
-					buildList();
-					break;
-				case 102:
-					//button_row.setVisibility(View.INVISIBLE);
-					break;
-				default:
-					break;
-				}
-				//}
-			}
-		};
+		doneHandler = new DoneHandler(this);
 		
 		TextView title = (TextView)findViewById(R.id.titlebar);
 		title.setText("TIMERS");
@@ -273,6 +234,7 @@ public class TimerSelectionDialog extends Dialog {
 			entries = objects;
 		}
 		
+		@SuppressLint("ResourceType")
 		public View getView(int pos, View convertView,ViewGroup parent) {
 			View v = convertView;
 			if(v == null) {
@@ -759,7 +721,45 @@ public class TimerSelectionDialog extends Dialog {
 			// TODO Auto-generated method stub
 			
 		}
-		
+
 	}
-	
+
+	private static class DoneHandler extends Handler {
+		private final WeakReference<TimerSelectionDialog> ref;
+		DoneHandler(TimerSelectionDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			TimerSelectionDialog outer = ref.get();
+			if (outer == null) return;
+			switch(msg.what) {
+			case 99:
+				//special editor non new exit, means we need to clear the progress wad of the ordinal.
+				//wad.remove((String)msg.obj);
+				outer.buildList();
+				break;
+			case 101:
+				//ListView tmp = (ListView) TimerSelectionDialog.this.findViewById(R.id.list);
+				//tmp.invalidate();
+				//adapter.notifyDataSetInvalidated();
+				//updateTimers();
+				outer.buildList();
+				break;
+				//this.sendEmptyMessageDelayed(101, 1000);
+			case 100:
+				//editor new
+				//button_row.setVisibility(View.VISIBLE);
+				outer.lastSelectedIndex = Integer.parseInt((String)msg.obj);
+				outer.buildList();
+				break;
+			case 102:
+				//button_row.setVisibility(View.INVISIBLE);
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
