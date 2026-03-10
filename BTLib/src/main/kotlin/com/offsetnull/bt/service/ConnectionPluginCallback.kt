@@ -2,6 +2,7 @@ package com.offsetnull.bt.service
 
 import android.content.Context
 
+@Suppress("TooManyFunctions")
 interface ConnectionPluginCallback {
     fun setTriggersDirty()
     fun getWindowByName(name: String): WindowToken?
