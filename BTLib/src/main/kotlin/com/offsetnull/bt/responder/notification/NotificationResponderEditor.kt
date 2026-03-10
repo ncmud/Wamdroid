@@ -6,6 +6,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.ViewGroup
 import android.view.Window
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,23 @@ import com.offsetnull.bt.responder.TriggerResponder.FIRE_WHEN
 import com.offsetnull.bt.responder.TriggerResponderEditorDoneListener
 import com.offsetnull.bt.ui.EditorDialogScaffold
 import java.io.File
+import java.io.IOException
+
+private data class NotificationResult(
+    val title: String,
+    val message: String,
+    val useLights: Boolean,
+    val lightColor: Int,
+    val useVibrate: Boolean,
+    val vibrateLength: Int,
+    val useSound: Boolean,
+    val soundPath: String,
+    val spawnNew: Boolean
+)
+
+private const val SOUND_LIST_OFFSET = 2
+private const val VIBRATE_LONG = 3
+private const val VIBRATE_SUPER_LONG = 4
 
 class NotificationResponderEditor(
     context: Context,
@@ -75,11 +93,7 @@ class NotificationResponderEditor(
                     onPickLightColor = { onChecked, callback -> pickLightColor(onChecked, callback) },
                     onPickVibrate = { onChecked, callback -> pickVibrate(onChecked, callback) },
                     onPickSound = { onChecked, callback -> pickSound(onChecked, callback) },
-                    onDone = { title, message, useLights, lightColor, useVibrate, vibrateLen,
-                               useSound, soundPath, spawnNew ->
-                        doFinish(title, message, useLights, lightColor, useVibrate, vibrateLen,
-                            useSound, soundPath, spawnNew)
-                    },
+                    onDone = { result -> doFinish(result) },
                     onCancel = { dismiss() }
                 )
             }
@@ -90,22 +104,16 @@ class NotificationResponderEditor(
         ))
     }
 
-    private fun doFinish(
-        title: String, message: String,
-        useLights: Boolean, lightColor: Int,
-        useVibrate: Boolean, vibrateLength: Int,
-        useSound: Boolean, soundPath: String,
-        spawnNew: Boolean
-    ) {
-        responder.title = title
-        responder.message = message
-        responder.isUseDefaultLight = useLights
-        responder.colorToUse = lightColor
-        responder.isUseDefaultVibrate = useVibrate
-        responder.vibrateLength = vibrateLength
-        responder.isUseDefaultSound = useSound
-        responder.soundPath = soundPath
-        responder.isSpawnNewNotification = spawnNew
+    private fun doFinish(result: NotificationResult) {
+        responder.title = result.title
+        responder.message = result.message
+        responder.isUseDefaultLight = result.useLights
+        responder.colorToUse = result.lightColor
+        responder.isUseDefaultVibrate = result.useVibrate
+        responder.vibrateLength = result.vibrateLength
+        responder.isUseDefaultSound = result.useSound
+        responder.soundPath = result.soundPath
+        responder.isSpawnNewNotification = result.spawnNew
 
         if (isEditor) {
             finishWith.editTriggerResponder(responder, original)
@@ -161,18 +169,7 @@ class NotificationResponderEditor(
     }
 
     @Suppress("DEPRECATION")
-    private fun pickSound(onChecked: Boolean, callback: (Boolean, String, String) -> Unit) {
-        if (!onChecked) {
-            callback(false, "", "Currently disabled.")
-            return
-        }
-
-        val state = Environment.getExternalStorageState()
-        if (state != Environment.MEDIA_MOUNTED_READ_ONLY && state != Environment.MEDIA_MOUNTED) {
-            callback(false, "", "Currently disabled.")
-            return
-        }
-
+    private fun scanAvailableSounds(): Map<String, String> {
         val paths = mutableMapOf<String, String>()
         val systemPaths = arrayOf(
             "/system/media/audio/ringtones/",
@@ -185,55 +182,68 @@ class NotificationResponderEditor(
                 dir.listFiles()?.forEach { paths[it.name] = it.path }
             }
         }
-
         val btDir = File(Environment.getExternalStorageDirectory(), "/BlowTorch/")
         btDir.listFiles { _, name -> name.endsWith(".mp3") }?.forEach {
             paths[it.name] = it.path
         }
+        return paths
+    }
 
+    private fun findCurrentSoundPosition(soundNames: List<String>, paths: Map<String, String>): Int {
+        if (responder.isUseDefaultSound && responder.soundPath.isNullOrEmpty()) return 1
+        soundNames.forEachIndexed { idx, name ->
+            if (paths[name] == responder.soundPath) return idx + SOUND_LIST_OFFSET
+        }
+        return 0
+    }
+
+    private fun previewSound(path: String) {
+        try {
+            mp.stop()
+            mp = MediaPlayer()
+            mp.setDataSource(path)
+            mp.prepare()
+            mp.start()
+        } catch (e: IOException) {
+            Log.e("NotificationEditor", "Failed to play sound preview", e)
+        }
+    }
+
+    private fun pickSound(onChecked: Boolean, callback: (Boolean, String, String) -> Unit) {
+        if (!onChecked) {
+            callback(false, "", "Currently disabled.")
+            return
+        }
+
+        val state = Environment.getExternalStorageState()
+        if (state != Environment.MEDIA_MOUNTED_READ_ONLY && state != Environment.MEDIA_MOUNTED) {
+            callback(false, "", "Currently disabled.")
+            return
+        }
+
+        val paths = scanAvailableSounds()
         val soundNames = paths.keys.toList()
-        val items = Array(soundNames.size + 2) { i ->
+        val items = Array(soundNames.size + SOUND_LIST_OFFSET) { i ->
             when (i) {
                 0 -> "Disabled"
                 1 -> "Default"
-                else -> soundNames[i - 2]
-            }
-        }
-
-        var currentPosition = 0
-        if (responder.isUseDefaultSound && responder.soundPath.isNullOrEmpty()) {
-            currentPosition = 1
-        } else {
-            soundNames.forEachIndexed { idx, name ->
-                if (paths[name] == responder.soundPath) currentPosition = idx + 2
+                else -> soundNames[i - SOUND_LIST_OFFSET]
             }
         }
 
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Pick Sound: (Back to Exit)")
-        builder.setSingleChoiceItems(items, currentPosition) { _, which ->
+        builder.setSingleChoiceItems(items, findCurrentSoundPosition(soundNames, paths)) { _, which ->
             when (which) {
-                0 -> {
-                    callback(false, "", "Currently disabled.")
-                }
-                1 -> {
-                    callback(true, "", "Currently using: default")
-                }
+                0 -> callback(false, "", "Currently disabled.")
+                1 -> callback(true, "", "Currently using: default")
                 else -> {
-                    val name = soundNames[which - 2]
+                    val name = soundNames[which - SOUND_LIST_OFFSET]
                     val path = paths[name] ?: ""
                     val label = if (path.isEmpty()) "Currently using: default"
                     else context.getString(R.string.fmt_currently_using, path)
                     callback(true, path, label)
-                    try {
-                        mp.stop()
-                        mp = MediaPlayer()
-                        mp.setDataSource(path)
-                        mp.prepare()
-                        mp.start()
-                    } catch (e: Exception) {
-                        throw RuntimeException(e)
-                    }
+                    previewSound(path)
                 }
             }
         }
@@ -257,7 +267,7 @@ private fun NotificationEditorContent(
     onPickLightColor: (Boolean, (Boolean, Int, String) -> Unit) -> Unit,
     onPickVibrate: (Boolean, (Boolean, Int, String) -> Unit) -> Unit,
     onPickSound: (Boolean, (Boolean, String, String) -> Unit) -> Unit,
-    onDone: (String, String, Boolean, Int, Boolean, Int, Boolean, String, Boolean) -> Unit,
+    onDone: (NotificationResult) -> Unit,
     onCancel: () -> Unit
 ) {
     var title by remember { mutableStateOf(initialTitle) }
@@ -276,8 +286,8 @@ private fun NotificationEditorContent(
     EditorDialogScaffold(
         title = "Notification Responder",
         onSave = {
-            onDone(title, message, useLights, lightColor, useVibrate, vibrateLength,
-                useSound, soundPath, spawnNew)
+            onDone(NotificationResult(title, message, useLights, lightColor, useVibrate,
+                vibrateLength, useSound, soundPath, spawnNew))
         },
         onCancel = onCancel
     ) {
@@ -360,8 +370,8 @@ private fun formatVibrateLabel(enabled: Boolean, length: Int): String {
         0 -> "Currently using: default"
         1 -> "Currently using: Very Short"
         2 -> "Currently using: Short"
-        3 -> "Currently using: Long"
-        4 -> "Currently using: Suuper Long"
+        VIBRATE_LONG -> "Currently using: Long"
+        VIBRATE_SUPER_LONG -> "Currently using: Suuper Long"
         else -> "Currently using: default"
     }
 }

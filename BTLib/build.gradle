@@ -32,8 +32,8 @@ android {
 	}
 
 	lint {
-		warningsAsErrors = false
-		abortOnError = false
+		warningsAsErrors = true
+		abortOnError = true
 		xmlReport = true
 		htmlReport = true
 		baseline = file("lint-baseline.xml")
