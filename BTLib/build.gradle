@@ -6,7 +6,7 @@ plugins {
 
 detekt {
 	config.setFrom(files("${rootDir}/detekt.yml"))
-	source.setFrom(files("src"))
+	source.setFrom(files("src/main/java", "src/main/kotlin"))
 	buildUponDefaultConfig = true
 }
 
@@ -39,17 +39,6 @@ android {
 		baseline = file("lint-baseline.xml")
 	}
 
-	sourceSets {
-		main {
-			manifest.srcFile 'AndroidManifest.xml'
-			java.srcDirs = ['src']
-			kotlin.srcDirs = ['src']
-			resources.srcDirs = ['src']
-			res.srcDirs = ['res']
-			assets.srcDirs = ['assets']
-			jniLibs.srcDirs = ['libs']
-		}
-	}
 }
 
 dependencies {
