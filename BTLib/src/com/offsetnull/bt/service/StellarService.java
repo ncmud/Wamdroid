@@ -275,22 +275,22 @@ public class StellarService extends Service {
 
 	/** Enables Wifi KeepAlive. */
 	public final void enableWifiKeepAlive() {
-		//get the wifi manager
-		if (mWifiManager == null) {
-			mWifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-		}
-			
-		//check if we are connected to a wifi network
-		WifiInfo info = mWifiManager.getConnectionInfo();
-		if (info.getNetworkId() != -1) {
-			//if so, grab the lock
-			//Log.e("SERVICE","ATTEMPTING TO GRAB WIFI LOCK");
-			mWifiLock = mWifiManager.createWifiLock("BLOWTORCH_WIFI_LOCK");
-			boolean held = false;
-			while (!held) {
-				mWifiLock.acquire();
-				held = mWifiLock.isHeld();
+		try {
+			if (mWifiManager == null) {
+				mWifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 			}
+
+			WifiInfo info = mWifiManager.getConnectionInfo();
+			if (info.getNetworkId() != -1) {
+				mWifiLock = mWifiManager.createWifiLock("BLOWTORCH_WIFI_LOCK");
+				boolean held = false;
+				while (!held) {
+					mWifiLock.acquire();
+					held = mWifiLock.isHeld();
+				}
+			}
+		} catch (SecurityException e) {
+			Log.w("StellarService", "Cannot acquire wifi lock: " + e.getMessage());
 		}
 	}
 	
