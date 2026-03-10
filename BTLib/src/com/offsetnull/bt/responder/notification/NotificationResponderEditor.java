@@ -1,5 +1,6 @@
 package com.offsetnull.bt.responder.notification;
 
+import android.annotation.SuppressLint;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -62,6 +63,7 @@ public class NotificationResponderEditor extends Dialog {
 		}
 	}
 	
+	@SuppressLint("SetTextI18n")
 	public void onCreate(Bundle b) {
 		this.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setBackgroundDrawableResource(R.drawable.dialog_window_crawler1);
@@ -94,7 +96,7 @@ public class NotificationResponderEditor extends Dialog {
 				sound.setChecked(true);
 				if(the_responder.getSoundPath().equals("")) {
 					
-					sound_extra.setText("Currently using default sound.");
+					sound_extra.setText(R.string.msg_using_default_sound);
 					
 				} else {
 					sound_extra.setText(the_responder.getSoundPath());
@@ -104,7 +106,7 @@ public class NotificationResponderEditor extends Dialog {
 			} else {
 				sound.setChecked(false);
 				if(the_responder.getSoundPath().equals("")) {
-					sound_extra.setText("Currently disabled.");
+					sound_extra.setText(R.string.msg_currently_disabled);
 				} else {
 					sound_extra.setText(getContext().getString(R.string.fmt_sound_path_error, the_responder.getSoundPath()));
 				}
@@ -116,11 +118,11 @@ public class NotificationResponderEditor extends Dialog {
 				if(the_responder.getColorToUse() != 0) {
 					lights_extra.setText(getContext().getString(R.string.fmt_currently_using_cap, lookupRawColor(the_responder.getColorToUse())));
 				} else {
-					lights_extra.setText("Currently Using: default");
+					lights_extra.setText(R.string.label_currently_default);
 				}
 			} else {
 				lights.setChecked(false);
-				lights_extra.setText("Currently disabled.");
+				lights_extra.setText(R.string.msg_currently_disabled);
 			}
 			
 			if(the_responder.isUseDefaultVibrate())  {
@@ -134,7 +136,7 @@ public class NotificationResponderEditor extends Dialog {
 				}
 			} else {
 				vibrate.setChecked(false);
-				vibrate.setText("Currently disabled.");
+				vibrate.setText(R.string.msg_currently_disabled);
 			}
 			
 			//use of the on-going notification is not supported at this time.

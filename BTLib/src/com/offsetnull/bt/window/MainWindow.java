@@ -130,6 +130,7 @@ import com.offsetnull.bt.ui.SDCardUtils;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
 
+@SuppressLint("SourceLockedOrientationActivity")
 public class MainWindow extends AppCompatActivity implements MainWindowCallback,ActivityCompat.OnRequestPermissionsResultCallback {
 	
 	public static String TEST_MODE = "blowTorchTestMode";
@@ -553,8 +554,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 				//return false;
 			}
 		});
-        
-		
+
 		//assign my handler
 		myhandler = new MainWindowHandler(this);
 		extporthandler = new ExportHandler(this);
@@ -835,27 +835,15 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		b.setEnabled(false);
 		//b.setClickable(false);
 		//b.setFocusable(false);
-		b.setOnTouchListener(new View.OnTouchListener() {
+		@SuppressLint("ClickableViewAccessibility")
+		View.OnTouchListener touchListener = new View.OnTouchListener() {
 
-			@SuppressLint("ClickableViewAccessibility")
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				//if(v.isEnabled()) {
-				//mRootView.dispatchTouchEvent(event);
-				//}
-
-				//if (v.getParent() != mRootView && mRootView != null) {
-				//if(v )
-				//return mRootView.dispatchTouchEvent(event);
 				return false;
-				//} else {
-				//	return true;
-				//}
-				//super.onTouchEvent(e);
-				//return false;
 			}
-				//return true; //digest this event.
-		});
+		};
+		b.setOnTouchListener(touchListener);
 
 		//this.getSupportActionBar().setCustomView(b,tmp2);
 		//this.getSupportActionBar().setDisplayOptions(androidx.appcompat.app.ActionBar.DISPLAY_SHOW_CUSTOM);

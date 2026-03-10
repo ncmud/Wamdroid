@@ -591,7 +591,6 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 	private class listItemClicked implements ListView.OnItemClickListener {
 		
 		//@Override
-		@TargetApi(11)
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			
@@ -962,7 +961,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
     			
     		}
     	}
-		return found;
+    	return found;
 	}
 	
 	private void DoExport(String filename, boolean external) {
@@ -1156,15 +1155,15 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 			builder.setTitle("Version " + versionString + "t"+testVersion+" details!");
 			
 			final SpannableString s = new SpannableString(Launcher.this.getResources().getString(R.string.whatisnew_test));
-		    Linkify.addLinks(s, Linkify.ALL);
-	
+			Linkify.addLinks(s, Linkify.ALL);
+
 			builder.setMessage(s);
 		} else {
 			builder.setTitle("Version " + versionString + " details!");
-			
+
 			final SpannableString s = new SpannableString(Launcher.this.getResources().getString(R.string.whatisnew));
-		    Linkify.addLinks(s, Linkify.ALL);
-	
+			Linkify.addLinks(s, Linkify.ALL);
+
 			builder.setMessage(s);
 		}
 		builder.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
@@ -1223,9 +1222,9 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		
 		String windowAction = ConfigurationLoader.getConfigurationValue("windowAction",this);
 		the_intent = new Intent(windowAction);
-    	the_intent.putExtra("DISPLAY",launch.getDisplayName());
-    	the_intent.putExtra("HOST", launch.getHostName());
-    	the_intent.putExtra("PORT", launch.getPortString());
+		the_intent.putExtra("DISPLAY",launch.getDisplayName());
+		the_intent.putExtra("HOST", launch.getHostName());
+		the_intent.putExtra("PORT", launch.getPortString());
     	
     	//write out the intent to the service so it can do some lookup work in advance of the connection, such as loading the settings wad
     	//SharedPreferences prefs = Launcher.this.getSharedPreferences("SERVICE_INFO",0);

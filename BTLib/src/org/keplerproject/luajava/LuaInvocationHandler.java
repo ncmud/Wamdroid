@@ -102,14 +102,14 @@ public class LuaInvocationHandler implements InvocationHandler
 			
 	  		obj.L.getGlobal("Note");
 	  		
-			obj.L.pushString(error);
-			int ret = obj.L.pcall(1, 1, -3);
-			if(ret !=0) {
-				Log.e("DFG", "failure");
-			} else {
-				Log.e("DFG", "success");
-				obj.L.pop(2);
-			}
+	  		obj.L.pushString(error);
+	  		int ret = obj.L.pcall(1, 1, -3);
+	  		if(ret !=0) {
+	  			Log.e("DFG", "failure");
+	  		} else {
+	  			Log.e("DFG", "success");
+	  			obj.L.pop(2);
+	  		}
 			//	obj.L.pop(2);
 			//	Log.e("DFG", "not a function");
 			//}

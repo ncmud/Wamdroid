@@ -45,11 +45,10 @@
   			<TableRow>
   				<TextView
   					android:text="@string/label_name"
-  					android:paddingStart="10dip"/>
+  					android:paddingStart="10dip"
+  					android:paddingEnd="10dip"/>
   				<EditText
-  					android:id="@+id/trigger_editor_name"
-  					android:hint=""
-  					android:layout_marginEnd="10dip"
+  					android:id="@+id/trigger_editor_name"  					android:layout_marginEnd="10dip"
   					android:width="300dip"
   					android:singleLine="true"
   					android:inputType="text"/>
@@ -57,11 +56,10 @@
   			<TableRow>
   				<TextView
   					android:text="@string/label_pattern"
-  					android:paddingStart="10dip"/>
+  					android:paddingStart="10dip"
+  					android:paddingEnd="10dip"/>
   				<EditText
-  					android:id="@+id/trigger_editor_pattern"
-  					android:hint=""
-  					android:layout_marginEnd="10dip"
+  					android:id="@+id/trigger_editor_pattern"  					android:layout_marginEnd="10dip"
   					android:width="300dip"
   					android:singleLine="true"
   					android:inputType="text"/>
@@ -118,8 +116,8 @@
   			</TableRow>
   			<TableRow android:id="@+id/trigger_new_responder_row">
   				<Button android:id="@+id/trigger_new_notification" android:text="@string/btn_new_action" android:paddingStart="30dip" android:paddingEnd="30dip"/>
-  				<TextView android:text=""/>
-  				<TextView android:text=""/>
+  				<TextView />
+  				<TextView />
   			</TableRow>
   		</TableLayout>
   	</LinearLayout>

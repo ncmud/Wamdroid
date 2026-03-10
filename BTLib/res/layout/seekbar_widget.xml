@@ -19,6 +19,6 @@
 		android:layout_width="125dip"
 		android:id="@+id/extra"
 		android:textStyle="bold"
-		android:textSize="8sp"
+		android:textSize="12sp"
 		android:text="@string/label_two_point_five_seconds"/>
  </LinearLayout>

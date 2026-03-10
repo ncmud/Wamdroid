@@ -21,7 +21,7 @@
 		  		android:layout_width="40dip"
 		  		android:layout_height="wrap_content"
 		  		android:text="@string/option_auto"
-		  		android:textSize="10sp"
+		  		android:textSize="12sp"
 		  		android:textStyle="bold"
 		  		android:gravity="top|center"/>
 		  	
@@ -41,7 +41,7 @@
 		  		android:layout_width="60dip"
 		  		android:layout_height="wrap_content"
 		  		android:text="@string/label_chars"
-		  		android:textSize="10sp"
+		  		android:textSize="12sp"
 		  		android:textStyle="bold"
 		  		android:id="@+id/extra"
 		  		android:gravity="top|center"/>

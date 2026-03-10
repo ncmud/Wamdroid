@@ -23,7 +23,6 @@ import com.offsetnull.bt.settings.ConfigurationLoader;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
@@ -101,12 +100,7 @@ public class SettingsPersistence {
 				addextra = true;
 			}
 
-			if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ECLAIR_MR1) {
-				cachedir = context.getContext().getExternalCacheDir();
-			} else {
-				String packagename = context.getContext().getPackageName();
-				cachedir = new File(Environment.getExternalStorageDirectory(),"/Android/data/"+packagename+"/cache/");
-			}
+			cachedir = context.getContext().getExternalCacheDir();
 		}
 
 		boolean passed = true;
@@ -169,13 +163,7 @@ public class SettingsPersistence {
 				File extfile = null;
 				FileOutputStream extfilestream = null;
 				passed = true;
-				File extcachedir = null;
-				if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ECLAIR_MR1) {
-					extcachedir = context.getContext().getExternalCacheDir();
-				} else {
-					String packagename = context.getContext().getPackageName();
-					extcachedir = new File(Environment.getExternalStorageDirectory(),"/Android/data/"+packagename+"/cache/");
-				}
+				File extcachedir = context.getContext().getExternalCacheDir();
 				File tmppluginfile = null;
 				String currentplugin = "";
 				try {
