@@ -102,24 +102,14 @@ public class LuaInvocationHandler implements InvocationHandler
 			
 	  		obj.L.getGlobal("Note");
 	  		
-			//if(obj.L.getLuaObject(-1).isFunction()) {
-				
-				//need to start iterating the given map, re-creating the table on the other side.
-				//pushTable("",obj);
-				obj.L.pushString(error);
-				//obj.L.pushNumber(2);
-				int ret = obj.L.pcall(1, 1, -3);
-				if(ret !=0) {
-					//displayLuaError("WindowXCallT Error:" + obj.L.getLuaObject(-1).getString());
-					//crazy i don't think this can happen.
-					Log.e("DFG", "failure");
-				} else {
-					//success!
-					Log.e("DFG", "success");
-					obj.L.pop(2);
-				}
-				
-			//} else {
+			obj.L.pushString(error);
+			int ret = obj.L.pcall(1, 1, -3);
+			if(ret !=0) {
+				Log.e("DFG", "failure");
+			} else {
+				Log.e("DFG", "success");
+				obj.L.pop(2);
+			}
 			//	obj.L.pop(2);
 			//	Log.e("DFG", "not a function");
 			//}

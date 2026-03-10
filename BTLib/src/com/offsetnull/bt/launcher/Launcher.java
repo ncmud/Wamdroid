@@ -194,7 +194,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 					return;
 				}
 				//int testversion = this.getPackageManager().getApplicationInfo(launcher_source, PackageManager.GET_META_DATA).metaData.getInt("TEST_VERSION");
-				((TextView)findViewById(R.id.update_label)).setText("Test Version " + testversion);
+				((TextView)findViewById(R.id.update_label)).setText(getString(R.string.fmt_test_version, String.valueOf(testversion)));
 				
 				boolean needsupdate = true;
 				
@@ -432,7 +432,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 				dowhatsnew = true;
 				SharedPreferences.Editor edit = this.getSharedPreferences("TEST_VERSION_DOWHATSNEW", Context.MODE_PRIVATE).edit();
 				edit.putInt("TEST_VERSION", testVersion);
-				edit.commit();
+				edit.apply();
 			}
 		}
 		
@@ -610,7 +610,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 			Editor e = pref.edit();
 			e.putInt("STATUS_BAR_HEIGHT", statusBarHeight);
 			e.putInt("TITLE_BAR_HEIGHT", titleBarHeight);
-		    e.commit();
+		    e.apply();
 			
 			MudConnection muc = apdapter.getItem(arg2);		
 			
@@ -637,7 +637,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 	    	
 	    	
 	    	//edit.putString("SETTINGS_PATH", muc.getDisplayName());
-	    	//edit.commit();
+	    	//edit.apply();
 	    	
 	    	//check to see if the service is actually running
 	    	
@@ -1196,7 +1196,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		SharedPreferences.Editor editor = sprefs.edit();
 		editor.putBoolean("CONNECTED", false);
 		editor.putBoolean("FINISHSTART", true);
-		editor.commit();
+		editor.apply();
 		//Log.e("LAUNCHER","SERVICE NOT STARTED, AM RESETTING THE INITIALIZER BOOLS IN " + prefsname);
 		
 		//Launcher.this.startActivity(the_intent);
@@ -1204,7 +1204,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 		//SharedPreferences.Editor editor = sprefs.edit();
 		//editor.putBoolean("CONNECTED", false);
 		//editor.putBoolean("FINISHSTART", true);
-		editor.commit();
+		editor.apply();
 		
 		
 		//launch = muc;
@@ -1233,7 +1233,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
     	
     	
     	//edit.putString("SETTINGS_PATH", launch.getDisplayName());
-    	//edit.commit();
+    	//edit.apply();
 		//Pattern invalidchars = Pattern.compile("\\W"); 
 		//Matcher replacebadchars = invalidchars.matcher(launch.getDisplayName());
 		//String prefsname = replacebadchars.replaceAll("") + ".PREFS";
@@ -1248,7 +1248,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
     	
     	
     	edit.putString("SETTINGS_PATH", launch.getDisplayName());
-    	edit.commit();
+    	edit.apply();
     	
     	//this.unbindService(connectionChecker);
     	
@@ -1501,10 +1501,10 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 				TextView host = (TextView)v.findViewById(R.id.hoststring);
 				//TextView port = (TextView)v.findViewById(R.id.port);
 				if(title != null) {
-					title.setText(" " + m.getDisplayName());
+					title.setText(getString(R.string.fmt_connection_display, m.getDisplayName()));
 				}
 				if(host != null) {
-					host.setText("\t"  + m.getHostName() + ":" + m.getPortString());
+					host.setText(getString(R.string.fmt_connection_host, m.getHostName(), m.getPortString()));
 				}
 				
 				if(m.isConnected()) {
@@ -1874,7 +1874,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 			case MESSAGE_USERNAME:
 				SharedPreferences.Editor edit = outer.getSharedPreferences("TEST_USER", Context.MODE_PRIVATE).edit();
 				edit.putString("USER_NAME", (String)msg.obj);
-				edit.commit();
+				edit.apply();
 				break;
 			case MESSAGE_WHATSNEW:
 				break;

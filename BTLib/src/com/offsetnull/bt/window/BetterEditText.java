@@ -26,6 +26,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import android.widget.EditText;
 import android.widget.TextView;
 
+@SuppressLint("AppCompatCustomView")
 public class BetterEditText extends EditText {
 
 	private Boolean useFullScreen = false;

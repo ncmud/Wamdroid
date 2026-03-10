@@ -2,6 +2,7 @@ package com.offsetnull.bt.settings;
 
 
 import com.offsetnull.bt.R;
+import android.annotation.SuppressLint;
 import com.offsetnull.bt.validator.Validator;
 
 import android.content.Context;
@@ -50,6 +51,7 @@ public class CheckedEditPreference extends Preference  {
 		//android.R.layout.
 	}
 	
+	@SuppressLint("SetTextI18n")
 	public void onBindView(View in) {
 		super.onBindView(in);
 		View v = keeper;
@@ -114,6 +116,7 @@ public class CheckedEditPreference extends Preference  {
 			checker.add(towatch, Validator.VALIDATE_NUMBER_NOT_ZERO, "Characters");
 		}
 		
+		@SuppressLint("SetTextI18n")
 		public boolean onKey(View v, int keyCode, KeyEvent event) {
 			
 			if(event.getAction() == KeyEvent.ACTION_UP) {
@@ -128,7 +131,7 @@ public class CheckedEditPreference extends Preference  {
 				if(!(towatch.getText().toString().equals(""))) {
 					SharedPreferences.Editor edit = CheckedEditPreference.this.getEditor();
 					edit.putInt(CheckedEditPreference.this.getKey(), Integer.parseInt(towatch.getText().toString()));
-					edit.commit();
+					edit.apply();
 					//Log.e("sfdFD","SAVING:" +towatch.getText().toString() + " with key: " + CheckedEditPreference.this.getKey());
 				}
 			}
@@ -157,6 +160,7 @@ public class CheckedEditPreference extends Preference  {
 			display = pIn;
 		}
 
+		@SuppressLint("SetTextI18n")
 		public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
 			if(isChecked) {
 				toggle1.setEnabled(false);
@@ -167,13 +171,13 @@ public class CheckedEditPreference extends Preference  {
 				toggle1.setText(Integer.toString(calc));
 				SharedPreferences.Editor edit = getEditor();
 				edit.putInt(CheckedEditPreference.this.getKey(), 0);
-				edit.commit();
+				edit.apply();
 			} else {
 				toggle1.setEnabled(true);
 				toggle2.setEnabled(true);
 				SharedPreferences.Editor edit = getEditor();
 				edit.putInt(CheckedEditPreference.this.getKey(),Integer.parseInt(toggle1.getText().toString()));
-				edit.commit();
+				edit.apply();
 			}
 		}
 		

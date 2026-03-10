@@ -17,9 +17,11 @@ import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.annotation.SuppressLint;
 import android.view.MotionEvent;
 import android.view.View;
 
+@SuppressLint("ViewConstructor")
 public class SlickButton extends View {
 
 	boolean hasfocus = false;
@@ -222,6 +224,7 @@ public class SlickButton extends View {
 	
 	private DISPLAY_STATE state = DISPLAY_STATE.NONE;
 	
+	@SuppressLint("ClickableViewAccessibility")
 	public boolean onTouchEvent(MotionEvent e) {
 		
 		//if(!nudged) {
