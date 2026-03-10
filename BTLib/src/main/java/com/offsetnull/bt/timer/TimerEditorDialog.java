@@ -122,7 +122,7 @@ public class TimerEditorDialog extends Dialog
 
         if (isEditor) {
             name.setText(orig_timer.getName());
-            seconds.setText(orig_timer.getSeconds().toString());
+            seconds.setText(String.valueOf(orig_timer.getSeconds()));
             repeat.setChecked(orig_timer.isRepeat());
             donebutton.setText(R.string.btn_done);
         }
