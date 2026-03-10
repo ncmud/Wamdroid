@@ -2,6 +2,7 @@ package com.offsetnull.bt.settings;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -247,12 +249,21 @@ public class HyperSettingsActivity extends PreferenceActivity {
 		//Log.e("KLSDF","STARTING ONSTART");
 	}
 	
-	public Handler importexport = new Handler() {
-		public void handleMessage(Message msg) {
-			//we only get one message, so we do the dumpout.
-			dumpout();
+	private static class ImportExportHandler extends Handler {
+		private final WeakReference<HyperSettingsActivity> ref;
+		ImportExportHandler(HyperSettingsActivity outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
 		}
-	};
+		@Override
+		public void handleMessage(Message msg) {
+			HyperSettingsActivity outer = ref.get();
+			if (outer == null) return;
+			//we only get one message, so we do the dumpout.
+			outer.dumpout();
+		}
+	}
+	public Handler importexport = new ImportExportHandler(this);
 	
 	public void onBackPressed() {
 		dumpout();

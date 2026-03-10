@@ -1,5 +1,6 @@
 package com.offsetnull.bt.timer;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -236,19 +238,26 @@ public class BetterTimerSelectionDialog extends PluginFilterSelectionDialog impl
 		
 	}
 	
-	private final Handler triggerEditorDoneHandler = new Handler() {
-		
+	private static class TimerEditorDoneHandler extends Handler {
+		private final WeakReference<BetterTimerSelectionDialog> ref;
+		TimerEditorDoneHandler(BetterTimerSelectionDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
 		public void handleMessage(Message msg) {
+			BetterTimerSelectionDialog outer = ref.get();
+			if (outer == null) return;
 			switch(msg.what) {
 			case 100:
 				TimerData d = (TimerData)msg.obj;
-				BetterTimerSelectionDialog.this.buildList();
-				BetterTimerSelectionDialog.this.scrollToSelection(d.getName());
+				outer.buildList();
+				outer.scrollToSelection(d.getName());
 				break;
 			}
-			
 		}
-	};
+	}
+	private final Handler triggerEditorDoneHandler = new TimerEditorDoneHandler(this);
 	
 	
 

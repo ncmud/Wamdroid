@@ -3,6 +3,7 @@ package com.offsetnull.bt.window;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -27,6 +28,7 @@ import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -529,14 +531,23 @@ public class PluginSelectorDialog extends Dialog {
 		
 	}
 	
-	private Handler dismissTimer = new Handler() {
+	private static class DismissTimerHandler extends Handler {
+		private final WeakReference<PluginSelectorDialog> ref;
+		DismissTimerHandler(PluginSelectorDialog outer) {
+			super(Looper.getMainLooper());
+			ref = new WeakReference<>(outer);
+		}
+		@Override
 		public void handleMessage(Message msg) {
-			Toast t = Toast.makeText(PluginSelectorDialog.this.getContext(), "Adding plugin and reloading settings.",Toast.LENGTH_LONG);
-			PluginSelectorDialog.this.dismiss();
-			PluginSelectorDialog.this.mListener.onPluginLoad();
+			PluginSelectorDialog outer = ref.get();
+			if (outer == null) return;
+			Toast t = Toast.makeText(outer.getContext(), "Adding plugin and reloading settings.",Toast.LENGTH_LONG);
+			outer.dismiss();
+			outer.mListener.onPluginLoad();
 			t.show();
 		}
-	};
+	}
+	private Handler dismissTimer = new DismissTimerHandler(this);
 	
     public interface OnPluginLoadListener {
     	public void onPluginLoad();

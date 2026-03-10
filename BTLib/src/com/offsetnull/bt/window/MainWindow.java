@@ -25,6 +25,7 @@ import org.keplerproject.luajava.LuaState;
 import org.keplerproject.luajava.LuaStateFactory;
 
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -55,6 +56,7 @@ import android.os.Debug;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import com.google.android.material.snackbar.Snackbar;
@@ -342,6 +344,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	private int titleBarHeight;
 	
 	//private LayerManager mLayers = null;
+	@SuppressLint("ResourceType")
 	public void onCreate(Bundle icicle) {
 		//Log.e("Window","start onCreate");
 		//Debug.startMethodTracing("window");
@@ -2977,6 +2980,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		//Debug.stopMethodTracing();
 	}
 	
+	@SuppressLint("ResourceType")
 	private void initWindow(WindowToken w,String dataDir) {
 		RelativeLayout rl = (RelativeLayout)this.findViewById(R.id.window_container);
 		View v = rl.findViewWithTag(w.getName());
@@ -3045,6 +3049,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 	}
 	
 	
+	@SuppressLint("ResourceType")
 	public void cleanupWindows() {
 		RelativeLayout rl = (RelativeLayout)this.findViewById(R.id.window_container);
 		if(mWindows == null) return;
@@ -3291,6 +3296,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		private final WeakReference<MainWindow> mActivity;
 
 		MainWindowHandler(MainWindow activity) {
+			super(Looper.getMainLooper());
 			mActivity = new WeakReference<>(activity);
 		}
 
@@ -3308,6 +3314,7 @@ public class MainWindow extends AppCompatActivity implements MainWindowCallback,
 		private final WeakReference<MainWindow> mActivity;
 
 		ExportHandler(MainWindow activity) {
+			super(Looper.getMainLooper());
 			mActivity = new WeakReference<>(activity);
 		}
 
