@@ -2012,6 +2012,7 @@ public class Launcher extends AppCompatActivity implements ReadyListener,Activit
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions,
 										   int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		boolean external = false;
 		if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			external = true;

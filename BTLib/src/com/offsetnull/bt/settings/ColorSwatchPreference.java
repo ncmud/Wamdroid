@@ -50,7 +50,8 @@ public class ColorSwatchPreference extends Preference implements ColorPickerDial
 	}
 	
 	public void onBindView(View v) {
-		
+		super.onBindView(v);
+
 		Button b = (Button) v.findViewById(R.id.colorswatch);
 		TextView summary = (TextView) v.findViewById(android.R.id.summary);
 		summary.setText("Text for your viewing pleasuer.");
