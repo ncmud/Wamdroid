@@ -1,9 +1,11 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
 
 android {
 	namespace "com.happygoatstudios.bt"
-	compileSdk 35
+	compileSdk libs.versions.compileSdk.get().toInteger()
 
 	signingConfigs {
 		release {
@@ -15,8 +17,8 @@ android {
 	}
 
 	defaultConfig {
-		minSdk 31
-		targetSdk 35
+		minSdk libs.versions.minSdk.get().toInteger()
+		targetSdk libs.versions.targetSdk.get().toInteger()
 		versionCode 224
 		versionName "2.2"
 	}
@@ -27,7 +29,7 @@ android {
 	}
 
 	kotlinOptions {
-		jvmTarget = '17'
+		jvmTarget = libs.versions.jvmTarget.get()
 	}
 
 	buildTypes {
