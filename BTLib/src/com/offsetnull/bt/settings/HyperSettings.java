@@ -183,9 +183,9 @@ public class HyperSettings {
 			out.startTag("", "root");
 			
 			out.startTag("", BaseParser.TAG_WINDOW);
-			out.attribute("", BaseParser.ATTR_LINESIZE, new Integer(data.getLineSize()).toString());
-			out.attribute("", BaseParser.ATTR_SPACEEXTRA, new Integer(data.getLineSpaceExtra()).toString());
-			out.attribute("", BaseParser.ATTR_MAXLINES, new Integer(data.getMaxLines()).toString());
+			out.attribute("", BaseParser.ATTR_LINESIZE, Integer.valueOf(data.getLineSize()).toString());
+			out.attribute("", BaseParser.ATTR_SPACEEXTRA, Integer.valueOf(data.getLineSpaceExtra()).toString());
+			out.attribute("", BaseParser.ATTR_MAXLINES, Integer.valueOf(data.getMaxLines()).toString());
 			out.attribute("", BaseParser.ATTR_FONTNAME, data.getFontName());
 			out.attribute("", BaseParser.ATTR_FONTPATH, data.getFontPath());
 			out.attribute("", BaseParser.ATTR_USEEXTRACTUI, (data.isUseExtractUI()) ? "true" : "false");
@@ -305,9 +305,9 @@ public class HyperSettings {
 				if(setdefaults.getSelectedColor() != SlickButtonData.DEFAULT_SELECTED_COLOR) out.attribute("", BaseParser.ATTR_SELECTEDCOLOR, Integer.toHexString(setdefaults.getSelectedColor()));
 				if(setdefaults.getFlipColor() != SlickButtonData.DEFAULT_FLIP_COLOR) out.attribute("", BaseParser.ATTR_FLIPCOLOR, Integer.toHexString(setdefaults.getFlipColor()));
 				if(setdefaults.getLabelColor() != SlickButtonData.DEFAULT_LABEL_COLOR) out.attribute("", BaseParser.ATTR_LABELCOLOR, Integer.toHexString(setdefaults.getLabelColor()));
-				if(setdefaults.getButtonHeight() != SlickButtonData.DEFAULT_BUTTON_HEIGHT) out.attribute("", BaseParser.ATTR_BUTTONHEIGHT, new Integer(setdefaults.getButtonHeight()).toString());
-				if(setdefaults.getButtonWidth() != SlickButtonData.DEFAULT_BUTTON_WDITH) out.attribute("", BaseParser.ATTR_BUTTONWIDTH, new Integer(setdefaults.getButtonWidth()).toString());
-				if(setdefaults.getLabelSize() != SlickButtonData.DEFAULT_LABEL_SIZE) out.attribute("", BaseParser.ATTR_LABELSIZE, new Integer(setdefaults.getLabelSize()).toString());
+				if(setdefaults.getButtonHeight() != SlickButtonData.DEFAULT_BUTTON_HEIGHT) out.attribute("", BaseParser.ATTR_BUTTONHEIGHT, Integer.valueOf(setdefaults.getButtonHeight()).toString());
+				if(setdefaults.getButtonWidth() != SlickButtonData.DEFAULT_BUTTON_WDITH) out.attribute("", BaseParser.ATTR_BUTTONWIDTH, Integer.valueOf(setdefaults.getButtonWidth()).toString());
+				if(setdefaults.getLabelSize() != SlickButtonData.DEFAULT_LABEL_SIZE) out.attribute("", BaseParser.ATTR_LABELSIZE, Integer.valueOf(setdefaults.getLabelSize()).toString());
 				if(setdefaults.getFlipLabelColor() != SlickButtonData.DEFAULT_FLIPLABEL_COLOR) out.attribute("", BaseParser.ATTR_FLIPLABELCOLOR, Integer.toHexString(setdefaults.getFlipLabelColor()));
 				if(setdefaults.isLocked() != ColorSetSettings.DEFAULT_LOCKED) out.attribute("", BaseParser.ATTR_LOCKED, setdefaults.isLocked() ? "true" : "false");
 				if(setdefaults.isLockNewButtons() != ColorSetSettings.DEFAULT_LOCKNEWBUTTONS) out.attribute("", BaseParser.ATTR_LOCKNEWBUTTONS, setdefaults.isLockNewButtons() ? "true" : "false");
@@ -317,20 +317,20 @@ public class HyperSettings {
 				
 				for(SlickButtonData button : the_set) {
 					out.startTag("",BaseParser.TAG_BUTTON);
-					out.attribute("", BaseParser.ATTR_XPOS, new Integer(button.getX()).toString());
-					out.attribute("", BaseParser.ATTR_YPOS, new Integer(button.getY()).toString());
+					out.attribute("", BaseParser.ATTR_XPOS, Integer.valueOf(button.getX()).toString());
+					out.attribute("", BaseParser.ATTR_YPOS, Integer.valueOf(button.getY()).toString());
 					if(!button.getLabel().equals(""))  out.attribute("", BaseParser.ATTR_LABEL, button.getLabel());
 					if(!button.getText().equals("")) out.attribute("", BaseParser.ATTR_CMD, button.getText());
 					if(!button.getFlipCommand().equals("")) out.attribute("", BaseParser.ATTR_FLIPCMD, button.getFlipCommand());
-					out.attribute("", BaseParser.ATTR_MOVEMETHOD, new Integer(button.MOVE_STATE).toString());
+					out.attribute("", BaseParser.ATTR_MOVEMETHOD, Integer.valueOf(button.MOVE_STATE).toString());
 					if(!button.getTargetSet().equals("")) out.attribute("", BaseParser.ATTR_TARGETSET, button.getTargetSet());
-					if(button.getWidth() != setdefaults.getButtonWidth()) out.attribute("", BaseParser.ATTR_WIDTH, new Integer(button.getWidth()).toString());
-					if(button.getHeight() != setdefaults.getButtonHeight()) out.attribute("", BaseParser.ATTR_HEIGHT, new Integer(button.getHeight()).toString()); 
+					if(button.getWidth() != setdefaults.getButtonWidth()) out.attribute("", BaseParser.ATTR_WIDTH, Integer.valueOf(button.getWidth()).toString());
+					if(button.getHeight() != setdefaults.getButtonHeight()) out.attribute("", BaseParser.ATTR_HEIGHT, Integer.valueOf(button.getHeight()).toString()); 
 					if(button.getPrimaryColor() != setdefaults.getPrimaryColor())  out.attribute("", BaseParser.ATTR_PRIMARYCOLOR, Integer.toHexString(button.getPrimaryColor()));
 					if(button.getSelectedColor() != setdefaults.getSelectedColor())  out.attribute("", BaseParser.ATTR_SELECTEDCOLOR, Integer.toHexString(button.getSelectedColor()));
 					if(button.getFlipColor() != setdefaults.getFlipColor())  out.attribute("", BaseParser.ATTR_FLIPCOLOR, Integer.toHexString(button.getFlipColor()).toString());
 					if(button.getLabelColor() != setdefaults.getLabelColor())  out.attribute("", BaseParser.ATTR_LABELCOLOR, Integer.toHexString(button.getLabelColor()));
-					if(button.getLabelSize() != setdefaults.getLabelSize())  out.attribute("", BaseParser.ATTR_LABELSIZE,  new Integer(button.getLabelSize()).toString());
+					if(button.getLabelSize() != setdefaults.getLabelSize())  out.attribute("", BaseParser.ATTR_LABELSIZE,  Integer.valueOf(button.getLabelSize()).toString());
 					if(button.getFlipLabelColor() != setdefaults.getFlipLabelColor()) out.attribute("", BaseParser.ATTR_FLIPLABELCOLOR, Integer.toHexString(button.getFlipLabelColor()));
 					if(!button.getFlipLabel().equals("")) out.attribute("", BaseParser.ATTR_FLIPLABEL, button.getFlipLabel());
 					out.endTag("", BaseParser.TAG_BUTTON);
@@ -431,7 +431,7 @@ public class HyperSettings {
 				ToastResponder toasty = (ToastResponder)responder;
 				out.startTag("", BaseParser.TAG_TOASTRESPONDER);
 				out.attribute("", BaseParser.ATTR_TOASTMESSAGE, toasty.getMessage());
-				out.attribute("", BaseParser.ATTR_TOASTDELAY, new Integer(toasty.getDelay()).toString());
+				out.attribute("", BaseParser.ATTR_TOASTDELAY, Integer.valueOf(toasty.getDelay()).toString());
 				out.attribute("", BaseParser.ATTR_FIRETYPE, toasty.getFireType().getString());
 				out.endTag("", BaseParser.TAG_TOASTRESPONDER);
 				break;

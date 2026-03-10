@@ -24,8 +24,8 @@ public class SpeedwalkCommand extends SpecialCommand {
 	public Object execute(Object o,Connection c) {
 		String str = (String)o;
 		
-		Character cr = new Character((char)13);
-		Character lf = new Character((char)10);
+		Character cr = Character.valueOf((char)13);
+		Character lf = Character.valueOf((char)10);
 		String crlf = cr.toString() + lf.toString();
 		//str will be of the form, 3d2enewsnu3d32wijkl
 		//direction ordinals are now configurable.

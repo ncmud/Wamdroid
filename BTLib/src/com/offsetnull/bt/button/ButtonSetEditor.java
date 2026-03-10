@@ -141,9 +141,9 @@ public class ButtonSetEditor extends Dialog implements ColorPickerDialog.OnColor
 		buttonHeight = (EditText)findViewById(R.id.btnset_editor_height_et);
 		buttonWidth = (EditText)findViewById(R.id.btnset_editor_width_et);
 		
-		labelSize.setText(new Integer(oldsettings.getLabelSize()).toString());
-		buttonHeight.setText(new Integer(oldsettings.getButtonHeight()).toString());
-		buttonWidth.setText(new Integer(oldsettings.getButtonWidth()).toString());
+		labelSize.setText(Integer.valueOf(oldsettings.getLabelSize()).toString());
+		buttonHeight.setText(Integer.valueOf(oldsettings.getButtonHeight()).toString());
+		buttonWidth.setText(Integer.valueOf(oldsettings.getButtonWidth()).toString());
 		
 		Button done = (Button)findViewById(R.id.btnset_done_btn);
 		Button cancel = (Button)findViewById(R.id.btnset_cancel_btn);

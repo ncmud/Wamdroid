@@ -178,17 +178,17 @@ public class ColorActionEditor extends Dialog {
 		grey_val.setText(Integer.toString(greyInt));
 		sys_val.setText(Integer.toString(sysInt));
 		
-		red_up.setTag(new Integer(0));
-		green_up.setTag(new Integer(1));
-		blue_up.setTag(new Integer(2));
-		grey_up.setTag(new Integer(3));
-		sys_up.setTag(new Integer(4));
+		red_up.setTag(Integer.valueOf(0));
+		green_up.setTag(Integer.valueOf(1));
+		blue_up.setTag(Integer.valueOf(2));
+		grey_up.setTag(Integer.valueOf(3));
+		sys_up.setTag(Integer.valueOf(4));
 		
-		red_down.setTag(new Integer(0));
-		green_down.setTag(new Integer(1));
-		blue_down.setTag(new Integer(2));
-		grey_down.setTag(new Integer(3));
-		sys_down.setTag(new Integer(4));
+		red_down.setTag(Integer.valueOf(0));
+		green_down.setTag(Integer.valueOf(1));
+		blue_down.setTag(Integer.valueOf(2));
+		grey_down.setTag(Integer.valueOf(3));
+		sys_down.setTag(Integer.valueOf(4));
 		
 		red_up.setOnClickListener(mUpListener);
 		green_up.setOnClickListener(mUpListener);

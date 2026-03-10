@@ -14,7 +14,7 @@ public class ListOption extends BaseOption {
 	public ListOption() {
 		type = TYPE.LIST;
 		items = new ArrayList<String>();
-		this.value = new Integer(0);
+		this.value = Integer.valueOf(0);
 	}
 
 	public ListOption copy() {

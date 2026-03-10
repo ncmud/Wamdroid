@@ -53,8 +53,8 @@ public class AckResponder extends TriggerResponder {
 		return true;
 	}
 
-	Character cr = new Character((char)13);
-	Character lf = new Character((char)10);
+	Character cr = Character.valueOf((char)13);
+	Character lf = Character.valueOf((char)10);
 	String crlf = cr.toString() + lf.toString();
 
 	@Override

@@ -49,7 +49,7 @@ public class ConnectionSettingsPlugin extends Plugin {
 		orientation.setTitle("Orientation");
 		orientation.setDescription("Sets the layout mode for the application. Automatic will switch the layout when the device rotates.");
 		orientation.setKey("orientation");
-		orientation.setValue(new Integer(0));
+		orientation.setValue(Integer.valueOf(0));
 		orientation.addItem("Automatic");
 		orientation.addItem("Landscape");
 		orientation.addItem("Portrait");
@@ -158,7 +158,7 @@ public class ConnectionSettingsPlugin extends Plugin {
 		auto_reconnect_limit.setTitle("Auto Reconnect Tries");
 		auto_reconnect_limit.setDescription("Hard limit of how many times reconnection will be attempted.");
 		auto_reconnect_limit.setKey("auto_reconnect_limit");
-		auto_reconnect_limit.setValue(new Integer(5));
+		auto_reconnect_limit.setValue(Integer.valueOf(5));
 		servOptions.addOption(auto_reconnect_limit);
 		
 		//auto_reconnect,

@@ -1365,10 +1365,10 @@ NewTrigger("tmp2", "fox", { regex = false },
 						case LUA_TNIL:
 							break;
 						case LUA_TNUMBER:
-							value = new Double(obj.getNumber());
+							value = Double.valueOf(obj.getNumber());
 							break;
 						case LUA_TBOOLEAN:
-							value = new Boolean(obj.getBoolean());
+							value = Boolean.valueOf(obj.getBoolean());
 							break;
 						case LUA_TSTRING:
 							value = obj.getString();
@@ -1410,19 +1410,19 @@ NewTrigger("tmp2", "fox", { regex = false },
 					}
 					
 					if(soundpath == null) {
-						soundpath = new Boolean(false);
+						soundpath = Boolean.valueOf(false);
 					}
 					
 					if(vibrate == null) {
-						vibrate = new Boolean(false);
+						vibrate = Boolean.valueOf(false);
 					}
 					
 					if(light == null) {
-						light = new Boolean(false);
+						light = Boolean.valueOf(false);
 					}
 					
 					if(spawnNew == null) {
-						spawnNew = new Boolean(false);
+						spawnNew = Boolean.valueOf(false);
 					}
 					
 					tmp.setTitle((String)title);
@@ -1540,11 +1540,11 @@ NewTrigger("tmp2", "fox", { regex = false },
 					Object foreground = data.get("foreground");
 					Object background = data.get("background");
 					if(foreground == null || !(foreground instanceof Double)) {
-						foreground = new Double(256);
+						foreground = Double.valueOf(256);
 					}
 					
 					if(background == null || !(background instanceof Double)) {
-						background = new Double(232);
+						background = Double.valueOf(232);
 					}
 					tmp.setColor(((Double)foreground).intValue());
 					tmp.setBackgroundColor(((Double)background).intValue());

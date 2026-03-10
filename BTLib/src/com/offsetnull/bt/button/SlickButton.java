@@ -162,8 +162,8 @@ public class SlickButton extends View {
 		//Log.e("SB","DISPATCHING " + istr);
 		String tmp = istr;
 		//history.addCommand(data);
-		Character cr = new Character((char)13);
-		Character lf = new Character((char)10);
+		Character cr = Character.valueOf((char)13);
+		Character lf = Character.valueOf((char)10);
 		String crlf = cr.toString() + lf.toString();
 		tmp = tmp.concat(crlf);
 		//ByteBuffer buf = ByteBuffer.allocate(tmp.length());

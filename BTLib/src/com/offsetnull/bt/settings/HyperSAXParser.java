@@ -83,10 +83,10 @@ public class HyperSAXParser extends BaseParser {
 
 			public void start(Attributes attributes) {
 				//read in attribute values.
-				//tmp.setLineSize(new Integer(attributes.getValue("",ATTR_LINESIZE)).intValue());
-				tmp.setLineSize((attributes.getValue("",ATTR_LINESIZE) == null) ? 18 : new Float(Float.parseFloat(attributes.getValue("",ATTR_LINESIZE))).intValue());
-				tmp.setLineSpaceExtra(new Integer(attributes.getValue("",ATTR_SPACEEXTRA)).intValue());
-				tmp.setMaxLines(new Integer(attributes.getValue("",ATTR_MAXLINES)).intValue());
+				//tmp.setLineSize(Integer.valueOf(attributes.getValue("",ATTR_LINESIZE)).intValue());
+				tmp.setLineSize((attributes.getValue("",ATTR_LINESIZE) == null) ? 18 : Float.valueOf(Float.parseFloat(attributes.getValue("",ATTR_LINESIZE))).intValue());
+				tmp.setLineSpaceExtra(Integer.valueOf(attributes.getValue("",ATTR_SPACEEXTRA)).intValue());
+				tmp.setMaxLines(Integer.valueOf(attributes.getValue("",ATTR_MAXLINES)).intValue());
 				tmp.setFontName(attributes.getValue("",ATTR_FONTNAME));
 				tmp.setFontPath(attributes.getValue("",ATTR_FONTPATH));
 				tmp.setUseExtractUI( (attributes.getValue("",ATTR_USEEXTRACTUI) == null) ? false : (attributes.getValue("",ATTR_USEEXTRACTUI).equals("true")) ? true : false);
@@ -110,7 +110,7 @@ public class HyperSAXParser extends BaseParser {
 				tmp.setRemoveExtraColor( (attributes.getValue("",ATTR_REMOVEEXTRACOLOR) == null) ? true : (attributes.getValue("",ATTR_REMOVEEXTRACOLOR).equals("true")) ? true : false);
 				
 				
-				int wmode = new Integer(attributes.getValue("",ATTR_WRAPMODE));
+				int wmode = Integer.valueOf(attributes.getValue("",ATTR_WRAPMODE));
 				switch(wmode) {
 				case 0:
 					tmp.setWrapMode(HyperSettings.WRAP_MODE.NONE);
@@ -169,7 +169,7 @@ public class HyperSAXParser extends BaseParser {
 		/*(data.setEndTextElementListener(new EndTextElementListener() {
 
 			public void end(String body) {
-				int newline = new Integer(body).intValue();
+				int newline = Integer.valueOf(body).intValue();
 				if(newline == 0) {
 					tmp.setSemiIsNewLine(false);
 				} else {
@@ -236,9 +236,9 @@ public class HyperSAXParser extends BaseParser {
 				setinfo.setSelectedColor( (attributes.getValue("",ATTR_SELECTEDCOLOR) == null) ? SlickButtonData.DEFAULT_SELECTED_COLOR : new BigInteger((attributes.getValue("",ATTR_SELECTEDCOLOR)),16).intValue());
 				setinfo.setFlipColor( (attributes.getValue("",ATTR_FLIPCOLOR) == null) ? SlickButtonData.DEFAULT_FLIP_COLOR : new BigInteger(attributes.getValue("",ATTR_FLIPCOLOR),16).intValue());
 				setinfo.setLabelColor( (attributes.getValue("",ATTR_LABELCOLOR) == null) ? SlickButtonData.DEFAULT_LABEL_COLOR : new BigInteger(attributes.getValue("",ATTR_LABELCOLOR),16).intValue());
-				setinfo.setButtonWidth( (attributes.getValue("",ATTR_BUTTONWIDTH) == null) ? SlickButtonData.DEFAULT_BUTTON_WDITH : new Integer(attributes.getValue("",ATTR_BUTTONWIDTH)));
-				setinfo.setButtonHeight( (attributes.getValue("",ATTR_BUTTONHEIGHT) == null) ? SlickButtonData.DEFAULT_BUTTON_HEIGHT : new Integer(attributes.getValue("",ATTR_BUTTONHEIGHT)));
-				setinfo.setLabelSize( (attributes.getValue("",ATTR_LABELSIZE)==null) ? SlickButtonData.DEFAULT_LABEL_SIZE : new Integer(attributes.getValue("",ATTR_LABELSIZE)));
+				setinfo.setButtonWidth( (attributes.getValue("",ATTR_BUTTONWIDTH) == null) ? SlickButtonData.DEFAULT_BUTTON_WDITH : Integer.valueOf(attributes.getValue("",ATTR_BUTTONWIDTH)));
+				setinfo.setButtonHeight( (attributes.getValue("",ATTR_BUTTONHEIGHT) == null) ? SlickButtonData.DEFAULT_BUTTON_HEIGHT : Integer.valueOf(attributes.getValue("",ATTR_BUTTONHEIGHT)));
+				setinfo.setLabelSize( (attributes.getValue("",ATTR_LABELSIZE)==null) ? SlickButtonData.DEFAULT_LABEL_SIZE : Integer.valueOf(attributes.getValue("",ATTR_LABELSIZE)));
 				setinfo.setFlipLabelColor( (attributes.getValue("",ATTR_FLIPLABELCOLOR) == null ? SlickButtonData.DEFAULT_FLIPLABEL_COLOR : new BigInteger((attributes.getValue("",ATTR_FLIPLABELCOLOR)),16).intValue()));
 				setinfo.setLocked( (attributes.getValue("",ATTR_LOCKED) == null) ? ColorSetSettings.DEFAULT_LOCKED : (attributes.getValue("",ATTR_LOCKED).equals("true")) ? true : false);
 				setinfo.setLockNewButtons( (attributes.getValue("",ATTR_LOCKNEWBUTTONS) == null) ? ColorSetSettings.DEFAULT_LOCKNEWBUTTONS : (attributes.getValue("",ATTR_LOCKNEWBUTTONS).equals("true")) ? true : false);
@@ -271,21 +271,21 @@ public class HyperSAXParser extends BaseParser {
 
 			public void start(Attributes attributes) {
 				SlickButtonData tmp  = new SlickButtonData();
-				tmp.setX( (attributes.getValue("",ATTR_XPOS) == null) ? 40 : new Integer(attributes.getValue("",ATTR_XPOS)));
-				tmp.setY( (attributes.getValue("",ATTR_YPOS) == null) ? 40 : new Integer(attributes.getValue("",ATTR_YPOS)));
+				tmp.setX( (attributes.getValue("",ATTR_XPOS) == null) ? 40 : Integer.valueOf(attributes.getValue("",ATTR_XPOS)));
+				tmp.setY( (attributes.getValue("",ATTR_YPOS) == null) ? 40 : Integer.valueOf(attributes.getValue("",ATTR_YPOS)));
 				tmp.setText(attributes.getValue("",ATTR_CMD));
 				tmp.setFlipCommand(attributes.getValue("", ATTR_FLIPCMD));
 				tmp.setLabel((attributes.getValue("",ATTR_LABEL) == null ? "" : attributes.getValue("",ATTR_LABEL))); //no primary label crash
-				tmp.MOVE_STATE = new Integer(attributes.getValue("",ATTR_MOVEMETHOD));
+				tmp.MOVE_STATE = Integer.valueOf(attributes.getValue("",ATTR_MOVEMETHOD));
 				tmp.setTargetSet(attributes.getValue("",ATTR_TARGETSET));
-				tmp.setWidth( (attributes.getValue("",ATTR_WIDTH) == null) ? setinfo.getButtonWidth() : new Integer(attributes.getValue("",ATTR_WIDTH)));
-				tmp.setHeight( (attributes.getValue("",ATTR_HEIGHT)==null) ? setinfo.getButtonHeight() : new Integer(attributes.getValue("",ATTR_HEIGHT)));
+				tmp.setWidth( (attributes.getValue("",ATTR_WIDTH) == null) ? setinfo.getButtonWidth() : Integer.valueOf(attributes.getValue("",ATTR_WIDTH)));
+				tmp.setHeight( (attributes.getValue("",ATTR_HEIGHT)==null) ? setinfo.getButtonHeight() : Integer.valueOf(attributes.getValue("",ATTR_HEIGHT)));
 				
 				tmp.setPrimaryColor( (attributes.getValue("",ATTR_PRIMARYCOLOR) == null) ? setinfo.getPrimaryColor() : new BigInteger(attributes.getValue("",ATTR_PRIMARYCOLOR),16).intValue());
 				tmp.setSelectedColor( (attributes.getValue("",ATTR_SELECTEDCOLOR) == null) ? setinfo.getSelectedColor() : new BigInteger(attributes.getValue("",ATTR_SELECTEDCOLOR),16).intValue());
 				tmp.setFlipColor( (attributes.getValue("",ATTR_FLIPCOLOR) == null) ? setinfo.getFlipColor() : new BigInteger(attributes.getValue("",ATTR_FLIPCOLOR),16).intValue());
 				tmp.setLabelColor( (attributes.getValue("",ATTR_LABELCOLOR) == null) ? setinfo.getLabelColor() : new BigInteger(attributes.getValue("",ATTR_LABELCOLOR),16).intValue());
-				tmp.setLabelSize((attributes.getValue("",ATTR_LABELSIZE) == null) ? setinfo.getLabelSize() : new Integer(attributes.getValue("",ATTR_LABELSIZE)));
+				tmp.setLabelSize((attributes.getValue("",ATTR_LABELSIZE) == null) ? setinfo.getLabelSize() : Integer.valueOf(attributes.getValue("",ATTR_LABELSIZE)));
 				
 				tmp.setFlipLabel(attributes.getValue("",ATTR_FLIPLABEL));
 				tmp.setFlipLabelColor( (attributes.getValue("",ATTR_FLIPLABELCOLOR) == null) ? setinfo.getFlipLabelColor() : new BigInteger(attributes.getValue("",ATTR_FLIPLABELCOLOR),16).intValue());
