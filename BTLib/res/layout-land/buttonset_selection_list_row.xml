@@ -2,7 +2,7 @@
 
 <RelativeLayout
   	xmlns:android="http://schemas.android.com/apk/res/android"
-  	android:layout_width="420px"
+  	android:layout_width="420dp"
   	android:layout_height="wrap_content">
   	
   	<TextView

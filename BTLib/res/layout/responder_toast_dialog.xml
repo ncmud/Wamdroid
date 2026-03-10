@@ -14,7 +14,7 @@
 		android:text="TOAST RESPONDER"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
-		android:textSize="15dip"
+		android:textSize="15sp"
 		android:textStyle="bold"
 		android:gravity="center"/>
   
@@ -23,7 +23,7 @@
   		android:layout_height="wrap_content"
   		android:id="@+id/responder_toast_cancel"
   		android:layout_alignParentBottom="true"
-  		android:layout_alignParentRight="true"
+  		android:layout_alignParentEnd="true"
   		android:text="Cancel" />
   
   <Button
@@ -31,7 +31,7 @@
   	android:layout_height="wrap_content"
   	android:text="Done"
   	android:id="@+id/responder_toast_done_button"
-  	android:layout_toLeftOf="@id/responder_notification_cancel"
+  	android:layout_toStartOf="@id/responder_notification_cancel"
   	android:layout_alignParentBottom="true"/>
   
   <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_above="@id/responder_toast_done_button" android:layout_below="@id/titlebar">
@@ -43,7 +43,7 @@
   </TableLayout>
   <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:shrinkColumns="1" android:stretchColumns="0">
   	<TableRow>
-  		<TextView android:text="Show for (seconds):" android:gravity="right" android:layout_marginRight="5dip"/>
+  		<TextView android:text="Show for (seconds):" android:gravity="end" android:layout_marginEnd="5dip"/>
   		<EditText android:id="@+id/responder_toast_delay" android:width="60dip"/>
   	</TableRow>
   </TableLayout>

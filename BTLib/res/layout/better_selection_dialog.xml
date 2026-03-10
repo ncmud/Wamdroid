@@ -14,14 +14,14 @@
 		android:text="SELECT TRIGGER"
 		android:textColor="#FF333333"
 		android:background="#FF999999"
-		android:textSize="15dip"
+		android:textSize="15sp"
 		android:textStyle="bold"
 		android:gravity="center"/>
 	
 	<Button
 		android:id="@+id/trigger_new_button"
 		android:layout_alignParentBottom="true"
-		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"
 		android:layout_height="wrap_content"
 		android:layout_width="146dip"
 		android:text="New Trigger"/>
@@ -29,7 +29,7 @@
 	<Button
 		android:id="@+id/trigger_cancel_button"
 		android:layout_alignParentBottom="true"
-		android:layout_alignParentRight="true"
+		android:layout_alignParentEnd="true"
 		android:layout_height="wrap_content"
 		android:layout_width="133dip"
 		android:text="Done"/>
@@ -37,7 +37,7 @@
 	<!-- <ScrollView
 		android:id="@+id/buttonset_scroller"
 		android:layout_alignParentTop="true"
-		android:layout_width="420px"
+		android:layout_width="420dp"
 		android:layout_height="match_parent"
 		android:layout_above="@id/new_buttonset_button"> -->
 		<FrameLayout
@@ -62,7 +62,7 @@
 			android:layout_margin="0dip"
 			android:padding="0dip"
 			android:textStyle="bold"
-			android:textSize="18dip"
+			android:textSize="18sp"
 			android:gravity="center"/>
 		</FrameLayout>
 	<!-- </ScrollView> -->
