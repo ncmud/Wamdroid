@@ -11,6 +11,17 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+// Use local MTH checkout when available, fall back to JitPack otherwise.
+def mthLocal = file('../mth/kotlin')
+if (mthLocal.directory) {
+    includeBuild(mthLocal) {
+        dependencySubstitution {
+            substitute module('com.github.ncmud.mth:mth-core') using project(':mth-core')
+        }
     }
 }
 

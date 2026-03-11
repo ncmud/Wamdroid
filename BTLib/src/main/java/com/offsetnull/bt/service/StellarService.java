@@ -897,7 +897,9 @@ public class StellarService extends Service {
         if (c == null) {
             return;
         }
-        c.getProcessor().setDisplayDimensions(rows, cols);
+        if (c.getTelnetSession() != null) {
+            c.getTelnetSession().sendWindowSize(cols, rows);
+        }
     }
 
     public void reconnect(final String str) {

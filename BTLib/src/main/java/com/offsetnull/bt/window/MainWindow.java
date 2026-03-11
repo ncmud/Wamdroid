@@ -201,7 +201,6 @@ public class MainWindow extends AppCompatActivity
     // boolean servicestarted = false;
 
     StellarService service = null;
-    Processor the_processor = null;
     private int statusBarHeight = 1;
     // GestureDetector gestureDetector = null;
     OnTouchListener gestureListener = null;

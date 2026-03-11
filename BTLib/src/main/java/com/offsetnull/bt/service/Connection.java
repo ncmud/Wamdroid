@@ -313,8 +313,11 @@ public class Connection
     /** The DataPumper instance for this connection. */
     DataPumper mPump = null;
 
-    /** The Processor instance for this connection. */
-    private Processor mProcessor = null;
+    /** The MTH TelnetClientSession for this connection. */
+    mth.core.client.TelnetClientSession mTelnetSession = null;
+
+    /** GMCP supports string sent during negotiation (e.g. "\"char 1\""). */
+    String mGMCPSupports = "\"char 1\"";
 
     // TextTree buffer = null;
 
@@ -825,7 +828,7 @@ public class Connection
 
         mPump.shutdown();
 
-        mProcessor = null;
+        mTelnetSession = null;
 
         if (noreconnect) {
             if (mReconnectJob != null) {
@@ -943,8 +946,11 @@ public class Connection
 
         mPump = new DataPumper(mHost, mPort, mHandlerShim);
 
-        mProcessor =
-                new Processor(mHandlerShim, mSettings.getEncoding(), mService.getApplicationContext());
+        mTelnetSession = new mth.core.client.TelnetClientSession(
+                new TelnetDelegateAdapter(this),
+                com.offsetnull.bt.settings.ConfigurationLoader.getConfigurationValue(
+                        "terminalTypeString", mService.getApplicationContext()),
+                80, 24);
 
         initSettings();
         mPump.start();
@@ -1792,9 +1798,7 @@ public class Connection
                     mSettings.setSemiIsNewLine((Boolean) o.getValue());
                     break;
                 case debug_telnet:
-                    if (mProcessor != null) {
-                        mProcessor.setDebugTelnet((Boolean) o.getValue());
-                    }
+                    mSettings.setDebugTelnet((Boolean) o.getValue());
                     break;
                 case encoding:
                     this.doUpdateEncoding((String) o.getValue());
@@ -1857,10 +1861,9 @@ public class Connection
                     mService.dispatchShowRegexWarning((Boolean) o.getValue());
                     break;
                 case use_gmcp:
-                    mProcessor.setUseGMCP((Boolean) o.getValue());
                     break;
                 case gmcp_supports:
-                    mProcessor.setGMCPSupports((String) o.getValue());
+                    mGMCPSupports = (String) o.getValue();
                     break;
                 default:
                     break;
@@ -1877,9 +1880,6 @@ public class Connection
      */
     private void doSetDebugTelnet(final Boolean value) {
         mSettings.setDebugTelnet(value);
-        if (mProcessor != null) {
-            mProcessor.setDebugTelnet(value);
-        }
     }
 
     /**
@@ -1912,16 +1912,8 @@ public class Connection
      * @param value New value to use.
      */
     private void doUpdateEncoding(final String value) {
-        if (mProcessor == null) {
-            return;
-        }
-        mProcessor.setEncoding(value);
-        // this.encoding = value;
         mSettings.setEncoding(value);
         mTriggerManager.setEncoding(value);
-        if (mProcessor != null) {
-            this.mProcessor.setEncoding(value);
-        }
         for (int i = 0; i < mWindowManager.getWindows().size(); i++) {
             WindowToken w = mWindowManager.getWindows().get(i);
             w.getBuffer().setEncoding(value);
@@ -2903,13 +2895,13 @@ public class Connection
         return mPump;
     }
 
-    /**
-     * Getter for mProcessor.
-     *
-     * @return the processor associated with this connection.
-     */
-    public final Processor getProcessor() {
-        return mProcessor;
+    public final mth.core.client.TelnetClientSession getTelnetSession() {
+        return mTelnetSession;
+    }
+
+    @Override
+    public void sendGMCPTriggered(String plugin, String callback, java.util.HashMap<String, Object> data) {
+        sendCommand(new ConnectionCommand.GmcpTriggered(plugin, callback, data));
     }
 
     /**

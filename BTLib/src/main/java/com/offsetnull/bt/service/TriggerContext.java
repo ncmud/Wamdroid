@@ -19,7 +19,7 @@ public interface TriggerContext {
 
     String getEncoding();
 
-    Processor getProcessor();
+    mth.core.client.TelnetClientSession getTelnetSession();
 
     StellarService getService();
 
