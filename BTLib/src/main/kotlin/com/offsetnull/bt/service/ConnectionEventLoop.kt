@@ -22,13 +22,20 @@ class ConnectionEventLoop(
     fun start() {
         scope.launch {
             for (command in channel) {
-                dispatcher.dispatch(command)
+                try {
+                    dispatcher.dispatch(command)
+                } catch (e: Exception) {
+                    android.util.Log.e("ConnectionEventLoop", "Error dispatching $command", e)
+                }
             }
         }
     }
 
     fun send(command: ConnectionCommand) {
-        channel.trySend(command)
+        val result = channel.trySend(command)
+        if (result.isFailure) {
+            android.util.Log.e("ConnectionEventLoop", "trySend failed for $command", result.exceptionOrNull())
+        }
     }
 
     /** For delayed sends (reconnect timer, GMCP retry). Returns a Job that can be cancelled. */

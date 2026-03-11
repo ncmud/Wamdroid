@@ -180,7 +180,6 @@ public class TriggerManager {
      *     encoding provided.
      */
     public void dispatch(final byte[] data) throws UnsupportedEncodingException {
-
         byte[] raw = context.getProcessor().rawProcess(data);
         if (raw == null) {
             return;

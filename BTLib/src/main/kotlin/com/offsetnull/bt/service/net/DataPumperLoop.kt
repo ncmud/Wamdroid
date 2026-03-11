@@ -26,6 +26,7 @@ class DataPumperLoop(
         outgoing.trySend(data)
     }
 
+    @Suppress("UnusedParameter")
     fun startCompression(trailingData: ByteArray?) {
         compressed = true
         decompressor.reset()
@@ -42,6 +43,7 @@ class DataPumperLoop(
         outgoing.close()
     }
 
+    @Suppress("NestedBlockDepth")
     private suspend fun readLoop() {
         while (socket.isConnected) {
             val data: ByteArray
