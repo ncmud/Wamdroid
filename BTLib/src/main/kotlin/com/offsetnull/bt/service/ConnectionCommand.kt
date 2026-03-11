@@ -65,6 +65,10 @@ sealed interface ConnectionCommand {
     data class AddLink(val path: String) : ConnectionCommand
     data class DeletePlugin(val name: String) : ConnectionCommand
 
+    // Echo negotiation
+    data object DisableLocalEcho : ConnectionCommand
+    data object EnableLocalEcho : ConnectionCommand
+
     // Settings
     data class SaveDirtyPlugin(val name: String) : ConnectionCommand
     data class ExportFile(val path: String) : ConnectionCommand

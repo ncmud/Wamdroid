@@ -237,6 +237,12 @@ public class Connection
     /** Sent from the timer command. */
     static final int MESSAGE_TIMERSTOP = 40;
 
+    /** Server negotiated WILL ECHO — disable client local echo. */
+    static final int MESSAGE_DISABLE_LOCAL_ECHO = 42;
+
+    /** Server negotiated WONT ECHO — re-enable client local echo. */
+    static final int MESSAGE_ENABLE_LOCAL_ECHO = 43;
+
     /** The value of 4. */
     private static final int FOUR = 4;
 
@@ -837,7 +843,11 @@ public class Connection
      * @param data The data to send.
      */
     public void dispatchNoProcess(final byte[] data) {
-        mWindowManager.getWindows().get(0).getBuffer().addBytesImplSimple(data);
+        try {
+            mWindowManager.getWindows().get(0).getBuffer().addBytesImpl(data);
+        } catch (java.io.UnsupportedEncodingException e) {
+            mWindowManager.getWindows().get(0).getBuffer().addBytesImplSimple(data);
+        }
         sendBytesToWindow(data);
     }
 

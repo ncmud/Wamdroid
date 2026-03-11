@@ -81,6 +81,10 @@ internal class LifecycleAdapter(private val conn: Connection) : LifecycleHandle 
     override fun reloadSettings() {
         conn.reloadSettings()
     }
+
+    override fun setLocalEcho(enabled: Boolean) {
+        conn.mSettings.isLocalEcho = enabled
+    }
 }
 
 internal class WindowManagerAdapter(private val conn: Connection) : WindowManagerHandle {

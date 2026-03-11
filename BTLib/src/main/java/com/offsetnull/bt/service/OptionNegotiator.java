@@ -34,6 +34,9 @@ public class OptionNegotiator {
     /** GMCP marker. */
     private static final byte GMCP = (byte) 201;
 
+    /** ECHO marker. */
+    private static final byte ECHO = (byte) 0x01;
+
     /** Suppress goahead marker. */
     private static final byte SUPPRESS_GOAHEAD = (byte) 0x03;
 
@@ -124,6 +127,9 @@ public class OptionNegotiator {
         if (second == IAC_WILL) {
             switch (third) {
                 case COMPRESS2:
+                    response = IAC_DO;
+                    break;
+                case ECHO:
                     response = IAC_DO;
                     break;
                 case SUPPRESS_GOAHEAD:

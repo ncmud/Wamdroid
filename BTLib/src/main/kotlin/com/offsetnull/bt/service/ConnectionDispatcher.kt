@@ -109,6 +109,10 @@ class ConnectionDispatcher(
             is ConnectionCommand.ResetSettings -> pluginManager?.resetSettings()
             is ConnectionCommand.SetTriggersDirty -> triggerManager?.setDirty()
 
+            // Echo negotiation
+            is ConnectionCommand.DisableLocalEcho -> lifecycle?.setLocalEcho(false)
+            is ConnectionCommand.EnableLocalEcho -> lifecycle?.setLocalEcho(true)
+
             // Timers
             is ConnectionCommand.TimerAction ->
                 timerManager?.handleAction(command.name, command.id, command.action)
@@ -150,6 +154,7 @@ interface LifecycleHandle {
     fun doStartup()
     fun resetAutoReconnect()
     fun reloadSettings()
+    fun setLocalEcho(enabled: Boolean) {}
 }
 
 interface WindowManagerHandle {
