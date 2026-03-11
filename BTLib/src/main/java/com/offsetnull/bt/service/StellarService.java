@@ -132,6 +132,9 @@ public class StellarService extends Service {
     /** The currently "Selected" connection. */
     private String mConnectionClutch = "";
 
+    /** Dispatcher that handles service-level commands. */
+    private ServiceDispatcher mDispatcher = null;
+
     /** The callback list of MainWindow activities that have bound to the Service. */
     private final List<ConnectionCallback> mCallbacks = new ArrayList<ConnectionCallback>();
 
@@ -220,6 +223,13 @@ public class StellarService extends Service {
                 e.printStackTrace();
             }
         }
+        mDispatcher = new ServiceDispatcher(
+                (display, host, port) -> {
+                    Connection c = new Connection(display, host, port, StellarService.this);
+                    mConnections.put(display, c);
+                    return c;
+                }
+        );
         mHandler = new Handler(new ServiceHandler());
     }
 
@@ -233,16 +243,12 @@ public class StellarService extends Service {
         public boolean handleMessage(final Message msg) {
             switch (msg.what) {
                 case MESSAGE_RELOADSETTINGS:
-                    mConnections.get(mConnectionClutch).reloadSettings();
+                    mDispatcher.dispatch(ServiceCommand.ReloadSettings.INSTANCE);
+                    mConnectionClutch = mDispatcher.getActiveConnection();
                     reloadWindows();
                     break;
                 case MESSAGE_STARTUP:
-                    if (mConnections.get(mConnectionClutch).getPump() == null) {
-                        mConnections
-                                .get(mConnectionClutch)
-                                .getHandler()
-                                .sendEmptyMessage(Connection.MESSAGE_STARTUP);
-                    }
+                    mDispatcher.dispatch(ServiceCommand.Startup.INSTANCE);
                     break;
                 case MESSAGE_NEWCONENCTION:
                     Bundle b = msg.getData();
@@ -250,16 +256,16 @@ public class StellarService extends Service {
                     String host = b.getString("HOST");
                     int port = b.getInt("PORT");
 
-                    Connection c = mConnections.get(display);
-                    if (c == null) {
-                        // make new conneciton.
-                        mConnectionClutch = display;
-                        c = new Connection(display, host, port, StellarService.this);
-                        mConnections.put(mConnectionClutch, c);
-                        c.initWindows();
+                    if (!mConnections.containsKey(display)) {
+                        mDispatcher.dispatch(
+                                new ServiceCommand.NewConnection(display, host, port));
+                        mConnectionClutch = mDispatcher.getActiveConnection();
                     }
                     break;
                 case MESSAGE_SWITCH:
+                    mDispatcher.dispatch(
+                            new ServiceCommand.SwitchConnection((String) msg.obj));
+                    mConnectionClutch = mDispatcher.getActiveConnection();
                     switchTo((String) msg.obj);
                     break;
                 default:

@@ -16,6 +16,7 @@ class ServiceDispatcher(
                     val conn = connectionFactory(command.display, command.host, command.port)
                     connections[command.display] = conn
                     activeConnection = command.display
+                    conn.initWindows()
                 }
             }
             is ServiceCommand.SwitchConnection -> {
@@ -37,4 +38,5 @@ class ServiceDispatcher(
 interface ConnectionHandle {
     fun startup()
     fun reloadSettings()
+    fun initWindows()
 }
