@@ -8,6 +8,7 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 
+@Suppress("MagicNumber")
 class RealSocketIO(private val host: String, private val port: Int) : SocketIO {
     private var socket: Socket? = null
     private var reader: BufferedInputStream? = null

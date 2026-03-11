@@ -19,6 +19,7 @@ class ConnectionDispatcher(
     private val aliasManager: AliasManagerHandle? = null,
     private val encoding: String = "UTF-8",
 ) {
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     fun dispatch(command: ConnectionCommand) {
         when (command) {
             // Lifecycle

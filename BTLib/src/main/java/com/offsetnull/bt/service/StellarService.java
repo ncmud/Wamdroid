@@ -207,6 +207,11 @@ public class StellarService extends Service {
         );
         mEventLoop = new ServiceEventLoop(mDispatcher, new ServiceEventLoop.SideEffects() {
             @Override
+            public void onNewConnection(String display) {
+                mConnectionClutch = display;
+            }
+
+            @Override
             public void onReloadWindows() {
                 mConnectionClutch = mDispatcher.getActiveConnection();
                 reloadWindows();
@@ -803,8 +808,8 @@ public class StellarService extends Service {
     }
 
     public void sendData(final byte[] seq) {
-        mConnections.get(mConnectionClutch).sendCommand(
-                new ConnectionCommand.SendDataBytes(seq));
+        Handler handler = mConnections.get(mConnectionClutch).getHandler();
+        handler.sendMessage(handler.obtainMessage(Connection.MESSAGE_SENDDATA_BYTES, seq));
     }
 
     public void saveSettings() {

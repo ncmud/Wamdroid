@@ -38,6 +38,7 @@ class ConnectionHandlerShim(
         fun isConnected(): Boolean
     }
 
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     override fun handleMessage(msg: Message) {
         when (msg.what) {
             Connection.MESSAGE_TERMINATED_BY_PEER ->
@@ -168,11 +169,15 @@ class ConnectionHandlerShim(
             }
 
             // Special cases: these go through alias processing, not the dispatcher.
-            Connection.MESSAGE_SENDDATA_STRING ->
-                sendToServerString.send(msg.obj as String)
+            Connection.MESSAGE_SENDDATA_STRING -> {
+                val str = msg.obj as? String ?: return
+                sendToServerString.send(str)
+            }
 
-            Connection.MESSAGE_SENDDATA_BYTES ->
-                sendToServerBytes.send(msg.obj as ByteArray)
+            Connection.MESSAGE_SENDDATA_BYTES -> {
+                val bytes = msg.obj as? ByteArray ?: return
+                sendToServerBytes.send(bytes)
+            }
 
             Connection.MESSAGE_SENDGMCPDATA -> {
                 if (isPumpConnected.isConnected()) {

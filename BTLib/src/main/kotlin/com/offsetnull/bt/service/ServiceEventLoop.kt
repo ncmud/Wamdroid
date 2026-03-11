@@ -1,7 +1,6 @@
 package com.offsetnull.bt.service
 
-import android.os.Handler
-import android.os.Looper
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,9 +19,9 @@ class ServiceEventLoop(
 ) {
     private val channel = Channel<ServiceCommand>(Channel.BUFFERED)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    private val mainHandler = Handler(Looper.getMainLooper())
 
     interface SideEffects {
+        fun onNewConnection(display: String)
         fun onReloadWindows()
         fun onSwitchTo(display: String)
     }
@@ -30,11 +29,18 @@ class ServiceEventLoop(
     fun start() {
         scope.launch {
             for (command in channel) {
-                dispatcher.dispatch(command)
-                when (command) {
-                    is ServiceCommand.ReloadSettings -> sideEffects.onReloadWindows()
-                    is ServiceCommand.SwitchConnection -> sideEffects.onSwitchTo(command.display)
-                    else -> {}
+                try {
+                    dispatcher.dispatch(command)
+                    when (command) {
+                        is ServiceCommand.NewConnection ->
+                            sideEffects.onNewConnection(command.display)
+                        is ServiceCommand.ReloadSettings -> sideEffects.onReloadWindows()
+                        is ServiceCommand.SwitchConnection ->
+                            sideEffects.onSwitchTo(command.display)
+                        else -> {}
+                    }
+                } catch (e: Exception) {
+                    Log.e("ServiceEventLoop", "Error dispatching $command", e)
                 }
             }
         }
