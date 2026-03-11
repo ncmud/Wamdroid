@@ -272,21 +272,21 @@ public class Connection
     /** Value of -2. */
     private static final int NEGATIVE_TWO = -2;
 
-    private TriggerManager mTriggerManager;
-    private AliasManager mAliasManager;
+    TriggerManager mTriggerManager;
+    AliasManager mAliasManager;
     private SettingsPersistence mSettingsPersistence;
 
     /** String name of the default output window. */
     private static final String MAIN_WINDOW = "mainDisplay";
 
     /** Manages window tokens, callbacks, and window-related operations. */
-    private ConnectionWindowManager mWindowManager;
+    ConnectionWindowManager mWindowManager;
 
     /** The auto reconnect limit helper varialbe. */
     private Integer mAutoReconnectLimit;
 
     /** The current auto reconnect attempt. */
-    private Integer mAutoReconnectAttempt = 0;
+    Integer mAutoReconnectAttempt = 0;
 
     /** Weather or not we should auto reconnect on connection failure. */
     private Boolean mAutoReconnect;
@@ -301,13 +301,13 @@ public class Connection
     private SpeedwalkCommand mSpeedwalkCommand = null;
 
     /** Main tracker for plugins, generic ordered list of plugins in the order they were loaded. */
-    private ArrayList<Plugin> mPlugins = null;
+    ArrayList<Plugin> mPlugins = null;
 
     /** Global map for handling the capture transformation for triggers and aliases. */
     private HashMap<String, String> mCaptureMap = new HashMap<String, String>();
 
     /** The DataPumper instance for this connection. */
-    private DataPumper mPump = null;
+    DataPumper mPump = null;
 
     /** The Processor instance for this connection. */
     private Processor mProcessor = null;
@@ -324,28 +324,30 @@ public class Connection
     private boolean mLoaded = false;
 
     /** Launcher display name for this Connection. */
-    private String mDisplay;
+    String mDisplay;
 
     /** Host name for this connection. */
-    private String mHost;
+    String mHost;
 
     /** Port indication for this connection. */
-    private int mPort;
+    int mPort;
 
     /** Instance of our parent service. This is bad. */
-    private StellarService mService = null;
+    StellarService mService = null;
 
     /** A simple holder for if we are connected or not. */
-    private boolean mIsConnected = false;
+    boolean mIsConnected = false;
 
     /** The main settings wad/plugin. */
-    private ConnectionSettingsPlugin mSettings = null;
+    ConnectionSettingsPlugin mSettings = null;
 
-    private TimerManager mTimerManager;
-    private GMCPHandler mGMCPHandler;
+    TimerManager mTimerManager;
+    GMCPHandler mGMCPHandler;
 
     /** The keyboard command instance, not sure why this is here. */
     private KeyboardCommand mKeyboardCommand;
+
+    private ConnectionDispatcher mDispatcher;
 
     /** Value of CRLF. */
     private String mCRLF = "\r\n";
@@ -409,6 +411,19 @@ public class Connection
         mWindowManager = new ConnectionWindowManager();
         mSettingsPersistence = new SettingsPersistence(this);
 
+        mDispatcher = new ConnectionDispatcher(
+                new TriggerManagerAdapter(this),
+                new PumpAdapter(this),
+                new BellCallbacksAdapter(this),
+                new DisplayAdapter(this),
+                new LifecycleAdapter(this),
+                new WindowManagerAdapter(this),
+                new PluginManagerAdapter(this),
+                new TimerManagerAdapter(this),
+                new GmcpAdapter(this),
+                new AliasManagerAdapter(this),
+                "UTF-8");
+
         SharedPreferences sprefs = this.getContext().getSharedPreferences("STATUS_BAR_HEIGHT", 0);
         mStatusBarHeight =
                 sprefs.getInt(
@@ -438,150 +453,135 @@ public class Connection
         public boolean handleMessage(final Message msg) {
             switch (msg.what) {
                 case MESSAGE_TERMINATED_BY_PEER:
-                    killNetThreads(true);
-                    doDisconnect(true);
-                    mIsConnected = false;
+                    mDispatcher.dispatch(new ConnectionCommand.TerminatedByPeer());
                     break;
                 case MESSAGE_TIMERSTOP:
-                    mTimerManager.handleAction(
-                            (String) msg.obj, msg.arg2, TimerManager.TimerAction.STOP);
+                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
+                            (String) msg.obj, msg.arg2,
+                            ConnectionCommand.TimerActionType.STOP));
                     break;
                 case MESSAGE_TIMERSTART:
-                    mTimerManager.handleAction(
-                            (String) msg.obj, msg.arg2, TimerManager.TimerAction.PLAY);
+                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
+                            (String) msg.obj, msg.arg2,
+                            ConnectionCommand.TimerActionType.START));
                     break;
                 case MESSAGE_TIMERRESET:
-                    mTimerManager.handleAction(
-                            (String) msg.obj, msg.arg2, TimerManager.TimerAction.RESET);
+                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
+                            (String) msg.obj, msg.arg2,
+                            ConnectionCommand.TimerActionType.RESET));
                     break;
                 case MESSAGE_TIMERINFO:
-                    mTimerManager.handleAction(
-                            (String) msg.obj, msg.arg2, TimerManager.TimerAction.INFO);
+                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
+                            (String) msg.obj, msg.arg2,
+                            ConnectionCommand.TimerActionType.INFO));
                     break;
                 case MESSAGE_TIMERPAUSE:
-                    mTimerManager.handleAction(
-                            (String) msg.obj, msg.arg2, TimerManager.TimerAction.PAUSE);
+                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
+                            (String) msg.obj, msg.arg2,
+                            ConnectionCommand.TimerActionType.PAUSE));
                     break;
                 case MESSAGE_CALLPLUGIN:
-                    String ptmp = msg.getData().getString("PLUGIN");
-                    String ftmp = msg.getData().getString("FUNCTION");
-                    String dtmp = msg.getData().getString("DATA");
-                    doCallPlugin(ptmp, ftmp, dtmp);
+                    mDispatcher.dispatch(new ConnectionCommand.CallPlugin(
+                            msg.getData().getString("PLUGIN"),
+                            msg.getData().getString("FUNCTION"),
+                            msg.getData().getString("DATA")));
                     break;
                 case MESSAGE_SETTRIGGERSDIRTY:
-                    mTriggerManager.setDirty();
+                    mDispatcher.dispatch(ConnectionCommand.SetTriggersDirty.INSTANCE);
                     break;
                 case MESSAGE_RELOADSETTINGS:
-                    reloadSettings();
+                    mDispatcher.dispatch(ConnectionCommand.ReloadSettings.INSTANCE);
                     break;
                 case MESSAGE_TRIGGER_LUA_ERROR:
-                    dispatchLuaError((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.TriggerLuaError(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_RECONNECT:
-                    doReconnect();
+                    mDispatcher.dispatch(ConnectionCommand.Reconnect.INSTANCE);
                     break;
                 case MESSAGE_CONNECTED:
-                    mAutoReconnectAttempt = 0;
+                    mDispatcher.dispatch(ConnectionCommand.Connected.INSTANCE);
                     break;
                 case MESSAGE_DELETEPLUGIN:
-                    doDeletePlugin((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.DeletePlugin(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_ADDLINK:
-                    doAddLink((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.AddLink((String) msg.obj));
                     break;
                 case MESSAGE_DORESETSETTINGS:
-                    doResetSettings();
+                    mDispatcher.dispatch(ConnectionCommand.ResetSettings.INSTANCE);
                     break;
                 case MESSAGE_PLUGINLUAERROR:
-                    dispatchLuaError((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.LuaError(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_EXPORTFILE:
-                    exportSettings((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.ExportFile(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_IMPORTFILE:
-                    Connection.this.mService.markWindowsDirty();
-                    importSettings((String) msg.obj, true, false);
+                    mDispatcher.dispatch(new ConnectionCommand.ImportFile(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_SAVESETTINGS:
-                    String changedplugin = (String) msg.obj;
-                    Connection.this.saveDirtyPlugin(changedplugin);
+                    mDispatcher.dispatch(new ConnectionCommand.SaveDirtyPlugin(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_GMCPTRIGGERED:
-                    String plugin = msg.getData().getString("TARGET");
-                    String gcallback = msg.getData().getString("CALLBACK");
-                    @SuppressWarnings("unchecked")
-                    HashMap<String, Object> gdata = (HashMap<String, Object>) msg.obj;
-                    mGMCPHandler.handleCallback(plugin, gcallback, gdata);
+                    mDispatcher.dispatch(new ConnectionCommand.GmcpTriggered(
+                            msg.getData().getString("TARGET"),
+                            msg.getData().getString("CALLBACK"),
+                            msg.obj));
                     break;
                 case MESSAGE_INVALIDATEWINDOWTEXT:
-                    String wname = (String) msg.obj;
-                    doInvalidateWindowText(wname);
+                    mDispatcher.dispatch(new ConnectionCommand.InvalidateWindowText(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_WINDOWXCALLS:
                     Object o = msg.obj;
                     if (o == null) {
                         o = "";
                     }
-                    String token = msg.getData().getString("TOKEN");
-                    String function = msg.getData().getString("FUNCTION");
-                    Connection.this.windowXCallS(token, function, o);
+                    mDispatcher.dispatch(new ConnectionCommand.WindowXCallS(
+                            msg.getData().getString("TOKEN"),
+                            msg.getData().getString("FUNCTION"),
+                            o));
                     break;
                 case MESSAGE_WINDOWXCALLB:
-                    byte[] bytesa = (byte[]) msg.obj;
-                    String tokens = msg.getData().getString("TOKEN");
-                    String functions = msg.getData().getString("FUNCTION");
-                    Connection.this.windowXCallB(tokens, functions, bytesa);
+                    mDispatcher.dispatch(new ConnectionCommand.WindowXCallB(
+                            msg.getData().getString("TOKEN"),
+                            msg.getData().getString("FUNCTION"),
+                            (byte[]) msg.obj));
                     break;
                 case MESSAGE_ADDFUNCTIONCALLBACK:
                     Bundle data = msg.getData();
-                    String id = data.getString("ID");
-                    String command = data.getString("COMMAND");
-                    String callback = data.getString("CALLBACK");
-                    int pid = -1;
-                    for (int i = 0; i < mPlugins.size(); i++) {
-                        Plugin p = mPlugins.get(i);
-                        if (p.getName().equals(id)) {
-                            pid = i;
-                        }
-                    }
-                    if (pid != -1) {
-                        FunctionCallbackCommand fcc =
-                                new FunctionCallbackCommand(pid, command, callback);
-                        mAliasManager.getSpecialCommands().put(fcc.commandName, fcc);
-                    }
+                    mDispatcher.dispatch(new ConnectionCommand.AddFunctionCallback(
+                            data.getString("ID"),
+                            data.getString("COMMAND"),
+                            data.getString("CALLBACK")));
                     break;
                 case MESSAGE_WINDOWBUFFER:
-                    boolean set = (msg.arg1 == 0) ? false : true;
-
-                    String name = (String) msg.obj;
-
-                    for (WindowToken tok : mWindowManager.getWindows()) {
-                        if (tok.getName().equals(name)) {
-                            tok.setBufferText(set);
-                        }
-                    }
+                    mDispatcher.dispatch(new ConnectionCommand.WindowBuffer(
+                            (String) msg.obj, msg.arg1 != 0));
                     break;
                 case MESSAGE_NEWWINDOW:
-                    WindowToken tok = (WindowToken) msg.obj;
-                    mWindowManager.getWindows().add(tok);
+                    mDispatcher.dispatch(new ConnectionCommand.NewWindow(msg.obj));
                     break;
                 case MESSAGE_DRAWINDOW:
-                    Connection.this.redrawWindow((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.DrawWindow(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_LUANOTE:
                     String str = (String) msg.obj;
                     if (str != null) {
-                        try {
-                            dispatchNoProcess(str.getBytes(mSettings.getEncoding()));
-                        } catch (UnsupportedEncodingException e1) {
-                            e1.printStackTrace();
-                        }
+                        mDispatcher.dispatch(new ConnectionCommand.LuaNote(str));
                     }
                     break;
                 case MESSAGE_LINETOWINDOW:
-                    Object line = msg.obj;
-                    String target = msg.getData().getString("TARGET");
-                    Connection.this.lineToWindow(target, line);
+                    mDispatcher.dispatch(new ConnectionCommand.LineToWindow(
+                            msg.getData().getString("TARGET"),
+                            msg.obj));
                     break;
                 case MESSAGE_SENDDATA_STRING:
                     try {
@@ -596,7 +596,8 @@ public class Connection
                     break;
                 case MESSAGE_SENDGMCPDATA:
                     if (mPump != null && mPump.isConnected()) {
-                        mGMCPHandler.sendData((String) msg.obj);
+                        mDispatcher.dispatch(new ConnectionCommand.SendGmcpData(
+                                (String) msg.obj));
                     } else {
                         mHandler.sendMessageDelayed(
                                 mHandler.obtainMessage(MESSAGE_SENDGMCPDATA, msg.obj),
@@ -604,54 +605,35 @@ public class Connection
                     }
                     break;
                 case MESSAGE_STARTUP:
-                    doStartup();
+                    mDispatcher.dispatch(ConnectionCommand.Startup.INSTANCE);
                     break;
                 case MESSAGE_STARTCOMPRESS:
-                    mPump.startCompression((byte[]) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.StartCompress(
+                            (byte[]) msg.obj));
                     break;
                 case MESSAGE_SENDOPTIONDATA:
                     Bundle b = msg.getData();
-                    byte[] obytes = b.getByteArray("THE_DATA");
-                    String message = b.getString("DEBUG_MESSAGE");
-                    if (message != null) {
-                        sendDataToWindow(message);
-                    }
-
-                    if (mPump != null) {
-                        mPump.sendData(obytes);
-                    }
+                    mDispatcher.dispatch(new ConnectionCommand.SendOptionData(
+                            b.getByteArray("THE_DATA"),
+                            b.getString("DEBUG_MESSAGE")));
                     break;
                 case MESSAGE_PROCESSORWARNING:
-                    sendDataToWindow((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.ProcessorWarning(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_BELLINC:
-                    if (mSettings.isVibrateOnBell()) {
-                        Connection.this.mService.doVibrateBell();
-                    }
-                    if (mSettings.isNotifyOnBell()) {
-                        Connection.this.mService.doNotifyBell(
-                                Connection.this.mDisplay,
-                                Connection.this.mHost,
-                                Connection.this.mPort);
-                    }
-                    if (mSettings.isDisplayOnBell()) {
-                        Connection.this.mService.doDisplayBell();
-                    }
+                    mDispatcher.dispatch(new ConnectionCommand.BellReceived());
                     break;
                 case MESSAGE_DODIALOG:
-                    dispatchDialog((String) msg.obj);
+                    mDispatcher.dispatch(new ConnectionCommand.DialogError(
+                            (String) msg.obj));
                     break;
                 case MESSAGE_PROCESS:
-                    try {
-                        mTriggerManager.dispatch((byte[]) msg.obj);
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
+                    mDispatcher.dispatch(new ConnectionCommand.Process(
+                            (byte[]) msg.obj));
                     break;
                 case MESSAGE_DISCONNECTED:
-                    killNetThreads(true);
-                    doDisconnect(false);
-                    mIsConnected = false;
+                    mDispatcher.dispatch(ConnectionCommand.Disconnected.INSTANCE);
                     break;
                 default:
                     break;
@@ -735,7 +717,7 @@ public class Connection
      * @param function Name of the anonymous global function to call.
      * @param data String argument to provide to @param function.
      */
-    private void doCallPlugin(final String plugin, final String function, final String data) {
+    void doCallPlugin(final String plugin, final String function, final String data) {
         Plugin p = mPluginMap.get(plugin);
         if (p != null) {
             p.callFunction(function, data);
@@ -1047,6 +1029,22 @@ public class Connection
     /** Setter for triggersDirty. */
     public final void setTriggersDirty() {
         mTriggerManager.setDirty();
+    }
+
+    final void addFunctionCallbackImpl(
+            final String id, final String command, final String callback) {
+        int pid = -1;
+        for (int i = 0; i < mPlugins.size(); i++) {
+            Plugin p = mPlugins.get(i);
+            if (p.getName().equals(id)) {
+                pid = i;
+            }
+        }
+        if (pid != -1) {
+            FunctionCallbackCommand fcc =
+                    new FunctionCallbackCommand(pid, command, callback);
+            mAliasManager.getSpecialCommands().put(fcc.commandName, fcc);
+        }
     }
 
     /**
@@ -2307,7 +2305,7 @@ public class Connection
      * @param save flag to save the settings after loading.
      * @param loadmessage verb for loading(true) or importing(false)
      */
-    private void importSettings(final String path, final boolean save, final boolean loadmessage) {
+    void importSettings(final String path, final boolean save, final boolean loadmessage) {
         shutdownPlugins();
 
         String verb = null;
@@ -2838,7 +2836,7 @@ public class Connection
      *
      * @param plugin The name of the plugin to remove.
      */
-    private void doDeletePlugin(final String plugin) {
+    void doDeletePlugin(final String plugin) {
         Plugin p = mPluginMap.remove(plugin);
 
         String remove = null;
