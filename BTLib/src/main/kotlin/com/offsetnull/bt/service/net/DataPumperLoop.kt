@@ -18,10 +18,21 @@ class DataPumperLoop(
     private val onEvent: suspend (PumpEvent) -> Unit,
 ) {
     private val outgoing = Channel<ByteArray>(Channel.BUFFERED)
+    private val decompressor = MccpDecompressor()
+    private var compressed = false
 
     /** Queue bytes to be sent to the server. */
     fun send(data: ByteArray) {
         outgoing.trySend(data)
+    }
+
+    fun startCompression(trailingData: ByteArray?) {
+        compressed = true
+        decompressor.reset()
+    }
+
+    fun stopCompression() {
+        compressed = false
     }
 
     /** Runs the read and write loops until cancelled or disconnected. */
@@ -44,7 +55,20 @@ class DataPumperLoop(
                 onEvent(PumpEvent.DisconnectedByPeer)
                 return
             }
-            onEvent(PumpEvent.DataReceived(data))
+            val processed = if (compressed) {
+                val result = decompressor.decompress(data)
+                if (result == null) {
+                    if (decompressor.isCorrupted) {
+                        onEvent(PumpEvent.MccpFatalError)
+                        return
+                    }
+                    continue
+                }
+                result.data
+            } else {
+                data
+            }
+            onEvent(PumpEvent.DataReceived(processed))
         }
     }
 

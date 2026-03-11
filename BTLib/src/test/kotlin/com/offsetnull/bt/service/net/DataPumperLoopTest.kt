@@ -8,8 +8,19 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.util.zip.Deflater
 
 class DataPumperLoopTest {
+
+    private fun compress(input: ByteArray): ByteArray {
+        val deflater = Deflater()
+        deflater.setInput(input)
+        deflater.finish()
+        val output = ByteArray(input.size + 64)
+        val len = deflater.deflate(output)
+        deflater.end()
+        return output.copyOf(len)
+    }
 
     /** Collects events emitted by [DataPumperLoop]. */
     private class Collector {
@@ -88,6 +99,29 @@ class DataPumperLoopTest {
 
         assertEquals(1, socket.written.size)
         assertArrayEquals("test\n".toByteArray(), socket.written[0])
+    }
+
+    @Test
+    fun `startCompression enables decompression of subsequent data`() = runTest {
+        val original = "compressed data from server".toByteArray()
+        val compressed = compress(original)
+        val socket = fakeSocket(compressed)
+        val collector = Collector()
+        val loop = DataPumperLoop(socket) { event ->
+            when (event) {
+                is PumpEvent.DataReceived -> collector.received.add(event.data)
+                else -> collector.events.add(event)
+            }
+        }
+
+        loop.startCompression(null)
+
+        val job = launch { loop.run() }
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(1, collector.received.size)
+        assertArrayEquals(original, collector.received[0])
     }
 }
 
