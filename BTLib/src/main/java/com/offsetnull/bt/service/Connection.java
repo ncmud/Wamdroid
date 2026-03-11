@@ -77,7 +77,8 @@ public class Connection
                 GMCPContext,
                 TriggerContext,
                 AliasContext,
-                SettingsContext {
+                SettingsContext,
+                ConnectionHandle {
 
     /** Initiates the connection with the server. */
     public static final int MESSAGE_STARTUP = 1;
@@ -1103,6 +1104,13 @@ public class Connection
      */
     public final void sendBytesToWindow(final byte[] data) {
         mWindowManager.sendBytesToWindow(data);
+    }
+
+    @Override
+    public void startup() {
+        if (mPump == null) {
+            doStartup();
+        }
     }
 
     /** Meat of the startup sequence. Starts the net threads after the settings have been loaded. */

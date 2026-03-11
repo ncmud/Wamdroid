@@ -84,4 +84,5 @@ private class FakeConnection(val display: String) : ConnectionHandle {
     var onReload: (() -> Unit)? = null
     override fun startup() { onStartup?.invoke() }
     override fun reloadSettings() { onReload?.invoke() }
+    override fun initWindows() {}
 }
