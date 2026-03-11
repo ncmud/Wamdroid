@@ -40,6 +40,12 @@ android {
 		baseline = file("lint-baseline.xml")
 	}
 
+	testOptions {
+		unitTests.all {
+			useJUnitPlatform()
+		}
+	}
+
 }
 
 dependencies {
@@ -66,4 +72,8 @@ dependencies {
 	api libs.coroutines.android
 
 	api libs.datastore.preferences
+
+	testImplementation libs.junit5.api
+	testRuntimeOnly libs.junit5.engine
+	testImplementation libs.coroutines.test
 }
