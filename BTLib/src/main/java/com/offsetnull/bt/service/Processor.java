@@ -307,6 +307,14 @@ public class Processor {
                 initGMCP();
             }
         }
+
+        if (action == TC.WILL && option == TC.ECHO) {
+            // Server will handle echo — disable client-side local echo.
+            mReportTo.sendEmptyMessage(Connection.MESSAGE_DISABLE_LOCAL_ECHO);
+        } else if (action == TC.WONT && option == TC.ECHO) {
+            // Server stopped echoing — re-enable client-side local echo.
+            mReportTo.sendEmptyMessage(Connection.MESSAGE_ENABLE_LOCAL_ECHO);
+        }
     }
 
     /**

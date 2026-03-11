@@ -217,6 +217,12 @@ class ConnectionHandlerShim(
 
             Connection.MESSAGE_DISCONNECTED ->
                 eventLoop.send(ConnectionCommand.Disconnected)
+
+            Connection.MESSAGE_DISABLE_LOCAL_ECHO ->
+                eventLoop.send(ConnectionCommand.DisableLocalEcho)
+
+            Connection.MESSAGE_ENABLE_LOCAL_ECHO ->
+                eventLoop.send(ConnectionCommand.EnableLocalEcho)
         }
     }
 
