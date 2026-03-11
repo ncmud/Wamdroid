@@ -180,8 +180,10 @@ public class TriggerManager {
      *     encoding provided.
      */
     public void dispatch(final byte[] data) throws UnsupportedEncodingException {
-        byte[] raw = context.getProcessor().rawProcess(data);
-        if (raw == null) {
+        byte[] raw = context.getTelnetSession() != null
+                ? context.getTelnetSession().processInput(data)
+                : data;
+        if (raw == null || raw.length == 0) {
             return;
         }
 

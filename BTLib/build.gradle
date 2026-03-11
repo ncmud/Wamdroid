@@ -73,6 +73,8 @@ dependencies {
 
 	api libs.datastore.preferences
 
+	api 'com.github.ncmud.mth:mth-core:1.51'
+
 	testImplementation libs.junit5.api
 	testRuntimeOnly libs.junit5.engine
 	testRuntimeOnly libs.junit5.launcher

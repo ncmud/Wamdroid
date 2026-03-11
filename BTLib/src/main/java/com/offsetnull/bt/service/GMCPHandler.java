@@ -1,25 +1,32 @@
 package com.offsetnull.bt.service;
 
+import android.util.Log;
+
 import com.offsetnull.bt.responder.TriggerResponder;
 import com.offsetnull.bt.responder.script.ScriptResponder;
 import com.offsetnull.bt.service.plugin.Plugin;
 import com.offsetnull.bt.trigger.TriggerData;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GMCPHandler {
 
-    private static final int GMCP_PAYLOAD_SIZE = 5;
-
     private final GMCPContext context;
+
+    private final HashMap<String, ArrayList<GMCPWatcher>> gmcpWatchers = new HashMap<>();
+
+    private final GMCPData gmcpData = new GMCPData();
 
     public GMCPHandler(GMCPContext context) {
         this.context = context;
     }
 
     public void loadTriggers() {
+        gmcpWatchers.clear();
         String gmcpChar = context.getConnectionSettings().getGMCPTriggerChar();
         for (int i = 0; i < context.getPlugins().size(); i++) {
             Plugin p = context.getPlugins().get(i);
@@ -34,11 +41,38 @@ public class GMCPHandler {
                                 String module =
                                         t.getPattern().substring(1, t.getPattern().length());
                                 String name = p.getName();
-                                context.getProcessor().addWatcher(module, name, callback);
+                                addWatcher(module, name, callback);
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private void addWatcher(String module, String plugin, String callback) {
+        ArrayList<GMCPWatcher> list = gmcpWatchers.get(module);
+        if (list == null) {
+            list = new ArrayList<>();
+            gmcpWatchers.put(module, list);
+        }
+        list.add(new GMCPWatcher(plugin, callback));
+    }
+
+    public void dispatchGMCPData(String module, String jsonString) {
+        try {
+            JSONObject jo = new JSONObject(jsonString);
+            gmcpData.absorb(module, jo);
+        } catch (JSONException e) {
+            Log.e("GMCP", "GMCP PARSING FOR: " + jsonString);
+            Log.e("GMCP", "REASON: " + e.getMessage());
+        }
+
+        ArrayList<GMCPWatcher> list = gmcpWatchers.get(module);
+        if (list != null) {
+            for (GMCPWatcher w : list) {
+                HashMap<String, Object> data = gmcpData.getTable(module);
+                context.sendGMCPTriggered(w.plugin, w.callback, data);
             }
         }
     }
@@ -52,25 +86,22 @@ public class GMCPHandler {
     }
 
     public void sendData(String gmcpData) {
-        byte bIAC = TC.IAC;
-        byte bSB = TC.SB;
-        byte bSE = TC.SE;
-        byte bGMCP = TC.GMCP;
-        int size = gmcpData.length() + GMCP_PAYLOAD_SIZE;
-        ByteBuffer fub = ByteBuffer.allocate(size);
-        fub.put(bIAC).put(bSB).put(bGMCP);
-        try {
-            fub.put(gmcpData.getBytes("ISO-8859-1"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        mth.core.client.TelnetClientSession session = context.getTelnetSession();
+        if (session != null) {
+            int space = gmcpData.indexOf(' ');
+            if (space > 0) {
+                session.sendGMCP(gmcpData.substring(0, space), gmcpData.substring(space + 1));
+            }
         }
-        fub.put(bIAC).put(bSE);
-        byte[] fubtmp = new byte[size];
-        fub.rewind();
-        fub.get(fubtmp);
-        DataPumper pump = context.getPump();
-        if (pump != null && pump.isConnected()) {
-            pump.sendData(fubtmp);
+    }
+
+    private static class GMCPWatcher {
+        final String plugin;
+        final String callback;
+
+        GMCPWatcher(String plugin, String callback) {
+            this.plugin = plugin;
+            this.callback = callback;
         }
     }
 }
