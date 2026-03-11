@@ -2062,7 +2062,11 @@ public class Window extends View
 
         if (mBufferText) {
             // synchronized(synch) {
-            mHoldBuffer.addBytesImplSimple(obj);
+            try {
+                mHoldBuffer.addBytesImpl(obj);
+            } catch (java.io.UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             // }
             return;
         }

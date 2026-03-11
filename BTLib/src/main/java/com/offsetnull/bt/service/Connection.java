@@ -846,7 +846,7 @@ public class Connection
         try {
             mWindowManager.getWindows().get(0).getBuffer().addBytesImpl(data);
         } catch (java.io.UnsupportedEncodingException e) {
-            mWindowManager.getWindows().get(0).getBuffer().addBytesImplSimple(data);
+            e.printStackTrace();
         }
         sendBytesToWindow(data);
     }
@@ -2069,7 +2069,7 @@ public class Connection
                             .getWindows()
                             .get(0)
                             .getBuffer()
-                            .addBytesImplSimple(d.mVisString.getBytes(mSettings.getEncoding()));
+                            .addBytesImpl(d.mVisString.getBytes(mSettings.getEncoding()));
                     sendBytesToWindow(d.mVisString.getBytes(mSettings.getEncoding()));
                 }
             }

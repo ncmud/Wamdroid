@@ -75,9 +75,8 @@ public class TextTree {
 
     public void addString(String str) {
         try {
-            this.addBytesImplSimple(str.getBytes(encoding));
+            this.addBytesImpl(str.getBytes(encoding));
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -273,56 +272,6 @@ public class TextTree {
     private final byte u = (byte) 0x75;
     private final byte n = (byte) 0x6E;
 
-    public void addBytesImplSimple(byte[] data) {
-        // int startcount = this.getBrokenLineCount();
-        ByteBuffer sb = ByteBuffer.allocate(data.length);
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] == NEWLINE) {
-                int size = sb.position();
-                byte[] buf = new byte[size];
-                sb.rewind();
-                sb.get(buf, 0, size);
-
-                sb.clear();
-
-                try {
-                    Text u = new Text(buf);
-                    Line l = new Line();
-                    l.getData().addLast(u);
-                    l.getData().addLast(new NewLine());
-                    addLine(l);
-                } catch (UnsupportedEncodingException e) {
-
-                    e.printStackTrace();
-                }
-
-            } else {
-                sb.put(data[i]);
-            }
-        }
-
-        if (sb.position() > 0) {
-            int size = sb.position();
-            byte[] buf = new byte[size];
-            sb.rewind();
-            sb.get(buf, 0, size);
-
-            sb.clear();
-
-            try {
-                Text u = new Text(buf);
-                Line l = new Line();
-                l.getData().addLast(u);
-                addLine(l);
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        this.prune();
-    }
-
     static enum RUN {
         WHITESPACE,
         TEXT,
@@ -338,7 +287,6 @@ public class TextTree {
 
     public int addBytesImpl(byte[] data) throws UnsupportedEncodingException {
         // if(simpleMode) {
-        //	addBytesImplSimple(data);
         // }
         // this actually shouldn't be too hard to do with just a for loop.
         // STATE init = STATE.TEXT;
