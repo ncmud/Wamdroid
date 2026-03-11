@@ -8,10 +8,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import com.offsetnull.bt.alias.AliasData;
@@ -207,22 +205,22 @@ public class Connection
      * Sent from the foreground window indicating that the DataPumper should re-establish the tcp
      * connection to the server.
      */
-    private static final int MESSAGE_RECONNECT = 31;
+    static final int MESSAGE_RECONNECT = 31;
 
     /** Sent from the foreground window, initates a settings reset. */
-    private static final int MESSAGE_DORESETSETTINGS = 27;
+    static final int MESSAGE_DORESETSETTINGS = 27;
 
     /** Sent from the foreground window, adds an external plugin at the given path. */
-    private static final int MESSAGE_ADDLINK = 28;
+    static final int MESSAGE_ADDLINK = 28;
 
     /** Sent from the foreground window, deletes and removes a plugin. */
-    private static final int MESSAGE_DELETEPLUGIN = 29;
+    static final int MESSAGE_DELETEPLUGIN = 29;
 
     /**
      * Sent from Plugin.CallPlugin calls an anonymous global function in the target plugin with
      * arguments.
      */
-    private static final int MESSAGE_CALLPLUGIN = 35;
+    static final int MESSAGE_CALLPLUGIN = 35;
 
     /** Sent from the timer command. */
     static final int MESSAGE_TIMERINFO = 36;
@@ -291,11 +289,11 @@ public class Connection
     /** Weather or not we should auto reconnect on connection failure. */
     private Boolean mAutoReconnect;
 
-    /**
-     * The main looper handler for this "foreground" thread, although I'm not sure if service
-     * processes get "foreground threads".
-     */
-    private Handler mHandler = null;
+    /** Coroutine-based event loop replacing the legacy Handler dispatch. */
+    ConnectionEventLoop mEventLoop;
+
+    /** Backward-compatible Handler shim for callers still sending Message objects. */
+    private Handler mHandlerShim = null;
 
     /** Global handler for the speedwalk command, useful for changing the settings. */
     private SpeedwalkCommand mSpeedwalkCommand = null;
@@ -348,6 +346,9 @@ public class Connection
     private KeyboardCommand mKeyboardCommand;
 
     private ConnectionDispatcher mDispatcher;
+
+    /** Cancellable job for delayed reconnect. */
+    private kotlinx.coroutines.Job mReconnectJob = null;
 
     /** Value of CRLF. */
     private String mCRLF = "\r\n";
@@ -405,7 +406,6 @@ public class Connection
         this.mService = service;
 
         mPlugins = new ArrayList<Plugin>();
-        mHandler = new Handler(new ConnectionHandler());
         mTriggerManager = new TriggerManager(this);
 
         mWindowManager = new ConnectionWindowManager();
@@ -424,6 +424,20 @@ public class Connection
                 new AliasManagerAdapter(this),
                 "UTF-8");
 
+        mEventLoop = new ConnectionEventLoop(mDispatcher);
+        mEventLoop.start();
+
+        final Connection self = this;
+        mHandlerShim = new ConnectionHandlerShim(
+                mEventLoop,
+                bytes -> self.sendToServer(bytes),
+                str -> {
+                    try {
+                        self.sendToServer(str.getBytes(self.mSettings.getEncoding()));
+                    } catch (java.io.UnsupportedEncodingException ignored) { }
+                },
+                () -> self.mPump != null && self.mPump.isConnected());
+
         SharedPreferences sprefs = this.getContext().getSharedPreferences("STATUS_BAR_HEIGHT", 0);
         mStatusBarHeight =
                 sprefs.getInt(
@@ -440,206 +454,6 @@ public class Connection
 
         // fish out the window.
 
-    }
-
-    /**
-     * The connection handler message queue. Coordinates multithreaded efforts from the DataPumper
-     * and foreground window via the Service.
-     */
-    private class ConnectionHandler implements Handler.Callback {
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public boolean handleMessage(final Message msg) {
-            switch (msg.what) {
-                case MESSAGE_TERMINATED_BY_PEER:
-                    mDispatcher.dispatch(new ConnectionCommand.TerminatedByPeer());
-                    break;
-                case MESSAGE_TIMERSTOP:
-                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
-                            (String) msg.obj, msg.arg2,
-                            ConnectionCommand.TimerActionType.STOP));
-                    break;
-                case MESSAGE_TIMERSTART:
-                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
-                            (String) msg.obj, msg.arg2,
-                            ConnectionCommand.TimerActionType.START));
-                    break;
-                case MESSAGE_TIMERRESET:
-                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
-                            (String) msg.obj, msg.arg2,
-                            ConnectionCommand.TimerActionType.RESET));
-                    break;
-                case MESSAGE_TIMERINFO:
-                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
-                            (String) msg.obj, msg.arg2,
-                            ConnectionCommand.TimerActionType.INFO));
-                    break;
-                case MESSAGE_TIMERPAUSE:
-                    mDispatcher.dispatch(new ConnectionCommand.TimerAction(
-                            (String) msg.obj, msg.arg2,
-                            ConnectionCommand.TimerActionType.PAUSE));
-                    break;
-                case MESSAGE_CALLPLUGIN:
-                    mDispatcher.dispatch(new ConnectionCommand.CallPlugin(
-                            msg.getData().getString("PLUGIN"),
-                            msg.getData().getString("FUNCTION"),
-                            msg.getData().getString("DATA")));
-                    break;
-                case MESSAGE_SETTRIGGERSDIRTY:
-                    mDispatcher.dispatch(ConnectionCommand.SetTriggersDirty.INSTANCE);
-                    break;
-                case MESSAGE_RELOADSETTINGS:
-                    mDispatcher.dispatch(ConnectionCommand.ReloadSettings.INSTANCE);
-                    break;
-                case MESSAGE_TRIGGER_LUA_ERROR:
-                    mDispatcher.dispatch(new ConnectionCommand.TriggerLuaError(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_RECONNECT:
-                    mDispatcher.dispatch(ConnectionCommand.Reconnect.INSTANCE);
-                    break;
-                case MESSAGE_CONNECTED:
-                    mDispatcher.dispatch(ConnectionCommand.Connected.INSTANCE);
-                    break;
-                case MESSAGE_DELETEPLUGIN:
-                    mDispatcher.dispatch(new ConnectionCommand.DeletePlugin(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_ADDLINK:
-                    mDispatcher.dispatch(new ConnectionCommand.AddLink((String) msg.obj));
-                    break;
-                case MESSAGE_DORESETSETTINGS:
-                    mDispatcher.dispatch(ConnectionCommand.ResetSettings.INSTANCE);
-                    break;
-                case MESSAGE_PLUGINLUAERROR:
-                    mDispatcher.dispatch(new ConnectionCommand.LuaError(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_EXPORTFILE:
-                    mDispatcher.dispatch(new ConnectionCommand.ExportFile(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_IMPORTFILE:
-                    mDispatcher.dispatch(new ConnectionCommand.ImportFile(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_SAVESETTINGS:
-                    mDispatcher.dispatch(new ConnectionCommand.SaveDirtyPlugin(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_GMCPTRIGGERED:
-                    mDispatcher.dispatch(new ConnectionCommand.GmcpTriggered(
-                            msg.getData().getString("TARGET"),
-                            msg.getData().getString("CALLBACK"),
-                            msg.obj));
-                    break;
-                case MESSAGE_INVALIDATEWINDOWTEXT:
-                    mDispatcher.dispatch(new ConnectionCommand.InvalidateWindowText(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_WINDOWXCALLS:
-                    Object o = msg.obj;
-                    if (o == null) {
-                        o = "";
-                    }
-                    mDispatcher.dispatch(new ConnectionCommand.WindowXCallS(
-                            msg.getData().getString("TOKEN"),
-                            msg.getData().getString("FUNCTION"),
-                            o));
-                    break;
-                case MESSAGE_WINDOWXCALLB:
-                    mDispatcher.dispatch(new ConnectionCommand.WindowXCallB(
-                            msg.getData().getString("TOKEN"),
-                            msg.getData().getString("FUNCTION"),
-                            (byte[]) msg.obj));
-                    break;
-                case MESSAGE_ADDFUNCTIONCALLBACK:
-                    Bundle data = msg.getData();
-                    mDispatcher.dispatch(new ConnectionCommand.AddFunctionCallback(
-                            data.getString("ID"),
-                            data.getString("COMMAND"),
-                            data.getString("CALLBACK")));
-                    break;
-                case MESSAGE_WINDOWBUFFER:
-                    mDispatcher.dispatch(new ConnectionCommand.WindowBuffer(
-                            (String) msg.obj, msg.arg1 != 0));
-                    break;
-                case MESSAGE_NEWWINDOW:
-                    mDispatcher.dispatch(new ConnectionCommand.NewWindow(msg.obj));
-                    break;
-                case MESSAGE_DRAWINDOW:
-                    mDispatcher.dispatch(new ConnectionCommand.DrawWindow(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_LUANOTE:
-                    String str = (String) msg.obj;
-                    if (str != null) {
-                        mDispatcher.dispatch(new ConnectionCommand.LuaNote(str));
-                    }
-                    break;
-                case MESSAGE_LINETOWINDOW:
-                    mDispatcher.dispatch(new ConnectionCommand.LineToWindow(
-                            msg.getData().getString("TARGET"),
-                            msg.obj));
-                    break;
-                case MESSAGE_SENDDATA_STRING:
-                    try {
-                        byte[] bytes = ((String) msg.obj).getBytes(mSettings.getEncoding());
-                        sendToServer(bytes);
-                    } catch (UnsupportedEncodingException e1) {
-                        e1.printStackTrace();
-                    }
-                    break;
-                case MESSAGE_SENDDATA_BYTES:
-                    sendToServer((byte[]) msg.obj);
-                    break;
-                case MESSAGE_SENDGMCPDATA:
-                    if (mPump != null && mPump.isConnected()) {
-                        mDispatcher.dispatch(new ConnectionCommand.SendGmcpData(
-                                (String) msg.obj));
-                    } else {
-                        mHandler.sendMessageDelayed(
-                                mHandler.obtainMessage(MESSAGE_SENDGMCPDATA, msg.obj),
-                                FIVE_HUNDRED_MILLIS);
-                    }
-                    break;
-                case MESSAGE_STARTUP:
-                    mDispatcher.dispatch(ConnectionCommand.Startup.INSTANCE);
-                    break;
-                case MESSAGE_STARTCOMPRESS:
-                    mDispatcher.dispatch(new ConnectionCommand.StartCompress(
-                            (byte[]) msg.obj));
-                    break;
-                case MESSAGE_SENDOPTIONDATA:
-                    Bundle b = msg.getData();
-                    mDispatcher.dispatch(new ConnectionCommand.SendOptionData(
-                            b.getByteArray("THE_DATA"),
-                            b.getString("DEBUG_MESSAGE")));
-                    break;
-                case MESSAGE_PROCESSORWARNING:
-                    mDispatcher.dispatch(new ConnectionCommand.ProcessorWarning(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_BELLINC:
-                    mDispatcher.dispatch(new ConnectionCommand.BellReceived());
-                    break;
-                case MESSAGE_DODIALOG:
-                    mDispatcher.dispatch(new ConnectionCommand.DialogError(
-                            (String) msg.obj));
-                    break;
-                case MESSAGE_PROCESS:
-                    mDispatcher.dispatch(new ConnectionCommand.Process(
-                            (byte[]) msg.obj));
-                    break;
-                case MESSAGE_DISCONNECTED:
-                    mDispatcher.dispatch(ConnectionCommand.Disconnected.INSTANCE);
-                    break;
-                default:
-                    break;
-            }
-            return true;
-        }
     }
 
     /**
@@ -840,7 +654,7 @@ public class Connection
                                 link,
                                 mService.getApplicationContext(),
                                 tmplist,
-                                mHandler,
+                                mHandlerShim,
                                 this);
 
                 try {
@@ -967,7 +781,7 @@ public class Connection
      * @param override Indicates weather the auto reconnect should be overridden.
      */
     protected final void doDisconnect(final boolean override) {
-        if (mHandler == null) {
+        if (mEventLoop == null) {
             return;
         }
         if (mAutoReconnect && !override) {
@@ -982,9 +796,9 @@ public class Connection
                                 + " tries remaining."
                                 + Colorizer.getWhiteColor()
                                 + "\n";
-                mHandler.sendMessage(
-                        mHandler.obtainMessage(Connection.MESSAGE_PROCESSORWARNING, message));
-                mHandler.sendEmptyMessageDelayed(MESSAGE_RECONNECT, THREE_THOUSAND_MILLIS);
+                mEventLoop.send(new ConnectionCommand.ProcessorWarning(message));
+                mReconnectJob = mEventLoop.sendDelayed(
+                        ConnectionCommand.Reconnect.INSTANCE, THREE_THOUSAND_MILLIS);
                 return;
             }
         }
@@ -1008,8 +822,9 @@ public class Connection
         mProcessor = null;
 
         if (noreconnect) {
-            if (mHandler != null) {
-                mHandler.removeMessages(MESSAGE_RECONNECT);
+            if (mReconnectJob != null) {
+                mReconnectJob.cancel(null);
+                mReconnectJob = null;
             }
         }
 
@@ -1054,7 +869,7 @@ public class Connection
      * @param str The message fro the dialog.
      */
     protected final void dispatchDialog(final String str) {
-        if (mHandler == null || str == null) {
+        if (mEventLoop == null || str == null) {
             return;
         }
         if (mAutoReconnect) {
@@ -1072,9 +887,9 @@ public class Connection
                                 + " tries remaining."
                                 + Colorizer.getWhiteColor()
                                 + "\n";
-                mHandler.sendMessage(
-                        mHandler.obtainMessage(Connection.MESSAGE_PROCESSORWARNING, message));
-                mHandler.sendEmptyMessageDelayed(MESSAGE_RECONNECT, TWENTY_THOUSAND_MILLIS);
+                mEventLoop.send(new ConnectionCommand.ProcessorWarning(message));
+                mReconnectJob = mEventLoop.sendDelayed(
+                        ConnectionCommand.Reconnect.INSTANCE, TWENTY_THOUSAND_MILLIS);
                 return;
             }
         }
@@ -1116,10 +931,10 @@ public class Connection
 
         killNetThreads(true);
 
-        mPump = new DataPumper(mHost, mPort, mHandler);
+        mPump = new DataPumper(mHost, mPort, mHandlerShim);
 
         mProcessor =
-                new Processor(mHandler, mSettings.getEncoding(), mService.getApplicationContext());
+                new Processor(mHandlerShim, mSettings.getEncoding(), mService.getApplicationContext());
 
         initSettings();
         mPump.start();
@@ -1555,7 +1370,7 @@ public class Connection
 
     /** Helper method that kicks off the reconnection sequence. */
     public final void startReconnect() {
-        mHandler.sendEmptyMessage(MESSAGE_RECONNECT);
+        mEventLoop.send(ConnectionCommand.Reconnect.INSTANCE);
     }
 
     /** Helper method to initiate a reconnect right now. */
@@ -2249,7 +2064,7 @@ public class Connection
                 }
             }
         } catch (IOException e) {
-            mHandler.sendEmptyMessage(MESSAGE_DISCONNECTED);
+            mEventLoop.send(ConnectionCommand.Disconnected.INSTANCE);
         }
     }
 
@@ -2295,7 +2110,7 @@ public class Connection
      * @param path Path to save settings to, this must be absolute from the root directory (?)
      */
     public final void startExportSequence(final String path) {
-        mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_EXPORTFILE, path));
+        mEventLoop.send(new ConnectionCommand.ExportFile(path));
     }
 
     /**
@@ -2377,7 +2192,7 @@ public class Connection
                 ArrayList<Plugin> tmpplugs = new ArrayList<Plugin>();
                 ConnectionSetttingsParser newsettings =
                         new ConnectionSetttingsParser(
-                                null, mService.getApplicationContext(), tmpplugs, mHandler, this);
+                                null, mService.getApplicationContext(), tmpplugs, mHandlerShim, this);
                 tmpplugs = newsettings.load(this, dataDir);
 
                 Plugin buttonwindow = tmpplugs.get(1);
@@ -2625,7 +2440,7 @@ public class Connection
                                     path,
                                     mService.getApplicationContext(),
                                     tmpplugs,
-                                    mHandler,
+                                    mHandlerShim,
                                     this);
                     ApplicationInfo ai = null;
                     try {
@@ -2790,7 +2605,7 @@ public class Connection
 
     /** Entry point for the foreground window to reset the settings for this connection. */
     public final void resetSettings() {
-        this.mHandler.sendEmptyMessage(MESSAGE_DORESETSETTINGS);
+        mEventLoop.send(ConnectionCommand.ResetSettings.INSTANCE);
     }
 
     /** Work horse routine that actually resets the settings. */
@@ -2808,7 +2623,7 @@ public class Connection
      * @param path Path of the settings to load.
      */
     public final void startLoadSettingsSequence(final String path) {
-        mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_IMPORTFILE, path));
+        mEventLoop.send(new ConnectionCommand.ImportFile(path));
     }
 
     /**
@@ -2828,7 +2643,7 @@ public class Connection
      * @param path The location of the external settings file.
      */
     public final void addLink(final String path) {
-        mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_ADDLINK, path));
+        mEventLoop.send(new ConnectionCommand.AddLink(path));
     }
 
     /**
@@ -2863,7 +2678,7 @@ public class Connection
      * @param plugin The name of the plugin to remove.
      */
     public final void deletePlugin(final String plugin) {
-        mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_DELETEPLUGIN, plugin));
+        mEventLoop.send(new ConnectionCommand.DeletePlugin(plugin));
     }
 
     /**
@@ -2946,8 +2761,13 @@ public class Connection
         }
         mSettings.shutdown();
         mSettings = null;
-        mHandler.removeMessages(MESSAGE_RECONNECT);
-        mHandler = null;
+        if (mReconnectJob != null) {
+            mReconnectJob.cancel(null);
+            mReconnectJob = null;
+        }
+        mEventLoop.shutdown();
+        mEventLoop = null;
+        mHandlerShim = null;
         mService.removeConnectionNotification(mDisplay);
     }
 
@@ -2968,7 +2788,9 @@ public class Connection
      * @param str The string to send.
      */
     public final void dispatchLuaText(final String str) {
-        mHandler.sendMessage(mHandler.obtainMessage(Connection.MESSAGE_LUANOTE, str));
+        if (str != null) {
+            mEventLoop.send(new ConnectionCommand.LuaNote(str));
+        }
     }
 
     /**
@@ -2999,11 +2821,7 @@ public class Connection
 
     @Override
     public final void callPlugin(final String plugin, final String function, final String data) {
-        Message m = mHandler.obtainMessage(MESSAGE_CALLPLUGIN);
-        m.getData().putString("PLUGIN", plugin);
-        m.getData().putString("FUNCTION", function);
-        m.getData().putString("DATA", data);
-        mHandler.sendMessage(m);
+        mEventLoop.send(new ConnectionCommand.CallPlugin(plugin, function, data));
     }
 
     @Override
@@ -3026,12 +2844,25 @@ public class Connection
     }
 
     /**
-     * Getter for mHandler.
+     * Returns a backward-compatible Handler shim for callers that still use Message-based dispatch.
      *
-     * @return The handler associated with this connection.
+     * @return The handler shim associated with this connection.
+     * @deprecated Use {@link #sendCommand(ConnectionCommand)} instead.
      */
+    @Deprecated
     public final Handler getHandler() {
-        return mHandler;
+        return mHandlerShim;
+    }
+
+    /**
+     * Sends a command through the event loop for dispatch.
+     *
+     * @param command The command to dispatch.
+     */
+    public final void sendCommand(final ConnectionCommand command) {
+        if (mEventLoop != null) {
+            mEventLoop.send(command);
+        }
     }
 
     /**

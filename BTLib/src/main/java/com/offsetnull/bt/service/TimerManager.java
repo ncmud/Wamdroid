@@ -166,54 +166,28 @@ public class TimerManager {
                 }
 
                 if (action.equals("info")) {
-                    c.getHandler()
-                            .sendMessage(
-                                    c.getHandler()
-                                            .obtainMessage(Connection.MESSAGE_TIMERINFO, ordinal));
+                    c.sendCommand(new ConnectionCommand.TimerAction(
+                            ordinal, 0, ConnectionCommand.TimerActionType.INFO));
                     return null;
                 }
                 if (action.equals("reset")) {
-                    c.getHandler()
-                            .sendMessage(
-                                    c.getHandler()
-                                            .obtainMessage(
-                                                    Connection.MESSAGE_TIMERRESET,
-                                                    0,
-                                                    domsg,
-                                                    ordinal));
+                    c.sendCommand(new ConnectionCommand.TimerAction(
+                            ordinal, domsg, ConnectionCommand.TimerActionType.RESET));
                     return null;
                 }
                 if (action.equals("play")) {
-                    c.getHandler()
-                            .sendMessage(
-                                    c.getHandler()
-                                            .obtainMessage(
-                                                    Connection.MESSAGE_TIMERSTART,
-                                                    0,
-                                                    domsg,
-                                                    ordinal));
+                    c.sendCommand(new ConnectionCommand.TimerAction(
+                            ordinal, domsg, ConnectionCommand.TimerActionType.START));
                     return null;
                 }
                 if (action.equals("pause")) {
-                    c.getHandler()
-                            .sendMessage(
-                                    c.getHandler()
-                                            .obtainMessage(
-                                                    Connection.MESSAGE_TIMERPAUSE,
-                                                    0,
-                                                    domsg,
-                                                    ordinal));
+                    c.sendCommand(new ConnectionCommand.TimerAction(
+                            ordinal, domsg, ConnectionCommand.TimerActionType.PAUSE));
                     return null;
                 }
                 if (action.equals("stop")) {
-                    c.getHandler()
-                            .sendMessage(
-                                    c.getHandler()
-                                            .obtainMessage(
-                                                    Connection.MESSAGE_TIMERSTOP,
-                                                    0,
-                                                    domsg,
-                                                    ordinal));
+                    c.sendCommand(new ConnectionCommand.TimerAction(
+                            ordinal, domsg, ConnectionCommand.TimerActionType.STOP));
                     return null;
                 }
             } else {

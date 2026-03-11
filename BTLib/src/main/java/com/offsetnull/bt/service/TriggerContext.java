@@ -31,5 +31,10 @@ public interface TriggerContext {
 
     int getPort();
 
+    /** @deprecated Use {@link #sendCommand(ConnectionCommand)} instead. */
+    @Deprecated
     android.os.Handler getHandler();
+
+    /** Sends a command through the connection event loop. */
+    void sendCommand(ConnectionCommand command);
 }

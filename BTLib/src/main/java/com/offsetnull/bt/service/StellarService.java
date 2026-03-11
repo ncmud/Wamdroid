@@ -803,8 +803,8 @@ public class StellarService extends Service {
     }
 
     public void sendData(final byte[] seq) {
-        Handler handler = mConnections.get(mConnectionClutch).getHandler();
-        handler.sendMessage(handler.obtainMessage(Connection.MESSAGE_SENDDATA_BYTES, seq));
+        mConnections.get(mConnectionClutch).sendCommand(
+                new ConnectionCommand.SendDataBytes(seq));
     }
 
     public void saveSettings() {
