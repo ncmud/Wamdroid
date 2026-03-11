@@ -15,7 +15,7 @@ internal class TelnetDelegateAdapter(private val conn: Connection) : TelnetClien
 
     override fun onGMCPNegotiated() {
         val session = conn.mTelnetSession ?: return
-        session.sendGMCP("core.hello", "{\"client\": \"BlowTorch\",\"version\": \"1.4\"}")
+        session.sendGMCP("core.hello", "{\"client\": \"WAMDROID\",\"version\": \"2.0\"}")
         val supports = conn.mGMCPSupports
         session.sendGMCP("core.supports.set", "[$supports]")
     }
