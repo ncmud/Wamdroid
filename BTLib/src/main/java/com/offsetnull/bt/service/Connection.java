@@ -606,10 +606,7 @@ public class Connection
                     doStartup();
                     break;
                 case MESSAGE_STARTCOMPRESS:
-                    mPump.getHandler()
-                            .sendMessage(
-                                    mPump.getHandler()
-                                            .obtainMessage(DataPumper.MESSAGE_COMPRESS, msg.obj));
+                    mPump.startCompression((byte[]) msg.obj);
                     break;
                 case MESSAGE_SENDOPTIONDATA:
                     Bundle b = msg.getData();
@@ -1022,20 +1019,8 @@ public class Connection
         if (mPump == null) {
             return;
         }
-        if (mPump != null) {
-            if (mPump.getHandler() != null) {
-                mPump.closeSocket();
-                // mPump.getHandler().removeMessages(DataPumper.MESSAGE_RETRIEVE);
-                mPump.getHandler().removeCallbacksAndMessages(null);
-                mPump.getHandler().sendEmptyMessage(DataPumper.MESSAGE_END);
 
-                try {
-                    mPump.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        mPump.shutdown();
 
         mProcessor = null;
 
@@ -1570,9 +1555,7 @@ public class Connection
     /** Helper method to initiate a reconnect right now. */
     public final void doReconnect() {
         if (mPump != null) {
-            if (mPump.getHandler() != null) {
-                mPump.getHandler().sendEmptyMessage(DataPumper.MESSAGE_END);
-            }
+            mPump.shutdown();
             mPump = null;
         }
 
