@@ -22,7 +22,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
 
@@ -57,27 +56,6 @@ import java.util.Map;
  */
 public class StellarService extends Service {
 
-    /** Message constant indicating system startup. */
-    protected static final int MESSAGE_STARTUP = 0;
-
-    /** Message constant indicating a new connection launch. */
-    protected static final int MESSAGE_NEWCONENCTION = 1;
-
-    /**
-     * Message constant indicating that the active connection should switch to a different
-     * connection.
-     */
-    protected static final int MESSAGE_SWITCH = 2;
-
-    /** Message constant indicating that the active connection should reload its settings. */
-    protected static final int MESSAGE_RELOADSETTINGS = 3;
-
-    /**
-     * Not really sure what this is for but I think it had something to do with debugging an ANR in
-     * the service.
-     */
-    protected static final int MESSAGE_STOPANR = 4;
-
     /** Duration of a short interval of time. */
     private static final int SHORT_DURATION = 300;
 
@@ -93,11 +71,8 @@ public class StellarService extends Service {
     /** Tracker for if the foreground window is showing or hidden. */
     private boolean mWindowShowing = true;
 
-    /**
-     * The handler object used to coordinate multi-threaded efforts from the aidl callback onto the
-     * main thread.
-     */
-    private Handler mHandler = null;
+    /** Coroutine-based event loop that replaces the old Handler/ServiceHandler. */
+    private ServiceEventLoop mEventLoop = null;
 
     /** The WifiLock object. */
     private WifiManager.WifiLock mWifiLock = null;
@@ -230,49 +205,20 @@ public class StellarService extends Service {
                     return c;
                 }
         );
-        mHandler = new Handler(new ServiceHandler());
-    }
-
-    /**
-     * There are a few things that are needed to be handled on the main thread and the aidl bridge
-     * makes that difficult, so this is used to aggregate code onto the main thread rather than the
-     * dispatch threads.
-     */
-    private class ServiceHandler implements Handler.Callback {
-        @Override
-        public boolean handleMessage(final Message msg) {
-            switch (msg.what) {
-                case MESSAGE_RELOADSETTINGS:
-                    mDispatcher.dispatch(ServiceCommand.ReloadSettings.INSTANCE);
-                    mConnectionClutch = mDispatcher.getActiveConnection();
-                    reloadWindows();
-                    break;
-                case MESSAGE_STARTUP:
-                    mDispatcher.dispatch(ServiceCommand.Startup.INSTANCE);
-                    break;
-                case MESSAGE_NEWCONENCTION:
-                    Bundle b = msg.getData();
-                    String display = b.getString("DISPLAY");
-                    String host = b.getString("HOST");
-                    int port = b.getInt("PORT");
-
-                    if (!mConnections.containsKey(display)) {
-                        mDispatcher.dispatch(
-                                new ServiceCommand.NewConnection(display, host, port));
-                        mConnectionClutch = mDispatcher.getActiveConnection();
-                    }
-                    break;
-                case MESSAGE_SWITCH:
-                    mDispatcher.dispatch(
-                            new ServiceCommand.SwitchConnection((String) msg.obj));
-                    mConnectionClutch = mDispatcher.getActiveConnection();
-                    switchTo((String) msg.obj);
-                    break;
-                default:
-                    break;
+        mEventLoop = new ServiceEventLoop(mDispatcher, new ServiceEventLoop.SideEffects() {
+            @Override
+            public void onReloadWindows() {
+                mConnectionClutch = mDispatcher.getActiveConnection();
+                reloadWindows();
             }
-            return true;
-        }
+
+            @Override
+            public void onSwitchTo(String display) {
+                mConnectionClutch = mDispatcher.getActiveConnection();
+                switchTo(display);
+            }
+        });
+        mEventLoop.start();
     }
 
     /** Implementation of the Service.onDestroy() method. */
@@ -834,7 +780,7 @@ public class StellarService extends Service {
     }
 
     public void initXfer() {
-        mHandler.sendEmptyMessage(MESSAGE_STARTUP);
+        mEventLoop.send(ServiceCommand.Startup.INSTANCE);
     }
 
     public void endXfer() {
@@ -870,13 +816,7 @@ public class StellarService extends Service {
     }
 
     public void setConnectionData(final String host, final int port, final String display) {
-        Message msg = mHandler.obtainMessage(MESSAGE_NEWCONENCTION);
-        Bundle b = msg.getData();
-        b.putString("DISPLAY", display);
-        b.putString("HOST", host);
-        b.putInt("PORT", port);
-        msg.setData(b);
-        mHandler.sendMessage(msg);
+        mEventLoop.send(new ServiceCommand.NewConnection(display, host, port));
     }
 
     @SuppressWarnings("rawtypes")
@@ -1065,7 +1005,7 @@ public class StellarService extends Service {
     public void startNewConnection(final String host, final int port, final String display) {}
 
     public void switchToConnection(final String display) {
-        mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_SWITCH, display));
+        mEventLoop.send(new ServiceCommand.SwitchConnection(display));
     }
 
     public boolean isConnectedTo(final String display) {
@@ -1108,7 +1048,7 @@ public class StellarService extends Service {
     }
 
     public void reloadSettings() {
-        mHandler.sendEmptyMessage(MESSAGE_RELOADSETTINGS);
+        mEventLoop.send(ServiceCommand.ReloadSettings.INSTANCE);
     }
 
     public void pluginXcallS(final String plugin, final String function, final String str) {
