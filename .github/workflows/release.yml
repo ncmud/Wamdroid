@@ -25,15 +25,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build debug APK
-        run: ./gradlew :BT_Free:assembleDebug
+        run: ./gradlew :app:assembleDebug
 
       - name: Rename APK
         env:
           TAG: ${{ github.ref_name }}
-        run: cp BT_Free/build/outputs/apk/debug/BT_Free-debug.apk "BlowTorch-${TAG}.apk"
+        run: cp app/build/outputs/apk/debug/app-debug.apk "MUDWammer-${TAG}.apk"
 
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" "BlowTorch-${TAG}.apk" --generate-notes
+        run: gh release create "$TAG" "MUDWammer-${TAG}.apk" --generate-notes
