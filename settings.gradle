@@ -20,7 +20,7 @@ def mthLocal = file('../mth/kotlin')
 if (mthLocal.directory) {
     includeBuild(mthLocal) {
         dependencySubstitution {
-            substitute module('com.github.ncmud.mth:mth-core') using project(':mth-core')
+            substitute module('com.github.ncmud:mth') using project(':mth-core')
         }
     }
 }
