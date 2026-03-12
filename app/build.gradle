@@ -8,7 +8,7 @@ android {
 
 	signingConfigs {
 		release {
-			storeFile = file("../BTLib/key/bt_privatekey.keystore")
+			storeFile = file("../lib/key/bt_privatekey.keystore")
 			storePassword = System.getenv("BT_RELEASE_PASS")
 			keyAlias = "btkey"
 			keyPassword = System.getenv("BT_RELEASE_PASS")
@@ -49,5 +49,5 @@ android {
 }
 
 dependencies {
-	implementation project(":BTLib")
+	implementation project(":lib")
 }
