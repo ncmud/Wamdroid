@@ -13,10 +13,10 @@ manifest_filename = "AndroidManifest.xml"
 with open(manifest_filename,"r") as f:
     contents = [i for i in f]
     #print contents
-    mysearch = r'(^.+<meta-data android:value=")(\d+)(" android:name="BLOWTORCH_LUA_LIBS_VERSION"/>.+$)'
+    mysearch = r'(^.+<meta-data android:value=")(\d+)(" android:name="MUDWAMMER_LUA_LIBS_VERSION"/>.+$)'
     for line in contents:
         
-        match = re.match(r'^(.+")(\d+)(" android:name="BLOWTORCH_LUA_LIBS_VERSION".+$)',line)
+        match = re.match(r'^(.+")(\d+)(" android:name="MUDWAMMER_LUA_LIBS_VERSION".+$)',line)
         if match:
             prefix = match.group(1)
             value = int(match.group(2))

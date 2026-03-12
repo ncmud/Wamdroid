@@ -652,7 +652,7 @@ function checkImport()
  if(PluginSupports("button_window","exportButtons")) then
    WindowXCallS(buttonWindowName,"askImport")
  else
-   WindowXCallS(buttonWindowName,"failImport","Internal button window plugin does not support exporting buttons. Please update BlowTorch")
+   WindowXCallS(buttonWindowName,"failImport","Internal button window plugin does not support exporting buttons. Please update MUDWammer")
  end
 end
 
