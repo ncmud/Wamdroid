@@ -15,13 +15,13 @@
         android:icon="@drawable/blowtorch_logo3"
         android:label="BlowTorch"
         android:allowBackup="true"
-        android:process="com.offsetnull.bt"
+        android:process="org.ncmud.mudwammer"
         android:hardwareAccelerated="true"
         android:theme="@style/Theme.AppCompat.Dark.NoActionBar">
 
         <meta-data android:value="84" android:name="BLOWTORCH_LUA_LIBS_VERSION"/>
 
-        <activity android:name="com.offsetnull.btfree.FreeLauncher"
+        <activity android:name="org.ncmud.mudwammer.app.FreeLauncher"
                   android:label="BlowTorch"
                   android:exported="true">
             <intent-filter>
@@ -30,12 +30,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.offsetnull.bt.launcher.Launcher"
+        <activity android:name="org.ncmud.mudwammer.launcher.Launcher"
                   android:label="BlowTorch"
                   android:exported="false">
         </activity>
 
-        <activity android:name="com.offsetnull.bt.window.MainWindow"
+        <activity android:name="org.ncmud.mudwammer.window.MainWindow"
                   tools:replace="android:exported"
                   android:windowSoftInputMode="adjustPan|stateHidden"
                   android:label="BlowTorch"
@@ -43,16 +43,16 @@
                   android:configChanges="orientation|keyboard|keyboardHidden|screenLayout|screenSize"
                   android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="com.offsetnull.bt.window.MainWindow.NORMAL_MODE"/>
+                <action android:name="org.ncmud.mudwammer.window.MainWindow.NORMAL_MODE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
-        <service android:name="com.offsetnull.bt.service.StellarService"
+        <service android:name="org.ncmud.mudwammer.service.StellarService"
                  android:exported="false"
                  android:foregroundServiceType="connectedDevice">
             <intent-filter>
-                <action android:name="com.offsetnull.bt.service.IStellarService.MODE_NORMAL"/>
+                <action android:name="org.ncmud.mudwammer.service.IStellarService.MODE_NORMAL"/>
             </intent-filter>
         </service>
 

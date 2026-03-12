@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-	namespace = "com.happygoatstudios.bt"
+	namespace = "org.ncmud.mudwammer.app"
 	compileSdk = libs.versions.compileSdk.get().toInteger()
 
 	signingConfigs {

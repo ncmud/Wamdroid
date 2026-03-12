@@ -26,7 +26,7 @@ package org.keplerproject.luajava;
 
 import android.util.Log;
 
-import com.offsetnull.bt.service.Colorizer;
+import org.ncmud.mudwammer.service.Colorizer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

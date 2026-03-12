@@ -11,21 +11,21 @@
 
     <application android:label="BlowTorch" android:theme="@android:style/Theme.NoTitleBar" android:supportsRtl="true">
         <!-- android:windowSoftInputMode="adjustResize" -->
-        <activity android:name="com.offsetnull.bt.window.MainWindow"
+        <activity android:name="org.ncmud.mudwammer.window.MainWindow"
         		  android:windowSoftInputMode="adjustPan|stateHidden"
         		  android:exported="false"
 				  android:configChanges="orientation|keyboard|keyboardHidden|screenLayout|screenSize"
         		  android:launchMode = "singleTask">
         		  <intent-filter>
-        		  	<action android:name="com.happygoatstudios.bt.window.MainWindow"/>
+        		  	<action android:name="org.ncmud.mudwammer.window.MainWindow"/>
         		  	<category android:name="android.intent.category.DEFAULT"/>
         		  </intent-filter>
         </activity>
-        <service android:name="com.offsetnull.bt.service.StellarService"
+        <service android:name="org.ncmud.mudwammer.service.StellarService"
         		 android:exported="false"
         		 android:foregroundServiceType="connectedDevice">
         		 <intent-filter>
-        		 	<action android:name="com.happygoatstudios.bt.service.IStellarService"/>
+        		 	<action android:name="org.ncmud.mudwammer.service.IStellarService"/>
         		 </intent-filter>
         </service>
 

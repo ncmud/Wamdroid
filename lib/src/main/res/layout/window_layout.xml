@@ -26,7 +26,7 @@
     	android:textColor="#9999FF"
     	android:text="@string/btn_down"/>
     
-    <com.offsetnull.bt.window.BetterEditText
+    <org.ncmud.mudwammer.window.BetterEditText
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight = "20dip"
@@ -59,7 +59,7 @@
         android:id="@+id/divider"
         android:background="#FF444488"/>
 
-    <com.offsetnull.bt.window.NoTouchActionBar
+    <org.ncmud.mudwammer.window.NoTouchActionBar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -97,7 +97,7 @@
     	android:textColor="#9999FF"
     	android:text="@string/btn_down"/>
 
-    <com.offsetnull.bt.window.BetterEditText
+    <org.ncmud.mudwammer.window.BetterEditText
     android:layout_width="match_parent"
     android:layout_height="20dip"
     android:height = "20dip"
@@ -147,7 +147,7 @@
     android:layout_above="@id/input_bar" 
     />
 
-     <com.offsetnull.bt.legacy.FixedViewFlipper 
+     <org.ncmud.mudwammer.legacy.FixedViewFlipper 
     	android:id="@+id/flippdipper"
     	android:layout_height="match_parent"
     	android:layout_width="match_parent"
@@ -161,7 +161,7 @@
     					android:layout_y="0dp">
     				</RelativeLayout>
     				
-	 </com.offsetnull.bt.legacy.FixedViewFlipper> -->
+	 </org.ncmud.mudwammer.legacy.FixedViewFlipper> -->
 	
 
 </RelativeLayout>

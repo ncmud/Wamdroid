@@ -12,7 +12,7 @@ detekt {
 }
 
 android {
-	namespace = "com.offsetnull.bt"
+	namespace = "org.ncmud.mudwammer"
 	compileSdk = libs.versions.compileSdk.get().toInteger()
 
 	defaultConfig {
