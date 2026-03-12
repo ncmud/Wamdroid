@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Rebrand from BlowTorch to MUDWammer: rename packages, modules, assets, and display strings
 
 ### Fixed
+- Fix app crash: applicationId mismatch causes NameNotFoundException on launch (#102)
 - Fix ComposeView crash in all Dialog subclasses missing LifecycleOwner (#93)
 - Fix WifiManager crash on connection startup (#79)
 - Remove double onDestroy in MainWindow (#27)
