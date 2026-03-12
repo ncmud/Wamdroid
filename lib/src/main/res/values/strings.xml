@@ -26,7 +26,6 @@
     <string name="btn_delete">Delete</string>
     <string name="btn_delete_caps">DELETE</string>
     <string name="btn_display">DISPLAY</string>
-    <string name="btn_donate_bracket">[DONATE]</string>
     <string name="btn_done">Done</string>
     <string name="btn_done_excl">Done!</string>
     <string name="btn_down">|DOWN|</string>
