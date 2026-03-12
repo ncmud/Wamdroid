@@ -39,7 +39,7 @@ class ServiceEventLoop(
                             sideEffects.onSwitchTo(command.display)
                         else -> {}
                     }
-                } catch (e: Exception) {
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                     Log.e("ServiceEventLoop", "Error dispatching $command", e)
                 }
             }

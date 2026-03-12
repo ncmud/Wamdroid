@@ -24,7 +24,7 @@ class ConnectionEventLoop(
             for (command in channel) {
                 try {
                     dispatcher.dispatch(command)
-                } catch (e: Exception) {
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                     android.util.Log.e("ConnectionEventLoop", "Error dispatching $command", e)
                 }
             }
