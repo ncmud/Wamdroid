@@ -271,7 +271,7 @@ public class ConnectionSetttingsParser extends PluginParser {
         out.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
         out.setOutput(writer);
         out.startDocument("UTF-8", true);
-        out.startTag("", "blowtorch");
+        out.startTag("", "mudwammer");
         out.attribute("", "xmlversion", "2");
         out.startTag("", "windows");
 
@@ -343,7 +343,7 @@ public class ConnectionSetttingsParser extends PluginParser {
         }
 
         out.endTag("", "plugins");
-        out.endTag("", "blowtorch");
+        out.endTag("", "mudwammer");
         out.endDocument();
 
         // go back through the link list and check if the settings are dirty, if so then save the

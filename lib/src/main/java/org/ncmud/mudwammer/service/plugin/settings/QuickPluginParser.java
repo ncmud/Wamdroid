@@ -36,7 +36,7 @@ public class QuickPluginParser extends BasePluginParser {
 
     public PluginDescription[] load() throws IOException, SAXException {
         tmp = new Stack<PluginDescription>();
-        RootElement root = new RootElement("blowtorch");
+        RootElement root = new RootElement("mudwammer");
         Element plugins = root.getChild("plugins");
         Element plugin = plugins.getChild("plugin");
         Element triggers = plugins.getChild("triggers");

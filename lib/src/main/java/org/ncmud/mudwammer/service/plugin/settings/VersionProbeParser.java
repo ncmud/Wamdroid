@@ -47,7 +47,7 @@ public class VersionProbeParser extends BasePluginParser {
     }
 
     public int getVersionNumber() throws FileNotFoundException, IOException, SAXException {
-        RootElement root = new RootElement("blowtorch");
+        RootElement root = new RootElement("mudwammer");
 
         root.setStartElementListener(
                 new StartElementListener() {
