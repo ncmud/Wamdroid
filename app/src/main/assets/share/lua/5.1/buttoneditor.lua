@@ -389,7 +389,7 @@ function showEditorDialog(editorValues,numediting)
 		--Note("already constructed editor"..dialogView:toString())
 	--end
 	
-	editorDialog = luajava.newInstance("com.offsetnull.bt.window.LuaDialog",context,top,false,nil)
+	editorDialog = luajava.newInstance("org.ncmud.mudwammer.window.LuaDialog",context,top,false,nil)
 	editorDialog:show()
 	context = nil
 end

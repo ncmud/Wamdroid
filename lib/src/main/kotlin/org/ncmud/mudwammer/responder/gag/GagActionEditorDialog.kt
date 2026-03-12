@@ -1,0 +1,101 @@
+package org.ncmud.mudwammer.responder.gag
+
+import android.content.Context
+import android.os.Bundle
+import android.view.Window
+import androidx.activity.ComponentDialog
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import org.ncmud.mudwammer.R
+import org.ncmud.mudwammer.responder.TriggerResponder
+import org.ncmud.mudwammer.responder.TriggerResponderEditorDoneListener
+import org.ncmud.mudwammer.ui.EditorDialogScaffold
+import org.ncmud.mudwammer.ui.setComposeContent
+
+class GagActionEditorDialog(
+    context: Context,
+    private val original: TriggerResponder?,
+    private val finishWith: TriggerResponderEditorDoneListener
+) : ComponentDialog(context) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        window?.requestFeature(Window.FEATURE_NO_TITLE)
+        window?.setBackgroundDrawableResource(R.drawable.dialog_window_crawler1)
+
+        val gagOriginal = original as? GagAction
+        val initialOutput = gagOriginal?.isGagOutput ?: true
+        val initialLog = gagOriginal?.isGagLog ?: true
+        val initialRetarget = gagOriginal?.retarget ?: ""
+
+        setComposeContent {
+            GagEditorContent(
+                initialGagOutput = initialOutput,
+                initialGagLog = initialLog,
+                initialRetarget = initialRetarget,
+                onDone = { gagOutput, gagLog, retarget ->
+                    doExit(gagOutput, gagLog, retarget)
+                },
+                onCancel = { dismiss() }
+            )
+        }
+    }
+
+    private fun doExit(gagOutput: Boolean, gagLog: Boolean, retarget: String) {
+        val action = GagAction().apply {
+            isGagOutput = gagOutput
+            isGagLog = gagLog
+            this.retarget = retarget
+        }
+        if (original != null) {
+            finishWith.editTriggerResponder(action, original)
+        } else {
+            finishWith.newTriggerResponder(action)
+        }
+        dismiss()
+    }
+}
+
+@Composable
+private fun GagEditorContent(
+    initialGagOutput: Boolean,
+    initialGagLog: Boolean,
+    initialRetarget: String,
+    onDone: (Boolean, Boolean, String) -> Unit,
+    onCancel: () -> Unit
+) {
+    var gagOutput by remember { mutableStateOf(initialGagOutput) }
+    var gagLog by remember { mutableStateOf(initialGagLog) }
+    var retarget by remember { mutableStateOf(initialRetarget) }
+
+    EditorDialogScaffold(
+        title = "Gag Responder",
+        onSave = { onDone(gagOutput, gagLog, retarget) },
+        onCancel = onCancel
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = gagOutput, onCheckedChange = { gagOutput = it })
+            Text("Gag from output")
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = gagLog, onCheckedChange = { gagLog = it })
+            Text("Gag from log")
+        }
+        OutlinedTextField(
+            value = retarget,
+            onValueChange = { retarget = it },
+            label = { Text("Retarget to window") },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}

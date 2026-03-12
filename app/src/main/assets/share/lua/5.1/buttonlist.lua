@@ -217,7 +217,7 @@ function showList(unsortedList,lastLoadedSet)
 	
 	local donebutton = layout:findViewById(R_id.done)
 	donebutton:setOnClickListener(doneListener)
-	dialog = luajava.newInstance("com.offsetnull.bt.window.LuaDialog",context,layout,false,nil)
+	dialog = luajava.newInstance("org.ncmud.mudwammer.window.LuaDialog",context,layout,false,nil)
 
 	--end
 	dialog:show()
@@ -471,7 +471,7 @@ newButtonListener = luajava.createProxy("android.view.View$OnClickListener",{
     linear:addView(newSetEdit)
     linear:addView(buttonholder)
     
-    newButtonSetDialog = luajava.newInstance("com.offsetnull.bt.window.LuaDialog",context,linear,false,nil)
+    newButtonSetDialog = luajava.newInstance("org.ncmud.mudwammer.window.LuaDialog",context,linear,false,nil)
     newButtonSetDialog:show()
   end
 })

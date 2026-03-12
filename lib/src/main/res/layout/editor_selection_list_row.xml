@@ -63,7 +63,7 @@
   		android:lines="1"
   		android:id="@+id/infoExtended"/>
   	 
-  	 <com.offsetnull.bt.window.AnimatedRelativeLayout
+  	 <org.ncmud.mudwammer.window.AnimatedRelativeLayout
   	     android:id="@+id/toolbarholder"
   	     android:layout_width="wrap_content"
   	     android:layout_height="match_parent"
