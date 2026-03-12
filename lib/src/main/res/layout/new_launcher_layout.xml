@@ -3,8 +3,9 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		android:id = "@+id/launcher_window_content"
-		android:layout_height = "wrap_content"
-		android:layout_width = "wrap_content">
+		android:layout_height = "match_parent"
+		android:layout_width = "match_parent"
+		android:fitsSystemWindows = "true">
 	<ImageView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -45,44 +46,59 @@
 			android:id="@+id/separator"
 			src="@drawable/horizontal_separator"/> -->
 			
-		<TableLayout
+		<LinearLayout
 			android:id = "@+id/table_container"
 			android:layout_height = "wrap_content"
-			android:layout_width = "wrap_content"
-			android:layout_alignParentEnd = "true"
+			android:layout_width = "match_parent"
 			android:layout_alignParentBottom = "true"
-			android:background = "#AAAAAAAA"
-			>
-			<TableRow
+			android:orientation = "horizontal"
+			android:background = "#EE222222"
+			android:padding = "8dp"
+			android:gravity = "center">
+			<LinearLayout
 				android:id="@+id/test_update"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
 				android:visibility="gone">
-				<TextView android:id="@+id/update_label" android:text="@string/label_test_version"  android:textSize="18sp" android:textColor = "#AA222222" android:textStyle="bold"/>
-				<Button android:text="@string/btn_update" android:id="@+id/update_button" android:visibility="gone"/>
-				
-			</TableRow>
-			<TableRow
-				android:layout_height = "wrap_content"
-				android:layout_width = "wrap_content"
-				android:gravity = "center"
-				android:background = "#AAAAAAAA">
-				<Button
-					style="?android:attr/buttonBarButtonStyle" android:id = "@+id/new_connection"
-					android:layout_height = "wrap_content"
-					android:layout_width = "100dip"
-					android:text = "@string/btn_new_bracket"/>
-				<Button
-					style="?android:attr/buttonBarButtonStyle" android:id = "@+id/help_button"
-					android:layout_height = "wrap_content"
-					android:layout_width = "100dip"
-					android:text = "@string/btn_help_bracket"/>
-				<Button
-					style="?android:attr/buttonBarButtonStyle" android:id = "@+id/donate_button"
-					android:layout_height = "wrap_content"
-					android:layout_width = "100dip"
-					android:text = "@string/btn_donate_bracket"/>
-			</TableRow>
-			
-		</TableLayout>
+				<TextView android:id="@+id/update_label" android:text="@string/label_test_version" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="18sp" android:textColor = "#AA222222" android:textStyle="bold"/>
+				<Button android:text="@string/btn_update" android:id="@+id/update_button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone"/>
+			</LinearLayout>
+			<Button
+				android:id = "@+id/new_connection"
+				android:layout_height = "48dp"
+				android:layout_width = "0dp"
+				android:layout_weight = "1"
+				android:layout_marginEnd = "4dp"
+				android:text = "@string/btn_new_bracket"
+				android:textColor = "#FFFFFFFF"
+				android:textSize = "14sp"
+				android:textStyle = "bold"
+				android:backgroundTint = "#FF555555"/>
+			<Button
+				android:id = "@+id/help_button"
+				android:layout_height = "48dp"
+				android:layout_width = "0dp"
+				android:layout_weight = "1"
+				android:layout_marginStart = "4dp"
+				android:layout_marginEnd = "4dp"
+				android:text = "@string/btn_help_bracket"
+				android:textColor = "#FFFFFFFF"
+				android:textSize = "14sp"
+				android:textStyle = "bold"
+				android:backgroundTint = "#FF555555"/>
+			<Button
+				android:id = "@+id/donate_button"
+				android:layout_height = "48dp"
+				android:layout_width = "0dp"
+				android:layout_weight = "1"
+				android:layout_marginStart = "4dp"
+				android:text = "@string/btn_donate_bracket"
+				android:textColor = "#FFFFFFFF"
+				android:textSize = "14sp"
+				android:textStyle = "bold"
+				android:backgroundTint = "#FF555555"/>
+		</LinearLayout>
 		<FrameLayout
 			android:id="@+id/timer_frame"
 			android:layout_width = "300dip"
