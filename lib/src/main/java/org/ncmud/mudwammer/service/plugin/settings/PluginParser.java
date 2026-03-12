@@ -104,7 +104,7 @@ public class PluginParser extends BasePluginParser {
     boolean current_script_execute = false;
 
     public ArrayList<Plugin> load() throws FileNotFoundException, IOException, SAXException {
-        RootElement root = new RootElement("blowtorch");
+        RootElement root = new RootElement("mudwammer");
         tmp = new PluginSettings();
         attatchListeners(root);
 
@@ -114,7 +114,7 @@ public class PluginParser extends BasePluginParser {
         // tmp.setPath(path);
         // p.setSettings(tmp);
         // do alternate parsing for plugin data.
-        RootElement root2 = new RootElement("blowtorch");
+        RootElement root2 = new RootElement("mudwammer");
         Element data = root2.getChild(PluginParser.TAG_PLUGINS).getChild(PluginParser.TAG_PLUGIN);
         // data.
         // upon encountering.

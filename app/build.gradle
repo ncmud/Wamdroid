@@ -16,6 +16,7 @@ android {
 	}
 
 	defaultConfig {
+		applicationId = "org.ncmud.mudwammer"
 		minSdk = libs.versions.minSdk.get().toInteger()
 		targetSdk = libs.versions.targetSdk.get().toInteger()
 		versionCode = 224

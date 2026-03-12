@@ -191,7 +191,7 @@ public class SettingsPersistence {
                     out.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
                     out.setOutput(writer);
                     out.startDocument("UTF-8", true);
-                    out.startTag("", "blowtorch");
+                    out.startTag("", "mudwammer");
                     out.attribute("", "xmlversion", "2");
                     out.startTag("", "plugins");
 
@@ -203,7 +203,7 @@ public class SettingsPersistence {
                     }
 
                     out.endTag("", "plugins");
-                    out.endTag("", "blowtorch");
+                    out.endTag("", "mudwammer");
                     out.endDocument();
 
                     tmppluginfile = File.createTempFile("plugin_settings", "xml", extcachedir);
