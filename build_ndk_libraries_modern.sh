@@ -50,7 +50,7 @@ make clean || true
 cd ..
 
 # Clean old JNI artifacts
-rm -f BTLib/jni/luajava/libluajit-*.a BTLib/jni/luajava/libluajit-*.so
+rm -f lib/jni/luajava/libluajit-*.a lib/jni/luajava/libluajit-*.so
 
 build_luajit() {
     local ARCH=$1
@@ -97,30 +97,30 @@ build_luajit "x86_64" "$CROSS_X86_64" "" "x86_64"
 # Copy output to JNI project
 echo ""
 echo "**********************************************"
-echo "** Copying LuaJIT output to BTLib/jni/luajava"
+echo "** Copying LuaJIT output to lib/jni/luajava"
 echo "**********************************************"
-cp "$LUAJIT_DIR/src/libluajit-arm64-v8a.a" BTLib/jni/luajava/
-cp "$LUAJIT_DIR/src/libluajit-x86_64.a" BTLib/jni/luajava/
+cp "$LUAJIT_DIR/src/libluajit-arm64-v8a.a" lib/jni/luajava/
+cp "$LUAJIT_DIR/src/libluajit-x86_64.a" lib/jni/luajava/
 
 # Copy headers
 echo "Copying LuaJIT headers..."
-cp "$LUAJIT_DIR/src/lauxlib.h" BTLib/jni/luajava/
-cp "$LUAJIT_DIR/src/lua.h" BTLib/jni/luajava/
-cp "$LUAJIT_DIR/src/luaconf.h" BTLib/jni/luajava/
-cp "$LUAJIT_DIR/src/luajit.h" BTLib/jni/luajava/
-cp "$LUAJIT_DIR/src/luajit_rolling.h" BTLib/jni/luajava/
-cp "$LUAJIT_DIR/src/lualib.h" BTLib/jni/luajava/
+cp "$LUAJIT_DIR/src/lauxlib.h" lib/jni/luajava/
+cp "$LUAJIT_DIR/src/lua.h" lib/jni/luajava/
+cp "$LUAJIT_DIR/src/luaconf.h" lib/jni/luajava/
+cp "$LUAJIT_DIR/src/luajit.h" lib/jni/luajava/
+cp "$LUAJIT_DIR/src/luajit_rolling.h" lib/jni/luajava/
+cp "$LUAJIT_DIR/src/lualib.h" lib/jni/luajava/
 
 # Build JNI modules with ndk-build
 echo ""
 echo "**********************************************"
 echo "** Building JNI modules (luajava, sqlite3, etc.)"
 echo "**********************************************"
-cd BTLib
+cd lib
 "$NDK/ndk-build" NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=jni/Android.mk NDK_APPLICATION_MK=jni/Application.mk
 
 echo ""
 echo "**********************************************"
-echo "** Build complete! Libraries in BTLib/libs/"
+echo "** Build complete! Libraries in lib/libs/"
 echo "**********************************************"
 ls -la libs/*/

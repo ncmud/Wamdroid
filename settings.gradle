@@ -25,5 +25,5 @@ if (mthLocal.directory) {
     }
 }
 
-include 'BTLib'
-include 'BT_Free'
+include 'lib'
+include 'app'
