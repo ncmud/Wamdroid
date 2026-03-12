@@ -142,5 +142,13 @@ lib/jni/luajava/libluajit-*.a
 lib/jni/luajava/libluajit-*.so
 lib/obj/
 
+# Editor backup files
+*~
+
+# Eclipse
+.classpath
+.project
+.settings/
+
 # Git worktrees
 .worktrees/
