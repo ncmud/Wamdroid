@@ -91,7 +91,7 @@ public class BetterPluginSelectionDialog extends StandardSelectionDialog
     public void onNewPressed(View v) {
         String extDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-        String plugpath = extDir + "/BlowTorch/plugins";
+        String plugpath = extDir + "/MUDWammer/plugins";
 
         File plugfile = new File(plugpath);
 

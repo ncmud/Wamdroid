@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, BaardTERMLauncher!</string>
-    <string name="app_name">BaardTERM</string>
+    <string name="app_name">MUDWammer</string>
     <string name="thewelcometext">Welcome to BaardTERM version AWESOME!111!one!!!@1NOWWITHLINEBREAKSOMGWTFBBQOHANDYOUMADEITTAKEFOURTYPERCENTLESSBATTERY?!?!?!!??!!?OMGWTFBBQXIXORRRSSS!OMGDANISSOCOOL</string>
     <string name="hello2">This is the debug screen. However this text will disappear when data arrives from the server.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n</string>
     <string name="whatisnew">--- New Features:\n*SD Card Permissions are now asked for.\n*Support fixes for newer android versions.\n*Fixed crash when touching the top of the window.</string>
@@ -136,7 +136,7 @@
     <string name="label_name">Name:</string>
     <string name="label_normal">Normal</string>
     <string name="label_pattern">Pattern:</string>
-    <string name="label_plugin_path">/mnt/sdcard/BlowTorch/plugins</string>
+    <string name="label_plugin_path">/MUDWammer/plugins</string>
     <string name="label_port">Port</string>
     <string name="label_port_number">Port Number:</string>
     <string name="label_portrait">Portrait</string>
@@ -215,7 +215,7 @@
 
     <!-- Format strings -->
     <string name="fmt_ack_with_label">Ack With: %1$s</string>
-    <string name="fmt_blowtorch_version">BlowTorch %1$s</string>
+    <string name="fmt_mudwammer_version">MUDWammer %1$s</string>
     <string name="fmt_color_label">Color: %1$d</string>
     <string name="fmt_connection_display"> %1$s</string>
     <string name="fmt_connection_host">\t%1$s:%2$s</string>

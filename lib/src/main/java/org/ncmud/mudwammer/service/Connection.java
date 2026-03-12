@@ -655,7 +655,7 @@ public class Connection
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             for (String link : mSettings.getLinks()) {
                 buffer.addString(Colorizer.getWhiteColor() + "Loading plugin file: " + link);
-                String filename = Environment.getExternalStorageDirectory() + "/BlowTorch/" + link;
+                String filename = Environment.getExternalStorageDirectory() + "/MUDWammer/" + link;
                 ArrayList<Plugin> tmplist = new ArrayList<Plugin>();
                 PluginParser parse =
                         new PluginParser(
@@ -2138,7 +2138,7 @@ public class Connection
                     File f = new File(mService.getApplicationContext().getFilesDir(), path);
                     String file = f.getName();
                     // File p = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                    // + "/BlowTorch/recovered/");
+                    // + "/MUDWammer/recovered/");
                     File p = new File(mService.getExternalFilesDir(null), "/recovered/");
                     if (!p.exists()) {
                         p.mkdirs();
@@ -2731,7 +2731,7 @@ public class Connection
      * @return The state of the target plugin. true = loaded, false = unloaded.
      */
     public final boolean isLinkLoaded(final String link) {
-        String foo = Environment.getExternalStorageDirectory() + "/BlowTorch/";
+        String foo = Environment.getExternalStorageDirectory() + "/MUDWammer/";
         String bar = link.replace(foo, "");
 
         boolean ret = mLinkMap.containsKey(bar);

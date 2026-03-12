@@ -2,12 +2,12 @@
 <resources>
 	<string name="testMode">false</string>
 	<string name="windowAction">org.ncmud.mudwammer.window.MainWindow.NORMAL_MODE</string>
-	<string name="notificationIcon">blowtorch_notification2</string>
+	<string name="notificationIcon">mudwammer_notification</string>
 	<string name="serviceProcessName">:stellar</string>
 	<string name="serviceBindAction">org.ncmud.mudwammer.service.IStellarService.MODE_NORMAL</string>
-	<string name="ongoingNotificationLabel">BlowTorch</string>
+	<string name="ongoingNotificationLabel">MUDWammer</string>
 	<string name="packageName">org.ncmud.mudwammer</string>
-	<string name="exportDirectory">BlowTorch</string>
+	<string name="exportDirectory">MUDWammer</string>
 	<string name="terminalTypeString">WAMDROID</string>
-	<string name="blowtorch_desc">BlowTorch is a mobile terminal emulator with features that aide in playing text based adventure games (MUDs). For more information on the capabilities of this client, please visit the online documentation.</string>
+	<string name="mudwammer_desc">MUDWammer is a mobile terminal emulator with features that aide in playing text based adventure games (MUDs). For more information on the capabilities of this client, please visit the online documentation.</string>
 </resources>

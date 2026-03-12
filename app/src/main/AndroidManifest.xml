@@ -12,17 +12,17 @@
 
     <application
         tools:replace="android:theme"
-        android:icon="@drawable/blowtorch_logo3"
-        android:label="BlowTorch"
+        android:icon="@drawable/mudwammer_logo"
+        android:label="MUDWammer"
         android:allowBackup="true"
         android:process="org.ncmud.mudwammer"
         android:hardwareAccelerated="true"
         android:theme="@style/Theme.AppCompat.Dark.NoActionBar">
 
-        <meta-data android:value="84" android:name="BLOWTORCH_LUA_LIBS_VERSION"/>
+        <meta-data android:value="84" android:name="MUDWAMMER_LUA_LIBS_VERSION"/>
 
         <activity android:name="org.ncmud.mudwammer.app.FreeLauncher"
-                  android:label="BlowTorch"
+                  android:label="MUDWammer"
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,14 +31,14 @@
         </activity>
 
         <activity android:name="org.ncmud.mudwammer.launcher.Launcher"
-                  android:label="BlowTorch"
+                  android:label="MUDWammer"
                   android:exported="false">
         </activity>
 
         <activity android:name="org.ncmud.mudwammer.window.MainWindow"
                   tools:replace="android:exported"
                   android:windowSoftInputMode="adjustPan|stateHidden"
-                  android:label="BlowTorch"
+                  android:label="MUDWammer"
                   android:exported="true"
                   android:configChanges="orientation|keyboard|keyboardHidden|screenLayout|screenSize"
                   android:launchMode="singleTask">

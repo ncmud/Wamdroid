@@ -133,21 +133,21 @@ public class Launcher extends AppCompatActivity
 
         launcher_source = this.getIntent().getStringExtra("LAUNCH_MODE");
         if (launcher_source == null) {
-            // Log.e("BlowTorch","Launcher not provided a valid launch source. Finishing.");
+            // Log.e("MUDWammer","Launcher not provided a valid launch source. Finishing.");
             this.finish();
         }
 
         /*if(launcher_source.equals("org.ncmud.mudwammer.test")) {
         	mode = LAUNCH_MODE.TEST;
-        	//Log.e("BlowTorch","Test Launcher Engaged.");
+        	//Log.e("MUDWammer","Test Launcher Engaged.");
         } else if(launcher_source.equals("org.ncmud.mudwammer")) {
-        	//Log.e("BlowTorch","Free Launcher Engaged.");
+        	//Log.e("MUDWammer","Free Launcher Engaged.");
         	mode = LAUNCH_MODE.FREE;
         } else if(launcher_source.equals("org.ncmud.mudwammer.pro")) {
-        	//Log.e("BlowTorch","Paid Launcher Engaged");
+        	//Log.e("MUDWammer","Paid Launcher Engaged");
         	mode = LAUNCH_MODE.PAID;
         } else {
-        	//Log.e("BlowTorch","Launcher given source: " + launcher_source + " which is invalid, Finishing");
+        	//Log.e("MUDWammer","Launcher given source: " + launcher_source + " which is invalid, Finishing");
         	this.finish();
         }*/
 
@@ -170,14 +170,14 @@ public class Launcher extends AppCompatActivity
                                 .getApplicationInfo(launcher_source, PackageManager.GET_META_DATA);
                 if (testLauncher != null) {
                     if (testLauncher.metaData != null) {
-                        testversion = testLauncher.metaData.getInt("BLOWTORCH_TEST_VERSION");
+                        testversion = testLauncher.metaData.getInt("MUDWAMMER_TEST_VERSION");
                     } else {
-                        // Log.e("BlowTorch","metaData is null");
+                        // Log.e("MUDWammer","metaData is null");
                         return;
                     }
 
                 } else {
-                    // Log.e("BlowTorch","ApplicationInfo is null");
+                    // Log.e("MUDWammer","ApplicationInfo is null");
                     return;
                 }
                 // int testversion = this.getPackageManager().getApplicationInfo(launcher_source,
@@ -227,12 +227,12 @@ public class Launcher extends AppCompatActivity
                                             //								try {
                                             //									Integer newVersion =
                                             // Integer.parseInt(buf.toString());
-                                            //									//Log.e("BlowTorch","Web update version: " +
+                                            //									//Log.e("MUDWammer","Web update version: " +
                                             // newVersion);
                                             //									ApplicationInfo testLauncher =
                                             // Launcher.this.getPackageManager().getApplicationInfo(launcher_source, PackageManager.GET_META_DATA);
                                             //									int testversionName =
-                                            // testLauncher.metaData.getInt("BLOWTORCH_TEST_VERSION");
+                                            // testLauncher.metaData.getInt("MUDWAMMER_TEST_VERSION");
                                             //									int testversion = newVersion;
                                             //									PackageManager pm =
                                             // Launcher.this.getPackageManager();
@@ -243,7 +243,7 @@ public class Launcher extends AppCompatActivity
                                             //										//needsupdate = true;
                                             //									} else {
                                             //										Toast t = Toast.makeText(Launcher.this,
-                                            // "BlowTorch Test Version "+testversionName+" is up to
+                                            // "MUDWammer Test Version "+testversionName+" is up to
                                             // date.", Toast.LENGTH_SHORT);
                                             //										t.show();
                                             //										updateDialog.dismiss();
@@ -317,7 +317,7 @@ public class Launcher extends AppCompatActivity
                 launcher_settings = new LauncherSettings();
                 String[] files = this.fileList();
                 for (String file : files) {
-                    Log.e("BLOWTORCH", "Internal settings: " + file);
+                    Log.e("MUDWAMMER", "Internal settings: " + file);
                 }
             }
             // buildList();
@@ -434,7 +434,7 @@ public class Launcher extends AppCompatActivity
                         this.getPackageManager()
                                 .getApplicationInfo(launcher_source, PackageManager.GET_META_DATA)
                                 .metaData
-                                .getInt("BLOWTORCH_TEST_VERSION");
+                                .getInt("MUDWAMMER_TEST_VERSION");
             } catch (NameNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -902,7 +902,7 @@ public class Launcher extends AppCompatActivity
             if (list == null || list.length == 0) {
                 Toast t =
                         Toast.makeText(
-                                this, "No XML files in /BlowTorch/launcher/", Toast.LENGTH_LONG);
+                                this, "No XML files in /MUDWammer/launcher/", Toast.LENGTH_LONG);
                 t.show();
                 return;
             }
@@ -917,7 +917,7 @@ public class Launcher extends AppCompatActivity
             if (xmlfiles.size() == 0) {
                 Toast t =
                         Toast.makeText(
-                                this, "No XML files in /BlowTorch/launcher/", Toast.LENGTH_LONG);
+                                this, "No XML files in /MUDWammer/launcher/", Toast.LENGTH_LONG);
                 t.show();
                 return;
             }
@@ -1008,11 +1008,11 @@ public class Launcher extends AppCompatActivity
                     this.createPackageContext(
                             this.getPackageName(),
                             Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-            dir = (external == true) ? "/BlowTorch" : c.getExternalFilesDir(null).getAbsolutePath();
+            dir = (external == true) ? "/MUDWammer" : c.getExternalFilesDir(null).getAbsolutePath();
         } catch (NameNotFoundException e) {
             throw new RuntimeException(e);
         }
-        // String dir = "/BlowTorch";
+        // String dir = "/MUDWammer";
         String launcher = "/launcher";
         String path = dir + launcher + filename;
 
@@ -1102,7 +1102,7 @@ public class Launcher extends AppCompatActivity
                         targetPackage,
                         Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
         String dir =
-                (external == true) ? "/BlowTorch" : c.getExternalFilesDir(null).getAbsolutePath();
+                (external == true) ? "/MUDWammer" : c.getExternalFilesDir(null).getAbsolutePath();
         String backupDir = "/recovered/";
 
         String targetInstallation = c.getApplicationInfo().dataDir + "/files";
@@ -1212,7 +1212,7 @@ public class Launcher extends AppCompatActivity
                     this.getPackageManager()
                             .getApplicationInfo(launcher_source, PackageManager.GET_META_DATA)
                             .metaData
-                            .getInt("BLOWTORCH_TEST_VERSION");
+                            .getInt("MUDWAMMER_TEST_VERSION");
             builder.setTitle("Version " + versionString + "t" + testVersion + " details!");
 
             final SpannableString s =
@@ -1281,7 +1281,7 @@ public class Launcher extends AppCompatActivity
         /*if(mode == LAUNCH_MODE.TEST) {
         	the_intent = new Intent("org.ncmud.mudwammer.window.MainWindow.TEST_MODE");
         } else {
-        	//Log.e("BlowTorch","LAUNCHING NORMAL MODE!");
+        	//Log.e("MUDWammer","LAUNCHING NORMAL MODE!");
         	the_intent = new Intent("org.ncmud.mudwammer.window.MainWindow.NORMAL_MODE");
         }*/
 
@@ -1490,10 +1490,10 @@ public class Launcher extends AppCompatActivity
                 final String[] names;
                 final String[] values;
                 if(retailInstalled) {
-                	names = new String[] {"BlowTorch (Release)", "BlowTorch (Test)" };
+                	names = new String[] {"MUDWammer (Release)", "MUDWammer (Test)" };
                 	values = new String[] {"org.ncmud.mudwammer","org.ncmud.mudwammer.test"};
                 } else {
-                	names = new String[] {"BlowTorch (Test)" };
+                	names = new String[] {"MUDWammer (Test)" };
                 	values = new String[] {"org.ncmud.mudwammer.test"};
                 }
 
@@ -1654,13 +1654,13 @@ public class Launcher extends AppCompatActivity
                 try {
                     String data = buf.toString();
                     Integer newVersion = Integer.parseInt(data);
-                    // Log.e("BlowTorch","Web update version: " + newVersion);
+                    // Log.e("MUDWammer","Web update version: " + newVersion);
                     ApplicationInfo testLauncher =
                             Launcher.this
                                     .getPackageManager()
                                     .getApplicationInfo(
                                             launcher_source, PackageManager.GET_META_DATA);
-                    int testversionName = testLauncher.metaData.getInt("BLOWTORCH_TEST_VERSION");
+                    int testversionName = testLauncher.metaData.getInt("MUDWAMMER_TEST_VERSION");
                     int testversion = newVersion;
                     PackageManager pm = Launcher.this.getPackageManager();
                     testversion =
@@ -1712,7 +1712,7 @@ public class Launcher extends AppCompatActivity
 
             String filename =
                     Environment.getExternalStorageDirectory().getAbsolutePath()
-                            + "/BlowTorch/launcher/TestPackage.apk";
+                            + "/MUDWammer/launcher/TestPackage.apk";
 
             File deleter = new File(filename);
             if (deleter.exists()) deleter.delete();
@@ -1732,11 +1732,11 @@ public class Launcher extends AppCompatActivity
                 reportTo.sendMessage(m);
                 String updatepath =
                         Environment.getExternalStorageDirectory().getAbsolutePath()
-                                + "/BlowTorch/launcher/TestPackage.apk";
+                                + "/MUDWammer/launcher/TestPackage.apk";
                 String btdir =
-                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/";
+                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/MUDWammer/";
                 // String launcherdir = Environment.getExternalStorageDirectory().getAbsolutePath()
-                // + "/BlowTorch/launcher/";
+                // + "/MUDWammer/launcher/";
                 File btdirF = new File(btdir);
                 File launcherdirF = new File(btdirF, "/launcher/");
                 if (!btdirF.exists()) {
@@ -1815,13 +1815,13 @@ public class Launcher extends AppCompatActivity
                 }
                 try {
                     Integer newVersion = Integer.parseInt(buf.toString());
-                    // Log.e("BlowTorch","Web update version: " + newVersion);
+                    // Log.e("MUDWammer","Web update version: " + newVersion);
                     ApplicationInfo testLauncher =
                             Launcher.this
                                     .getPackageManager()
                                     .getApplicationInfo(
                                             launcher_source, PackageManager.GET_META_DATA);
-                    int testversionName = testLauncher.metaData.getInt("BLOWTORCH_TEST_VERSION");
+                    int testversionName = testLauncher.metaData.getInt("MUDWAMMER_TEST_VERSION");
                     int testversion = newVersion;
                     PackageManager pm = Launcher.this.getPackageManager();
                     testversion =
@@ -2131,11 +2131,11 @@ public class Launcher extends AppCompatActivity
                     } catch (NameNotFoundException e1) {
                         e1.printStackTrace();
                     }
-                    int testversionName = testLauncher.metaData.getInt("BLOWTORCH_TEST_VERSION");
+                    int testversionName = testLauncher.metaData.getInt("MUDWAMMER_TEST_VERSION");
                     Toast t =
                             Toast.makeText(
                                     outer,
-                                    "BlowTorch Test Version " + testversionName + " is up to date.",
+                                    "MUDWammer Test Version " + testversionName + " is up to date.",
                                     Toast.LENGTH_SHORT);
                     t.show();
                     break;
@@ -2158,7 +2158,7 @@ public class Launcher extends AppCompatActivity
                     outer.updateDialog = null;
                     String delyou =
                             Environment.getExternalStorageDirectory().getAbsolutePath()
-                                    + "/BlowTorch/launcher/TestPackage.apk";
+                                    + "/MUDWammer/launcher/TestPackage.apk";
                     File delme = new File(delyou);
                     if (delme.exists()) delme.delete();
                     break;
@@ -2168,7 +2168,7 @@ public class Launcher extends AppCompatActivity
                     outer.update = null;
                     String updatepath =
                             Environment.getExternalStorageDirectory().getAbsolutePath()
-                                    + "/BlowTorch/launcher/TestPackage.apk";
+                                    + "/MUDWammer/launcher/TestPackage.apk";
                     File file = new File(updatepath);
                     if (!file.exists()) {
                         return; // file doesn't exist

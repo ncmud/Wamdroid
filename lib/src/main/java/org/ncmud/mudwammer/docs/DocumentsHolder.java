@@ -66,7 +66,7 @@ public class DocumentsHolder {
 
         \subsection loading Loading Plugins
         Load plugins using the MENU->Plugins->Load button.
-        Use the Load menu to select valid XML plugin files from the [external memory folder]/BlowTorch/plugins folder.
+        Use the Load menu to select valid XML plugin files from the [external memory folder]/MUDWammer/plugins folder.
         Once loaded, plugins may display description and author information. Invalid plugins will display the parse error to assist with debugging.
         Already loaded plugins should be indicated through the following icons:
         \image html plugin_load_states.png
