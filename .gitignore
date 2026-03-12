@@ -135,6 +135,11 @@ docs/plans/
 .mcp.json
 CHANGELOG.md
 
+# Misc
+crash.log
+firebase-debug.log
+__pycache__/
+
 # LuaJIT source (cloned at build time)
 LuaJIT-2.1/
 
