@@ -418,7 +418,7 @@ public class ConnectionSetttingsParser extends PluginParser {
                             }
                             break;
                         case keep_last:
-                            if ((Boolean) opt.getValue() != false) {
+                            if ((Boolean) opt.getValue() != true) {
                                 dooutput = true;
                             }
                             break;

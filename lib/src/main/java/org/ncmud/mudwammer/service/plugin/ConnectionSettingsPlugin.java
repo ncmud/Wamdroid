@@ -99,7 +99,7 @@ public class ConnectionSettingsPlugin extends Plugin {
         keep_last.setDescription(
                 "Keeps the last text entered in the window and highights after sending.");
         keep_last.setKey("keep_last");
-        keep_last.setValue(false);
+        keep_last.setValue(true);
         input.addOption(keep_last);
 
         BooleanOption compatilibility_mode = new BooleanOption();
