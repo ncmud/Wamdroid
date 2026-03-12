@@ -228,7 +228,7 @@ public class WindowToken {
         fontPath.addItem("sans serrif");
         fontPath.addItem("default");
         fontPath.addPath("/system/fonts/");
-        fontPath.addPath("BlowTorch/");
+        fontPath.addPath("MUDWammer/");
         fontPath.addExtension(".ttf");
         window.addOption(fontPath);
 

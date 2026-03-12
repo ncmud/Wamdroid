@@ -41,9 +41,9 @@ public class AboutDialog extends Dialog {
                     this.getContext()
                             .getResources()
                             .getIdentifier(
-                                    "blowtorch_about", "id", this.getContext().getPackageName());
+                                    "mudwammer_about", "id", this.getContext().getPackageName());
             TextView v = (TextView) this.findViewById(abtid);
-            v.setText(getContext().getString(R.string.fmt_blowtorch_version, str));
+            v.setText(getContext().getString(R.string.fmt_mudwammer_version, str));
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -71,7 +71,7 @@ public class AboutDialog extends Dialog {
                 this.getContext()
                         .getResources()
                         .getIdentifier(
-                                "blowtorch_button", "id", this.getContext().getPackageName());
+                                "mudwammer_button", "id", this.getContext().getPackageName());
         this.findViewById(btid)
                 .setOnClickListener(
                         new View.OnClickListener() {

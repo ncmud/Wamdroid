@@ -61,13 +61,13 @@ public class VersionProbeParser extends BasePluginParser {
                                         Integer.parseInt(a.getValue("", "xmlversion"));
                                 Log.e(
                                         "XMLPARSE",
-                                        "FOUND APPROPRIATE BLOWTORCH ROOT NODE IN V2 SETTINGS FILE"
+                                        "FOUND APPROPRIATE MUDWAMMER ROOT NODE IN V2 SETTINGS FILE"
                                                 + " - FOUND VERSION "
                                                 + VersionProbeParser.this.version);
                             } catch (NumberFormatException e) {
                                 Log.e(
                                         "XMLPARSE",
-                                        "DID NOT FIND APPROPRIATE BLOWTORCH ROOT NOTE VERSION"
+                                        "DID NOT FIND APPROPRIATE MUDWAMMER ROOT NOTE VERSION"
                                                 + " NUMBER IN V2 SETTINGS FILE");
                             }
                         }

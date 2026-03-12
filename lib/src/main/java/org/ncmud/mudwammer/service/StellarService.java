@@ -158,7 +158,7 @@ public class StellarService extends Service {
         if (ConfigurationLoader.isTestMode(this.getApplicationContext())) {
             // Thread.setDefaultUncaughtExceptionHandler(new
             // org.ncmud.mudwammer.crashreport.CrashReporter(this.getApplicationContext()));
-            Log.e("BLOWTORCH", "SHOULD SET THE UNCAUGHT EXCEPTION HANDLER HERE.");
+            Log.e("MUDWAMMER", "SHOULD SET THE UNCAUGHT EXCEPTION HANDLER HERE.");
         }
         return Service.START_STICKY_COMPATIBILITY;
     }
@@ -183,7 +183,7 @@ public class StellarService extends Service {
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
-        int packagever = meta.getInt("BLOWTORCH_LUA_LIBS_VERSION");
+        int packagever = meta.getInt("MUDWAMMER_LUA_LIBS_VERSION");
         if (packagever != libsver) {
             // copy new libs.
             try {
@@ -290,7 +290,7 @@ public class StellarService extends Service {
 
             WifiInfo info = mWifiManager.getConnectionInfo();
             if (info.getNetworkId() != -1) {
-                mWifiLock = mWifiManager.createWifiLock("BLOWTORCH_WIFI_LOCK");
+                mWifiLock = mWifiManager.createWifiLock("MUDWAMMER_WIFI_LOCK");
                 boolean held = false;
                 while (!held) {
                     mWifiLock.acquire();

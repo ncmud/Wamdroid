@@ -259,13 +259,13 @@
 			android:key="IMPORT_PATH"
 			android:defaultValue=""
 			android:title="Import Settings from File"
-			android:summary="Import settings from .xml files in /sdcard/BlowTorch/"/>
+			android:summary="Import settings from .xml files in /sdcard/MUDWammer/"/>
 		<EditTextPreference
 			android:key="EXPORT_PATH"
 			android:defaultValue=""
 			android:singleLine = "true"
 			android:title="Export Settings to File"
-			android:summary="Export settings to an .xml file in /sdcard/BlowTorch/"
+			android:summary="Export settings to an .xml file in /sdcard/MUDWammer/"
 			android:hint = "Please enter a file name."/>
 	</PreferenceCategory>
 	

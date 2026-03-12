@@ -89,7 +89,7 @@ public class SettingsPersistence {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE);
         boolean external = (state == PackageManager.PERMISSION_GRANTED) ? true : false;
         File cachedir = context.getContext().getCacheDir();
-        String btdir = "/BlowTorch";
+        String btdir = "/MUDWammer";
         if (!filename.startsWith("/")) {
             domessage = true;
             File ext = Environment.getExternalStorageDirectory();

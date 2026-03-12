@@ -91,7 +91,7 @@ public class PluginSelectorDialog extends Dialog {
 
         // build list
 
-        title.setText(Environment.getExternalStorageDirectory().getPath() + "/BlowTorch/plugins");
+        title.setText(Environment.getExternalStorageDirectory().getPath() + "/MUDWammer/plugins");
 
         // ViewFlipper flipper = (ViewFlipper) root.findViewById(R.id.flipper);
         // flipper.addView(content);
@@ -105,7 +105,7 @@ public class PluginSelectorDialog extends Dialog {
         // launch the real list building.
         String extDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-        addPage(extDir + "/BlowTorch/plugins");
+        addPage(extDir + "/MUDWammer/plugins");
     }
 
     @SuppressLint("InflateParams")
@@ -568,7 +568,7 @@ public class PluginSelectorDialog extends Dialog {
 
             content.loadDataWithBaseURL(
                     Environment.getExternalStorageDirectory().getPath()
-                            + "/BlowTorch/plugins/aardwolf/",
+                            + "/MUDWammer/plugins/aardwolf/",
                     desc.getDescription(),
                     null,
                     null,
@@ -598,7 +598,7 @@ public class PluginSelectorDialog extends Dialog {
         public void onClick(View v) {
             // get the substring path.
             String extDir =
-                    Environment.getExternalStorageDirectory().getAbsolutePath() + "/BlowTorch/";
+                    Environment.getExternalStorageDirectory().getAbsolutePath() + "/MUDWammer/";
 
             String subpath = path.substring(extDir.length(), path.length());
 
