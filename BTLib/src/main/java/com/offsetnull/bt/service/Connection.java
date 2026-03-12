@@ -846,11 +846,6 @@ public class Connection
      * @param data The data to send.
      */
     public void dispatchNoProcess(final byte[] data) {
-        try {
-            mWindowManager.getWindows().get(0).getBuffer().addBytesImpl(data);
-        } catch (java.io.UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         sendBytesToWindow(data);
     }
 
@@ -2057,11 +2052,6 @@ public class Connection
             }
             if (d.mVisString != null && !d.mVisString.equals("")) {
                 if (mSettings.isLocalEcho()) {
-                    mWindowManager
-                            .getWindows()
-                            .get(0)
-                            .getBuffer()
-                            .addBytesImpl(d.mVisString.getBytes(mSettings.getEncoding()));
                     sendBytesToWindow(d.mVisString.getBytes(mSettings.getEncoding()));
                 }
             }

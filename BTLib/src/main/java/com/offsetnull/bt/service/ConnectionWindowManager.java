@@ -139,15 +139,15 @@ public class ConnectionWindowManager {
                 tmp.updateMetrics();
                 byte[] lol = tmp.dumpToBytes(false);
 
-                try {
-                    w.getBuffer().addBytesImpl(lol);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
                 WindowCallback c = mWindowCallbackMap.get(target);
                 if (c != null) {
                     c.rawDataIncoming(lol);
+                } else {
+                    try {
+                        w.getBuffer().addBytesImpl(lol);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -233,6 +233,18 @@ public class ConnectionWindowManager {
         WindowCallback c = mWindowCallbackMap.get(MAIN_WINDOW);
         if (c != null) {
             c.rawDataIncoming(data);
+        } else {
+            // No callback registered yet — write directly to the buffer.
+            for (WindowToken w : mWindows) {
+                if (w.getName().equals(MAIN_WINDOW)) {
+                    try {
+                        w.getBuffer().addBytesImpl(data);
+                    } catch (java.io.UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
         }
     }
 }
