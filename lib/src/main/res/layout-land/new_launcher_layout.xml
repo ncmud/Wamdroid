@@ -75,11 +75,6 @@
 					android:layout_height = "wrap_content"
 					android:layout_width = "100dip"
 					android:text = "@string/btn_help_bracket"/>
-				<Button
-					style="?android:attr/buttonBarButtonStyle" android:id = "@+id/donate_button"
-					android:layout_height = "wrap_content"
-					android:layout_width = "100dip"
-					android:text = "@string/btn_donate_bracket"/>
 			</TableRow>
 			
 		</TableLayout>

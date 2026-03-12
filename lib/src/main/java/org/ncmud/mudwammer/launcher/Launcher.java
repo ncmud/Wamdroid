@@ -458,9 +458,6 @@ public class Launcher extends AppCompatActivity
         Button helpbutton = (Button) findViewById(R.id.help_button);
         helpbutton.setOnClickListener(new helpClickedListener());
 
-        Button donatebutton = (Button) findViewById(R.id.donate_button);
-        donatebutton.setOnClickListener(new helpClickedListener());
-
         Log.e("LAUNCHER", "STARTING SREVICE");
         String action =
                 ConfigurationLoader.getConfigurationValue("serviceBindAction", Launcher.this);

@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fix static mutable triggersDirty race condition (#25)
 
 ### Changed
+- Remove legacy Ant/Eclipse build files and other cruft (#105)
+- Remove old BlowTorch APKs from repository (#104)
 - Rewrite README as MUDWammer - Android with badges, build instructions, and credits (#92)
 - Convert callback interfaces to sealed classes (#50)
 - Add DataStore dependencies (#45)
