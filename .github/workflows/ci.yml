@@ -13,6 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout MTH telnet library
+        uses: actions/checkout@v4
+        with:
+          repository: ncmud/mth
+          path: ../mth
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
