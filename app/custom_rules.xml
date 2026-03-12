@@ -1,7 +1,0 @@
-<project name="MUDWammer" default="help">
-    <target name="update_manifest" description="Updating Meta-Data in Manifest">
-        <exec executable="python">
-		<arg value="update_manifest.py"/>
-	</exec>
-    </target>
-</project>
