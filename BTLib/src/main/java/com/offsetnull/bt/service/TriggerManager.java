@@ -397,7 +397,6 @@ public class TriggerManager {
 
         byte[] proc = mFinished.dumpToBytes(false);
 
-        buffer.addBytesImpl(proc);
         context.sendBytesToWindow(proc);
     }
 
