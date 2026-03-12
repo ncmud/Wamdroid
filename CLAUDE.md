@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-BlowTorch (Wamdroid) — an Android MUD client with Lua scripting, plugin support, and multi-connection capability.
+MUDWammer (Wamdroid) — an Android MUD client with Lua scripting, plugin support, and multi-connection capability.
 
 ## Build Commands
 
@@ -16,16 +16,16 @@ BlowTorch (Wamdroid) — an Android MUD client with Lua scripting, plugin suppor
 ```bash
 ./build_ndk_libraries_modern.sh
 ```
-Builds LuaJIT 2.1 for arm64-v8a and x86_64. Then builds JNI modules (luajava, lsqlite3, sqlite3, bit, marshal, luabins) and copies `.so` files to `BTLib/src/main/jniLibs/<abi>/`.
+Builds LuaJIT 2.1 for arm64-v8a and x86_64. Then builds JNI modules (luajava, lsqlite3, sqlite3, bit, marshal, luabins) and copies `.so` files to `lib/src/main/jniLibs/<abi>/`.
 
 ### Android App
 ```bash
-./gradlew :BT_Free:assembleDebug     # Debug APK
-./gradlew :BT_Free:assembleRelease   # Release (needs signing cert + BT_RELEASE_PASS env var)
+./gradlew :app:assembleDebug     # Debug APK
+./gradlew :app:assembleRelease   # Release (needs signing cert + BT_RELEASE_PASS env var)
 ```
-Output: `BT_Free/build/outputs/apk/`
+Output: `app/build/outputs/apk/`
 
-Release signing cert: `BTLib/key/bt_privatekey.keystore`.
+Release signing cert: `lib/key/bt_privatekey.keystore`.
 
 ### No Test Infrastructure
 No unit or integration tests exist.
@@ -33,10 +33,10 @@ No unit or integration tests exist.
 ## Architecture
 
 ### Module Structure
-- **BTLib** — Shared library (all core logic). Package: `com.offsetnull.bt`
-- **BT_Free** — Thin app wrapper (1 Java file: `FreeLauncher`). Package: `com.happygoatstudios.bt`
+- **lib** — Shared library (all core logic). Package: `org.ncmud.mudwammer`
+- **app** — Thin app wrapper (1 Java file: `FreeLauncher`). Package: `org.ncmud.mudwammer.app`
 
-### Key Classes (all in BTLib `com.offsetnull.bt`)
+### Key Classes (all in lib `org.ncmud.mudwammer`)
 
 | Class | Role |
 |-------|------|
@@ -71,7 +71,7 @@ User Input → MainWindow → Service → Connection → DataPumper → Socket �
 Lua scripts (LuaJIT 2.0.5) with Java bridge via `org.keplerproject.luajava`. Plugins are XML-configured with Lua code. Available Lua extensions: sqlite3, bitwise ops, binary serialization (marshal, luabins).
 
 ### Trigger/Responder System
-Pattern-matched triggers with 7 action types in `com.offsetnull.bt.responder`:
+Pattern-matched triggers with 7 action types in `org.ncmud.mudwammer.responder`:
 - `ack/` — Acknowledgment
 - `color/` — Colorize matched text
 - `gag/` — Suppress output

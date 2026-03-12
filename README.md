@@ -7,7 +7,7 @@
 ![It's dangerous!](https://img.shields.io/badge/You_are_likely_to_be_eaten_by_a-grue-red.svg)
 [![Take this.](https://img.shields.io/badge/get-lamp-yellow.svg)](http://getlamp.com)
 
-A MUD client for Android with Lua scripting, plugin support, and multi-connection capability. This is a fork of [BlowTorch](https://github.com/petter-syn/bloern) by Dan Block, modernized to build with current tools and target Android 16.
+A MUD client for Android with Lua scripting, plugin support, and multi-connection capability. This is a fork of [BlowTorch](https://github.com/blockda/BlowTorch) by Dan Block, modernized to build with current tools and target Android 16.
 
 See also [Wammer - iOS](https://github.com/ncmud/Wammer), the sister project for iPhone, iPad, and macOS.
 
@@ -41,29 +41,29 @@ The app uses LuaJIT and native extensions (luajava, lsqlite3, marshal, luabins) 
 ./build_ndk_libraries_modern.sh
 ```
 
-This builds for `arm64-v8a` and `x86_64` and copies `.so` files to `BTLib/src/main/jniLibs/`.
+This builds for `arm64-v8a` and `x86_64` and copies `.so` files to `lib/src/main/jniLibs/`.
 
 ### Build the app
 
 ```bash
-./gradlew :BT_Free:assembleDebug
+./gradlew :app:assembleDebug
 ```
 
-Output: `BT_Free/build/outputs/apk/debug/`
+Output: `app/build/outputs/apk/debug/`
 
 ### Install on a connected device
 
 ```bash
-./gradlew :BT_Free:installDebug
+./gradlew :app:installDebug
 ```
 
 ### Release builds
 
-Release builds require a signing keystore at `BTLib/key/bt_privatekey.keystore` and the `BT_RELEASE_PASS` environment variable:
+Release builds require a signing keystore at `lib/key/bt_privatekey.keystore` and the `BT_RELEASE_PASS` environment variable:
 
 ```bash
 export BT_RELEASE_PASS=your_keystore_password
-./gradlew :BT_Free:assembleRelease
+./gradlew :app:assembleRelease
 ```
 
 ## Architecture
@@ -72,8 +72,8 @@ The app is split into two modules:
 
 | Module | Purpose |
 |--------|---------|
-| **BTLib** | Shared library containing all core logic (`com.offsetnull.bt`) |
-| **BT_Free** | Thin app wrapper with the launcher activity |
+| **lib** | Shared library containing all core logic (`org.ncmud.mudwammer`) |
+| **app** | Thin app wrapper with the launcher activity |
 
 ### Key components
 
@@ -101,7 +101,7 @@ Pull requests, feature requests, and issues are welcome.
 
 ## Credits
 
-This project is a fork of [BlowTorch](https://github.com/petter-syn/bloern) by Dan Block. BlowTorch was an impressive piece of work — a full-featured Android MUD client with Lua scripting and plugin support that served the MUD community for years. We are grateful for Dan's contribution to the community and for open-sourcing the project.
+This project is a fork of [BlowTorch](https://github.com/blockda/BlowTorch) by Dan Block. BlowTorch was an impressive piece of work — a full-featured Android MUD client with Lua scripting and plugin support that served the MUD community for years. We are grateful for Dan's contribution to the community and for open-sourcing the project.
 
 ## License
 
