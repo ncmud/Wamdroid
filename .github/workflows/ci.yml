@@ -23,20 +23,20 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build debug APK
-        run: ./gradlew :BT_Free:assembleDebug
+        run: ./gradlew :app:assembleDebug
 
       - name: Detekt
-        run: ./gradlew :BTLib:detekt
+        run: ./gradlew :lib:detekt
 
       - name: Lint
-        run: ./gradlew :BTLib:lint :BT_Free:lint
+        run: ./gradlew :lib:lint :app:lint
         continue-on-error: true
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: blowtorch-debug
-          path: BT_Free/build/outputs/apk/debug/BT_Free-debug.apk
+          name: mudwammer-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload lint reports
         if: always()
@@ -44,5 +44,5 @@ jobs:
         with:
           name: lint-reports
           path: |
-            BTLib/build/reports/lint-results*.html
-            BT_Free/build/reports/lint-results*.html
+            lib/build/reports/lint-results*.html
+            app/build/reports/lint-results*.html
