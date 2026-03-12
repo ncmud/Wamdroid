@@ -483,6 +483,7 @@ public class MainWindow extends AppCompatActivity
         mInputBox.setDrawingCacheEnabled(true);
         mInputBox.setVisibility(View.VISIBLE);
         mInputBox.setEnabled(true);
+        mInputBox.requestFocus();
 
         mInputBox.setOnBackPressedListener(
                 new BetterEditText.BackPressedListener() {
