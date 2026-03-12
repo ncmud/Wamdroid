@@ -32,6 +32,12 @@ jobs:
         run: ./gradlew :BTLib:lint :BT_Free:lint
         continue-on-error: true
 
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: blowtorch-debug
+          path: BT_Free/build/outputs/apk/debug/BT_Free-debug.apk
+
       - name: Upload lint reports
         if: always()
         uses: actions/upload-artifact@v4
