@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import org.ncmud.mudwammer.data.AppStateKeys;
+import org.ncmud.mudwammer.data.AppStateStore;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -330,12 +332,10 @@ public class MainWindow extends AppCompatActivity
             // org.ncmud.mudwammer.crashreport.CrashReporter(this.getApplicationContext()));
         }
 
-        SharedPreferences sprefs = this.getSharedPreferences("STATUS_BAR_HEIGHT", 0);
         statusBarHeight =
-                sprefs.getInt(
-                        "STATUS_BAR_HEIGHT",
+                AppStateStore.getInt(this, AppStateKeys.INSTANCE.getSTATUS_BAR_HEIGHT(),
                         (int) (25 * this.getResources().getDisplayMetrics().density));
-        titleBarHeight = sprefs.getInt("TITLE_BAR_HEIGHT", 0);
+        titleBarHeight = AppStateStore.getInt(this, AppStateKeys.INSTANCE.getTITLE_BAR_HEIGHT(), 0);
         setContentView(R.layout.window_layout);
 
         androidx.appcompat.widget.Toolbar myToolbar =
@@ -951,10 +951,6 @@ public class MainWindow extends AppCompatActivity
                 String serviceBindAction =
                         ConfigurationLoader.getConfigurationValue(
                                 "serviceBindAction", MainWindow.this);
-                SharedPreferences.Editor edit =
-                        getSharedPreferences("CONNECT_TO", Context.MODE_PRIVATE).edit();
-                edit.putString("CONNECT_TO", getIntent().getStringExtra("DISPLAY"));
-                edit.apply();
                 bindService(
                         new Intent(
                                 serviceBindAction,
@@ -2359,10 +2355,6 @@ public class MainWindow extends AppCompatActivity
             	//this.startService(new Intent(org.ncmud.mudwammer.service.IStellarService.class.getName() + ".MODE_TEST"));
             	this.bindService(new Intent(org.ncmud.mudwammer.service.IStellarService.class.getName()+".MODE_TEST"), mConnection, 0);
             }*/
-            SharedPreferences.Editor edit =
-                    MainWindow.this.getSharedPreferences("CONNECT_TO", Context.MODE_PRIVATE).edit();
-            edit.putString("CONNECT_TO", MainWindow.this.getIntent().getStringExtra("DISPLAY"));
-            edit.apply();
             String serviceBindAction =
                     ConfigurationLoader.getConfigurationValue("serviceBindAction", this);
             this.bindService(

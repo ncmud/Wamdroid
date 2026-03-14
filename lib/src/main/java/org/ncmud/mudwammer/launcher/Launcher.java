@@ -11,7 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import org.ncmud.mudwammer.data.AppStateKeys;
+import org.ncmud.mudwammer.data.AppStateStore;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -426,8 +427,7 @@ public class Launcher extends AppCompatActivity
         // if(mode == LAUNCH_MODE.TEST) {
         if (ConfigurationLoader.isTestMode(this)) {
             int readver =
-                    this.getSharedPreferences("TEST_VERSION_DOWHATSNEW", Context.MODE_PRIVATE)
-                            .getInt("TEST_VERSION", 0);
+                    AppStateStore.getInt(this, AppStateKeys.INSTANCE.getTEST_VERSION(), 0);
             int testVersion = 0;
             try {
                 testVersion =
@@ -442,11 +442,7 @@ public class Launcher extends AppCompatActivity
 
             if (testVersion != readver) {
                 dowhatsnew = true;
-                SharedPreferences.Editor edit =
-                        this.getSharedPreferences("TEST_VERSION_DOWHATSNEW", Context.MODE_PRIVATE)
-                                .edit();
-                edit.putInt("TEST_VERSION", testVersion);
-                edit.apply();
+                AppStateStore.putInt(this, AppStateKeys.INSTANCE.getTEST_VERSION(), testVersion);
             }
         }
 
@@ -628,11 +624,8 @@ public class Launcher extends AppCompatActivity
             //	titleBarHeight += statusBarHeight;
             // }
 
-            SharedPreferences pref = Launcher.this.getSharedPreferences("STATUS_BAR_HEIGHT", 0);
-            Editor e = pref.edit();
-            e.putInt("STATUS_BAR_HEIGHT", statusBarHeight);
-            e.putInt("TITLE_BAR_HEIGHT", titleBarHeight);
-            e.apply();
+            AppStateStore.putInt(Launcher.this, AppStateKeys.INSTANCE.getSTATUS_BAR_HEIGHT(), statusBarHeight);
+            AppStateStore.putInt(Launcher.this, AppStateKeys.INSTANCE.getTITLE_BAR_HEIGHT(), titleBarHeight);
 
             MudConnection muc = apdapter.getItem(arg2);
 
@@ -1247,29 +1240,6 @@ public class Launcher extends AppCompatActivity
     }
 
     private void DoNewStartup() {
-        Pattern invalidchars = Pattern.compile("\\W");
-        Matcher replacebadchars = invalidchars.matcher(launch.getDisplayName());
-        String prefsname = replacebadchars.replaceAll("") + ".PREFS";
-        // prefsname = prefsname.replaceAll("/", "");
-
-        SharedPreferences sprefs = Launcher.this.getSharedPreferences(prefsname, 0);
-        // servicestarted = prefs.getBoolean("CONNECTED", false);
-        // finishStart = prefs.getBoolean("FINISHSTART", true);
-        SharedPreferences.Editor editor = sprefs.edit();
-        editor.putBoolean("CONNECTED", false);
-        editor.putBoolean("FINISHSTART", true);
-        editor.apply();
-        // Log.e("LAUNCHER","SERVICE NOT STARTED, AM RESETTING THE INITIALIZER BOOLS IN " +
-        // prefsname);
-
-        // Launcher.this.startActivity(the_intent);
-        // SharedPreferences sprefs = Launcher.this.getSharedPreferences(prefsname,0);
-        // SharedPreferences.Editor editor = sprefs.edit();
-        // editor.putBoolean("CONNECTED", false);
-        // editor.putBoolean("FINISHSTART", true);
-        editor.apply();
-
-        // launch = muc;
         DoFinalStartup();
     }
 
@@ -1303,12 +1273,6 @@ public class Launcher extends AppCompatActivity
 
         // Log.e("LAUNCHER","SERVICE NOT STARTED, AM RESETTING THE INITIALIZER BOOLS IN " +
         // prefsname);
-
-        SharedPreferences prefs = Launcher.this.getSharedPreferences("SERVICE_INFO", 0);
-        Editor edit = prefs.edit();
-
-        edit.putString("SETTINGS_PATH", launch.getDisplayName());
-        edit.apply();
 
         // this.unbindService(connectionChecker);
 
@@ -1991,10 +1955,6 @@ public class Launcher extends AppCompatActivity
             if (outer == null) return;
             switch (msg.what) {
                 case MESSAGE_USERNAME:
-                    SharedPreferences.Editor edit =
-                            outer.getSharedPreferences("TEST_USER", Context.MODE_PRIVATE).edit();
-                    edit.putString("USER_NAME", (String) msg.obj);
-                    edit.apply();
                     break;
                 case MESSAGE_WHATSNEW:
                     break;

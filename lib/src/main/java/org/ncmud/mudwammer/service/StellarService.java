@@ -11,7 +11,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import org.ncmud.mudwammer.data.AppStateKeys;
+import org.ncmud.mudwammer.data.AppStateStore;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -171,9 +172,7 @@ public class StellarService extends Service {
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.cancelAll();
 
-        SharedPreferences prefs = this.getSharedPreferences("SERVICE_INFO", 0);
-
-        int libsver = prefs.getInt("CURRENT_LUA_LIBS_VERSION", 0);
+        int libsver = AppStateStore.getInt(this, AppStateKeys.INSTANCE.getLUA_LIBS_VERSION(), 0);
         Bundle meta = null;
         try {
             meta =
@@ -188,10 +187,7 @@ public class StellarService extends Service {
             // copy new libs.
             try {
                 updateLibs();
-                // updatelibsver needs to be incremented and saved back into the shared preferences
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt("CURRENT_LUA_LIBS_VERSION", packagever);
-                editor.apply();
+                AppStateStore.putInt(this, AppStateKeys.INSTANCE.getLUA_LIBS_VERSION(), packagever);
             } catch (NameNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {

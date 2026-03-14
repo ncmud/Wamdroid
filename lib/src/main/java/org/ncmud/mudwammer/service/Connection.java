@@ -4,7 +4,8 @@
 package org.ncmud.mudwammer.service;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import org.ncmud.mudwammer.data.AppStateKeys;
+import org.ncmud.mudwammer.data.AppStateStore;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -447,17 +448,15 @@ public class Connection
                 },
                 () -> self.mPump != null && self.mPump.isConnected());
 
-        SharedPreferences sprefs = this.getContext().getSharedPreferences("STATUS_BAR_HEIGHT", 0);
         mStatusBarHeight =
-                sprefs.getInt(
-                        "STATUS_BAR_HEIGHT",
+                AppStateStore.getInt(this.getContext(), AppStateKeys.INSTANCE.getSTATUS_BAR_HEIGHT(),
                         (int)
                                 (STATUS_BAR_DEFAULT_SIZE
                                         * this.getContext()
                                                 .getResources()
                                                 .getDisplayMetrics()
                                                 .density));
-        mTitleBarHeight = sprefs.getInt("TITLE_BAR_HEIGHT", 0);
+        mTitleBarHeight = AppStateStore.getInt(this.getContext(), AppStateKeys.INSTANCE.getTITLE_BAR_HEIGHT(), 0);
 
         mLoaded = true;
 
