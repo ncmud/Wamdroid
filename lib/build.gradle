@@ -74,7 +74,7 @@ dependencies {
 	api libs.datastore.core
 	api libs.datastore.preferences
 
-	api 'com.github.ncmud:mth:2.0.4'
+	api 'com.github.ncmud:mth:2.1.1'
 
 	testImplementation libs.junit5.api
 	testRuntimeOnly libs.junit5.engine

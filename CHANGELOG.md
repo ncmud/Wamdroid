@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Update MTH dependency from 2.0.4 to 2.1.1 (#108)
 - Rebrand from BlowTorch to MUDWammer: rename packages, modules, assets, and display strings
 
 ### Fixed
