@@ -107,6 +107,14 @@ public class MainWindow extends AppCompatActivity
     // public static final String PREFS_NAME = "CONDIALOG_SETTINGS";
     // public String PREFS_NAME;
     private int MAIN_WINDOW_ID = -1;
+    /** Name of the primary terminal window — must match service.Connection.MAIN_WINDOW etc. */
+    private static final String MAIN_WINDOW_NAME = "mainDisplay";
+    /** Debounce window for coalescing rapid NAWS triggers (rotation, layout passes). */
+    private static final long NAWS_DEBOUNCE_MS = 80L;
+    /** Retry delay used when the main Window view is not yet measured at NAWS-handler time. */
+    private static final long NAWS_RETRY_MS = 250L;
+    /** Layout listener installed on the main Window view; nulled / removed in cleanupWindows(). */
+    private View.OnLayoutChangeListener mNawsLayoutListener = null;
     protected static final int MESSAGE_HTMLINC = 110;
     protected static final int MESSAGE_RAWINC = 111;
     protected static final int MESSAGE_BUFFINC = 112;
@@ -299,6 +307,9 @@ public class MainWindow extends AppCompatActivity
                         serviceConnected.notify();
                         serviceConnected = true;
                     }
+                    // Push real terminal dimensions once service+window are both up.
+                    // Idempotent and debounced; handler short-circuits if not yet measured.
+                    MainWindow.this.postNawsUpdate();
                     // finishInitializiation();
                     // loadSettings();
                     // Log.e("window","ending onServiceConnected()");
@@ -986,16 +997,27 @@ public class MainWindow extends AppCompatActivity
                     }
                 }
                 break;
-            case MESSAGE_RENAWS:
-                // try {
-                // TODO: NAWS WORK
-                // service.setDisplayDimensions(screen2.CALCULATED_LINESINWINDOW,
-                // screen2.CALCULATED_ROWSINWINDOW);
-                // } catch (RemoteException e5) {
-
-                // e5.printStackTrace();
-                // }
+            case MESSAGE_RENAWS: {
+                if (service == null || windowMap == null) {
+                    break;
+                }
+                org.ncmud.mudwammer.window.Window mainW = windowMap.get(MAIN_WINDOW_NAME);
+                if (mainW == null) {
+                    break;
+                }
+                int rows = mainW.getCalculatedRows();
+                int cols = mainW.getCalculatedCols();
+                if (rows <= 0 || cols <= 0) {
+                    // View not yet measured. Retry once after a longer delay so the
+                    // bind-time push from onServiceConnected isn't silently lost
+                    // when service binding wins the race against first layout.
+                    myhandler.removeMessages(MESSAGE_RENAWS);
+                    myhandler.sendEmptyMessageDelayed(MESSAGE_RENAWS, NAWS_RETRY_MS);
+                    break;
+                }
+                service.setDisplayDimensions(rows, cols);
                 break;
+            }
             case MESSAGE_CLEARINPUTWINDOW:
                 ClearKeyboard();
                 break;
@@ -2070,7 +2092,7 @@ public class MainWindow extends AppCompatActivity
                 // DoButtonPortraitMode(true);
                 // OREINTATION = Configuration.ORIENTATION_PORTRAIT;
                 myhandler.sendEmptyMessageDelayed(MESSAGE_HIDEKEYBOARD, 10);
-                myhandler.sendEmptyMessageDelayed(MESSAGE_RENAWS, 80);
+                postNawsUpdate();
 
                 if (orientation == 1) { // if we are selected as landscape
                     newconfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
@@ -2086,7 +2108,7 @@ public class MainWindow extends AppCompatActivity
                 // DoButtonPortraitMode(false);
                 // OREINTATION = Configuration.ORIENTATION_LANDSCAPE;
                 myhandler.sendEmptyMessageDelayed(MESSAGE_HIDEKEYBOARD, 10);
-                myhandler.sendEmptyMessageDelayed(MESSAGE_RENAWS, 80);
+                postNawsUpdate();
 
                 if (orientation == 2) { // if we are selected as landscape
                     newconfig.orientation = Configuration.ORIENTATION_PORTRAIT;
@@ -2311,6 +2333,9 @@ public class MainWindow extends AppCompatActivity
         }
 
         isResumed = false;
+        if (myhandler != null) {
+            myhandler.removeCallbacksAndMessages(null);
+        }
         super.onDestroy();
 
         // this.finish();
@@ -2497,9 +2522,9 @@ public class MainWindow extends AppCompatActivity
         // Typeface font = loadFontFromName(tmpname);
 
         // screen2.setFont(loadFontFromName(tmpname));
-        // TODO: NAWS-ACTION
-        // service.setDisplayDimensions(screen2.CALCULATED_LINESINWINDOW,
-        // screen2.CALCULATED_ROWSINWINDOW);
+        // Font size change alters cell counts even when the View's pixel bounds are
+        // unchanged, so the layout listener won't catch this. Post explicitly.
+        postNawsUpdate();
 
         // if(fontSizeChanged) {
         //	screen2.reBreakBuffer();
@@ -3113,6 +3138,23 @@ public class MainWindow extends AppCompatActivity
 
             windowMap.put(w.getName(), tmp);
 
+            if (MAIN_WINDOW_NAME.equals(w.getName())) {
+                if (mNawsLayoutListener == null) {
+                    mNawsLayoutListener =
+                            (view, left, top, right, bottom,
+                             oldLeft, oldTop, oldRight, oldBottom) -> {
+                                int newW = right - left;
+                                int newH = bottom - top;
+                                int oldW = oldRight - oldLeft;
+                                int oldH = oldBottom - oldTop;
+                                if (newW != oldW || newH != oldH) {
+                                    postNawsUpdate();
+                                }
+                            };
+                }
+                tmp.addOnLayoutChangeListener(mNawsLayoutListener);
+            }
+
             // RelativeLayout holder = new AnimatedRelativeLayout(mContext,tmp,this);
             // RelativeLayout.LayoutParams holderParams = new
             // RelativeLayout.LayoutParams(w.getX()+w.getWidth(),w.getY()+w.getHeight());
@@ -3149,6 +3191,13 @@ public class MainWindow extends AppCompatActivity
     public void cleanupWindows() {
         RelativeLayout rl = (RelativeLayout) this.findViewById(R.id.window_container);
         if (mWindows == null) return;
+        if (mNawsLayoutListener != null) {
+            View mainV = rl.findViewWithTag(MAIN_WINDOW_NAME);
+            if (mainV != null) {
+                mainV.removeOnLayoutChangeListener(mNawsLayoutListener);
+            }
+            mNawsLayoutListener = null;
+        }
         for (Object x : mWindows) {
             if (x instanceof WindowToken) {
                 WindowToken w = (WindowToken) x;
@@ -3403,6 +3452,18 @@ public class MainWindow extends AppCompatActivity
             default:
                 break;
         }
+    }
+
+    /**
+     * Schedule a debounced NAWS push. Rapid bursts (rotation often fires several
+     * layout passes) collapse to a single send.
+     */
+    private void postNawsUpdate() {
+        if (myhandler == null) {
+            return;
+        }
+        myhandler.removeMessages(MESSAGE_RENAWS);
+        myhandler.sendEmptyMessageDelayed(MESSAGE_RENAWS, NAWS_DEBOUNCE_MS);
     }
 
     private static class MainWindowHandler extends Handler {
