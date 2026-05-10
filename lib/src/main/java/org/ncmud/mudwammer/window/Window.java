@@ -185,10 +185,8 @@ public class Window extends View
     /** The string name of the plugin that launched this window. */
     private String mOwner;
 
-    /**
-     * Variable to store the calculated number of lines that can be drawn at the current font size.
-     */
-    private int mCalculatedLinesInWindow;
+    /** Calculated number of rows (vertical text lines) that fit at the current font size. */
+    private int mCalculatedRows;
 
     /** The preference value for the extra line space to add to each line. */
     private int mPrefLineExtra = 2;
@@ -199,8 +197,8 @@ public class Window extends View
     /** The preferred font to use to draw text. */
     private Typeface mPrefFont = Typeface.MONOSPACE;
 
-    /** The calclualated number of rows in the window for the preferred line size. */
-    private int mCalculatedRowsInWindow;
+    /** Calculated number of columns (horizontal character cells) that fit at the current font size. */
+    private int mCalculatedCols;
 
     /** Tracker value for weather or not text selection should be available for this window. */
     private boolean mTextSelectionEnabled = true;
@@ -733,13 +731,13 @@ public class Window extends View
         if (height == 0 && width == 0) {
             return;
         }
-        mCalculatedLinesInWindow = (int) (height / mPrefLineSize);
+        mCalculatedRows = (int) (height / mPrefLineSize);
 
         featurePaint.setTypeface(mPrefFont);
         featurePaint.setTextSize(mPrefFontSize);
         mOneCharWidth =
                 (int) Math.ceil(featurePaint.measureText("a")); // measure a single character
-        mCalculatedRowsInWindow = width / mOneCharWidth;
+        mCalculatedCols = width / mOneCharWidth;
 
         mSelectionIndicatorPaint.setTextSize(mSelectionIndicatorFontSize);
         mSelectionIndicatorPaint.setTypeface(mPrefFont);
@@ -753,6 +751,16 @@ public class Window extends View
         if (mBuffer.getBrokenLineCount() == 0) {
             jumpToZero();
         }
+    }
+
+    /** @return number of vertical text rows that fit in the window at the current font size. */
+    public final int getCalculatedRows() {
+        return mCalculatedRows;
+    }
+
+    /** @return number of horizontal character columns that fit in the window at the current font size. */
+    public final int getCalculatedCols() {
+        return mCalculatedCols;
     }
 
     /**
@@ -936,7 +944,7 @@ public class Window extends View
     private void calculateScrollBack() {
 
         if (mLastFrameTime == 0) { // never drawn before
-            if (mBuffer.getBrokenLineCount() <= mCalculatedLinesInWindow) {
+            if (mBuffer.getBrokenLineCount() <= mCalculatedRows) {
                 mScrollback = SCROLL_MIN;
                 return;
             }
@@ -1105,9 +1113,9 @@ public class Window extends View
 
             float x = 0;
             float y = 0;
-            if (mPrefLineSize * mCalculatedLinesInWindow < this.getHeight()) {
+            if (mPrefLineSize * mCalculatedRows < this.getHeight()) {
 
-                y = ((mPrefLineSize * mCalculatedLinesInWindow) - this.getHeight()) - mPrefLineSize;
+                y = ((mPrefLineSize * mCalculatedRows) - this.getHeight()) - mPrefLineSize;
                 // Log.e("STARTY","STARTY IS:"+y);
             }
 
@@ -1655,7 +1663,7 @@ public class Window extends View
                             x = 0;
                             drawnlines++;
                             workingcol = 0;
-                            if (drawnlines > mCalculatedLinesInWindow + extraLines) {
+                            if (drawnlines > mCalculatedRows + extraLines) {
                                 stop = true;
                             }
                             break;
@@ -1784,7 +1792,7 @@ public class Window extends View
         }
 
         if (mScrollback > SCROLL_MIN + 3 * mDensity
-                && mBuffer.getBrokenLineCount() > mCalculatedLinesInWindow) {
+                && mBuffer.getBrokenLineCount() > mCalculatedRows) {
             homeWidgetShowing = true;
             c.drawBitmap(mHomeWidgetDrawable, mHomeWidgetRect.left, mHomeWidgetRect.top, null);
         } else {
@@ -2012,8 +2020,8 @@ public class Window extends View
     public void setLineBreaks(Integer i) {
 
         if (i == 0) {
-            if (mCalculatedRowsInWindow != 0) {
-                mBuffer.setLineBreakAt(mCalculatedRowsInWindow);
+            if (mCalculatedCols != 0) {
+                mBuffer.setLineBreakAt(mCalculatedCols);
             } else {
                 mBuffer.setLineBreakAt(80);
             }
@@ -2089,7 +2097,7 @@ public class Window extends View
             mScrollback = SCROLL_MIN;
             // mHandler.sendEmptyMessage(MSG_CLEAR_NEW_TEXT_INDICATOR);
         } else {
-            if (mBuffer.getBrokenLineCount() <= mCalculatedLinesInWindow) {
+            if (mBuffer.getBrokenLineCount() <= mCalculatedRows) {
                 mScrollback = (double) mHeight;
             } else {
                 if (mScrollback > SCROLL_MIN + mPrefLineSize) {
@@ -2263,13 +2271,13 @@ public class Window extends View
             }
         }
 
-        if (mBuffer.getBrokenLineCount() <= mCalculatedLinesInWindow) {
+        if (mBuffer.getBrokenLineCount() <= mCalculatedRows) {
             int offset = 0;
-            if (mPrefLineSize * mCalculatedLinesInWindow < this.getHeight()) {
+            if (mPrefLineSize * mCalculatedRows < this.getHeight()) {
 
-                offset = ((mPrefLineSize) * mCalculatedLinesInWindow) - this.getHeight();
+                offset = ((mPrefLineSize) * mCalculatedRows) - this.getHeight();
             }
-            int under = mCalculatedLinesInWindow - (mBuffer.getBrokenLineCount() - 1);
+            int under = mCalculatedRows - (mBuffer.getBrokenLineCount() - 1);
             while (drawingIterator.hasNext()) {
                 drawingIterator.next();
                 startline += 1;
@@ -2289,9 +2297,9 @@ public class Window extends View
 
             if (working_h >= pY) {
                 int y = 0;
-                if (mPrefLineSize * mCalculatedLinesInWindow < this.getHeight()) {
+                if (mPrefLineSize * mCalculatedRows < this.getHeight()) {
 
-                    y = ((mPrefLineSize) * mCalculatedLinesInWindow) - this.getHeight();
+                    y = ((mPrefLineSize) * mCalculatedRows) - this.getHeight();
                 }
                 double delta = working_h - pY;
                 double offset = delta - pLineSize;
